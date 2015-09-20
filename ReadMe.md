@@ -14,7 +14,7 @@ in the [CMB]() application suite
 or as part of a custom application built on SMTK
 to prepare a simulation scenario.
 
-[SMTK]: https://github.com/Kitware/SMTK
+[SMTK]: https://smtk.readthedocs.org/
 [CMB]: http://computationalmodelbuilder.org/
 
 ## Supported simulations
