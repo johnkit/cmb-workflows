@@ -130,22 +130,28 @@ def init_scope(spec):
 
   Contains:
   * logger
-  * manager
-  * model
-  * gridinfo
-  * export_manager
+  * manager (smtk::attribute::System)
+  * export_manager  (smtk::attribute::System)
   * output_directory
   * output_file
   '''
   scope = ExportScope()
   scope.logger = spec.getLogger()
   scope.manager = spec.getSimulationAttributes()
-  scope.model = None
   if scope.manager is not None:
     scope.model = scope.manager.refModelManager()
-  scope.gridinfo = None
-  # if scope.model is not None:
-  #   scope.gridinfo = scope.model.gridInfo()
+    scope.mesh_collection = None
+    mesh_manager = scope.model.meshes()
+    mesh_collections = mesh_manager.collectionsWithAssociations()
+    if len(mesh_collections) == 1:
+      scope.mesh_collection = mesh_collections[0]
+      scope.mesh_points = scope.mesh_collection.points()
+      #print 'Using meshCollection', scope.mesh_collection
+    else:
+      print 'WARNING: expecting 1 mesh, instead there are', len(mesh_collections)
+  else:
+    print 'System attributes not associated with model'
+
   scope.output_filename = 'output.bc'  # default
   scope.output_directory = os.getcwd() # default
   scope.analysis_types = list()
@@ -279,7 +285,9 @@ def write_section(scope, att_type):
 
     if att.definition().associationMask() == 0x0:
       write_items(scope, att, format_list)
+      return
 
+    # (else)
     model_ent_item = att.associations()
     if model_ent_item is None:
       print 'Expecting model association for attribute', att.name()
@@ -618,14 +626,12 @@ def write_bc_sets(scope):
   bc_list = sorted(scope.bc_dict.items())
   #print 'sorted', bc_list
 
-  # Get model dimension
-  api_status = smtk.model.GridInfo.ApiStatus()
-
-  print 'Todo get dimension from gridInfo'
-  dimension = 2
-  """
-  dimension = scope.gridinfo.dimension(api_status)
-  """
+  # Determine mesh dimension
+  dimension = 3
+  meshset3D = scope.mesh_collection.meshes(smtk.mesh.Dims3)
+  if meshset3D.is_empty():
+    dimension = 2
+  #print 'mesh dimension', dimension
 
   for bc_id, bc_index in bc_list:
     bc_att = scope.manager.findAttribute(bc_id)
@@ -643,31 +649,37 @@ def write_EGS_cards(scope, bc_att):
   '''
   Writes edge element cards for given boundary condition attribute
   '''
-  print 'Write EGS cards for att ', bc_att.name()
+  print 'DEBUG: Write EGS cards for att ', bc_att.name()
   bc_id = scope.bc_dict.get(bc_att.id())
   if bc_id is None:
     print 'WARNING: No id found for BC %s' % bc_att.name()
 
-  # Get grid items
-  api_status = smtk.model.GridInfo.ApiStatus()
-  grid_item_set = set()
-  #model_ent_list = bc_att.associatedEntitiesSet()
   model_ent_item = bc_att.associations()
   if model_ent_item is None:
     return
 
-  for i in range(model_ent_item.numberOfValues()):
-    ent_uuid = model_ent_item.valueAsString(i)
-    ent_id = get_unique_id(scope, ent_uuid)
+  # Instantiate mesh tessellation class for edge data
+  # Set vtk connectivity to off, since we can presume that all
+  # mesh edges have 2 points.
+  tess = smtk.mesh.Tessellation(False, False)
 
-    print 'Todo need grid edges for model entity ', ent_id
-    """
-    ent_grid_items = scope.gridinfo.edgeGridItems(ent_id, api_status)
-    #print 'grid items', len(ent_grid_items)
-    for grid_item in ent_grid_items:
+  # Traverse model entities
+  for i in range(model_ent_item.numberOfValues()):
+    model_ent = model_ent_item.value(i)
+    #scope.output.write('! model edge %s\n' % model_ent.entity())
+    meshset = scope.mesh_collection.findAssociatedMeshes(model_ent, smtk.mesh.Dims1)
+    if meshset.is_empty():
+      print 'WARNING: meshset is empty for model ent', model_ent.entity()
+      continue
+
+    tess.extract(meshset, scope.mesh_points)
+    conn = tess.connectivity()
+
+    # With vtk Connectivity off, conn is [first-id, second-id]*
+    for i in range(0, len(conn), 2):
       scope.output.write('EGS %d %d %d\n' % \
-        (grid_item[0]+1, grid_item[1]+1, bc_id))
-    """
+        (conn[i]+1, conn[i+1]+1, bc_id))
+
 
 # ---------------------------------------------------------------------
 def write_FCS_cards(scope, bc_att):
@@ -719,6 +731,7 @@ def write_NDS_cards(scope, bc_att):
   '''
   Writes node cards for given boundary condition attribute
   '''
+  print 'DEBUG: Write NDS cards for att ', bc_att.name()
   bc_id = scope.bc_dict.get(bc_att.id())
   if bc_id is None:
     msg = 'No id found for BC %s' % bc_att.name()
@@ -726,28 +739,28 @@ def write_NDS_cards(scope, bc_att):
     scope.logger.addWarning(msg)
     return
 
-  api_status = smtk.model.GridInfo.ApiStatus()
-  node_id_set = set()
   model_ent_item = bc_att.associations()
   if model_ent_item is None:
     return
 
-  for i in range(model_ent_item.numberOfValues()):
-    ent_uuid = model_ent_item.valueAsString(i)
-    ent_id = get_unique_id(scope, ent_uuid)
+  node_id_set = set()
 
-    print 'Todo need grid boundary for model entity ', ent_id
-    """
-    vertex_id_list = list()
-    point_id_list = scope.gridinfo.pointIds(model_ent.id(), \
-      smtk.model.GridInfo.ALL_POINTS, api_status)
-    if api_status.returnType != smtk.model.GridInfo.OK:
-      msg = 'GridInfo error: %s' % api_status.errorMessage
-      print 'WARNING:', msg
-      scope.logger.addWarning(msg)
+  # Instantiate mesh tessellation class for edge data
+  # Turn off vtk connectivity and cell types
+  tess = smtk.mesh.Tessellation(False, False)
+
+  for i in range(model_ent_item.numberOfValues()):
+    model_ent = model_ent_item.value(i)
+    #scope.output.write('! model edge %s\n' % model_ent.entity())
+    meshset = scope.mesh_collection.findAssociatedMeshes(model_ent, smtk.mesh.Dims1)
+    if meshset.is_empty():
+      print 'WARNING: meshset is empty for model ent', model_ent.entity()
       continue
-    node_id_set.update(point_id_list)
-    """
+
+    tess.extract(meshset, scope.mesh_points)
+    conn = tess.connectivity()
+    node_id_set.update(conn)
+
   for node_id in sorted(node_id_set):
     scope.output.write('NDS %d %d\n' % (node_id+1, bc_id))
 
