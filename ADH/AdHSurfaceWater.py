@@ -150,6 +150,11 @@ def ExportCMB(spec):
     else:
       print 'Categories:', sorted(list(scope.categories))
 
+    # Write mesh file
+    mesh_filename = scope.output_filebase + '.2dm'
+    mesh_path = os.path.join(scope.output_directory, mesh_filename)
+    print 'TODO Write mesh data to', mesh_path
+
     # Open output file and start exporting content
     completed = False
     bc_filename = scope.output_filebase + '.bc'

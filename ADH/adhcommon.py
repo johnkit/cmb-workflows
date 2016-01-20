@@ -140,6 +140,13 @@ def init_scope(spec):
   scope.manager = spec.getSimulationAttributes()
   if scope.manager is not None:
     scope.model = scope.manager.refModelManager()
+
+    # Assign unique ids to all model cells
+    # (although only *required* for face entities)
+    next_id = assign_model_entity_ids(scope.model, 0, 'id', 1)
+    next_id = assign_model_entity_ids(scope.model, 1, 'id', next_id)
+    next_id = assign_model_entity_ids(scope.model, 2, 'id', next_id)
+
     scope.mesh_collection = None
     mesh_manager = scope.model.meshes()
     mesh_collections = mesh_manager.collectionsWithAssociations()
@@ -838,3 +845,29 @@ def find_subgroup_item(group_item, group_index, item_name):
       return smtk.attribute.to_concrete(item)
   # else
   return None
+
+
+# ---------------------------------------------------------------------
+# Assigns integer ids to model entities of given dimension
+# Returns the NEXT UNUSED ID. So if no ids are assigned, returns first
+def assign_model_entity_ids(model, dimension, property_name='id', first=1):
+  celltype_dict = {
+    0: smtk.model.VERTEX,
+    1: smtk.model.EDGE,
+    2: smtk.model.FACE,
+    3: smtk.model.VOLUME
+  }
+  celltype = celltype_dict.get(dimension)
+  if celltype is None:
+    print 'Unrecognized dimension', dimension
+    return first
+
+  entity_list = model.entitiesMatchingFlags(celltype, True)
+  entity_id = first
+  for entity in entity_list:
+    model.setIntegerProperty(entity, property_name, entity_id)
+    print 'Assigned \"%s\" %d to model entity %s (dimension %d)' % \
+      (property_name, entity_id, entity, dimension)
+    entity_id += 1
+
+  return entity_id
