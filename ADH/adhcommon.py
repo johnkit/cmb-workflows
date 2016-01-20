@@ -108,22 +108,6 @@ class CardFormat:
 
 
 # ---------------------------------------------------------------------
-# Returns integer id for input string, intended to be used with UUID
-# strings. The ExportScope object should be pass in as the first argument.
-def get_unique_id(self, tag):
-  '''
-  '''
-  if not hasattr(self, 'uid_dict'):
-    self.uid_dict = dict()
-
-  uid = self.uid_dict.get(tag)
-  if uid is None:
-    uid = len(self.uid_dict)
-    self.uid_dict[tag] = uid
-  return uid
-
-
-# ---------------------------------------------------------------------
 ExportScope = type('ExportScope', (object,), dict())
 def init_scope(spec):
   '''Returns ExportScope object initialized to input spec
@@ -209,6 +193,11 @@ def init_scope(spec):
   scope.categories = list(categories)
 
   # Initialize ID dictionaries (material, bc, constituent, function)
+
+  # Use material_dict to store <model entity uuid, material index>
+  # Assigning one material id to each material attribute
+  # Use UUID for the key, since multiple python wrappers can be
+  # created for the same model entity
   scope.material_dict = dict()
   material_index = 0
   material_att_list = scope.manager.findAttributes('Material')
@@ -227,11 +216,11 @@ def init_scope(spec):
 
     material_index += 1
     for i in range(model_ent_item.numberOfValues()):
-      uuid_string = model_ent_item.valueAsString(i)
-      model_ent_id = get_unique_id(scope, uuid_string)
-      scope.material_dict[model_ent_id] = material_index
-      print 'Added Material ID %d for model ent %d (%s)' % \
-        (material_index, model_ent_id, uuid_string)
+      ent_ref = model_ent_item.value(i)
+      ent_id = str(ent_ref.entity())
+      scope.material_dict[ent_id] = material_index
+      print 'Stored Material string %d for model ent %s' % \
+        (material_index, ent_id)
 
   scope.bc_dict = dict()
   bc_index = 0
@@ -318,8 +307,7 @@ def write_section(scope, att_type):
       scope.output.write('! material -- %s\n' % att.name())
 
     for i in range(model_ent_item.numberOfValues()):
-      ent_uuid = model_ent_item.valueAsString(i)
-      ent_id = get_unique_id(scope, ent_uuid)
+      ent_id = model_ent_item.valueAsString(i)
       ok = write_items(scope, att, format_list, ent_id)
 
   return True
@@ -623,12 +611,14 @@ def write_MTS_cards(scope):
         continue
 
       for i in range(model_ent_item.numberOfValues()):
-        ent_uuid = model_ent_item.valueAsString(i)
-        ent_id = get_unique_id(scope, ent_uuid)
+        ent_ref = model_ent_item.value(i)
+        ent = ent_ref.entity()
+        ent_id = str(ent)
         material_id = scope.material_dict.get(ent_id, 0)
         #print 'Retrieved material id %d for entity %d' % \
         #  (material_id, ent_id)
-        t = (material_id, ent_id)
+        mesh_file_id = scope.model.integerProperty(ent, 'id')[0]
+        t = (mesh_file_id, material_id)
         mts_list.append(t)
     mts_list.sort()
     for t in mts_list:
@@ -709,15 +699,15 @@ def write_FCS_cards(scope, bc_att):
     print 'WARNING: No id found for BC %s' % bc_att.name()
 
   # Get grid items
-  api_status = smtk.model.GridInfo.ApiStatus()
-  grid_item_set = set()
   model_ent_item = bc_att.associations()
   if model_ent_item is None:
     return
 
+  grid_item_set = set()
   for i in range(model_ent_item.numberOfValues()):
-    ent_uuid = model_ent_item.valueAsString(i)
-    ent_id = get_unique_id(scope, ent_uuid)
+    ent_ref = model_ent_item.value(i)
+    ent = ent_ref.entity()
+    ent_id = str(ent)
 
     print 'Todo need grid boundary for model entity ', ent_id
     """
