@@ -17,6 +17,10 @@
             </File>
             <String Name="AnalysisTypes" Label="Analysis Types" AdvanceLevel="99" Version="0"
                     Extensible="true" NumberOfRequiredValues="1"/>
+            <Directory Name="OutputDirectory" Label="Output Directory" Version="1" NumberOfRequiredValues="1" />
+            <String Name="FileBase" Label="File Base" Version="1" NumberOfRequiredValues="1">
+              <BriefDescription="Common base name for output files (.2dm, .bc)" />
+            </String>
             <File Name="PythonScript" Label="Python script" AdvanceLevel="1" Version="0"  NumberOfRequiredValues="1"
                   AdvanceLevel="1" ShouldExist="true"
                   FileFilters="Python files (*.py);;All files (*.*)">

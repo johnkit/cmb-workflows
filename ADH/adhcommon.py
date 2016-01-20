@@ -133,7 +133,7 @@ def init_scope(spec):
   * manager (smtk::attribute::System)
   * export_manager  (smtk::attribute::System)
   * output_directory
-  * output_file
+  * output_filebase == common prefix for output files
   '''
   scope = ExportScope()
   scope.logger = spec.getLogger()
@@ -152,7 +152,7 @@ def init_scope(spec):
   else:
     print 'System attributes not associated with model'
 
-  scope.output_filename = 'output.bc'  # default
+  scope.output_filebase = 'output'  # default
   scope.output_directory = os.getcwd() # default
   scope.analysis_types = list()
   scope.categories = list()
@@ -168,10 +168,21 @@ def init_scope(spec):
     else:
       att = att_list[0]
 
+      # Legacy/deprecated
       item = att.find('OutputFile')
       if item is not None:
         file_item = smtk.to_concrete(item)
-        scope.output_filename = file_item.value(0)
+        filename = file_item.value(0)
+        scope.output_filebase = os.path.splitext(filename)[0]
+        scope.output_filename = filename
+
+      item = att.find('FileBase')
+      if item is not None:
+        string_item = smtk.to_concrete(item)
+        scope.output_filebase = string_item.value(0)
+        # String off ending ".bc", in case it was included
+        if scope.output_filebase.endswith('.bc'):
+          scope.output_filebase = scope.output_filebase[0:-3]
 
       item = att.find('OutputDirectory')
       if item is not None:
