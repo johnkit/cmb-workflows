@@ -127,16 +127,20 @@ def init_scope(spec):
 
     # Assign unique ids to all model cells
     # (although only *required* for face entities)
-    next_id = assign_model_entity_ids(scope.model, 0, 'id', 1)
-    next_id = assign_model_entity_ids(scope.model, 1, 'id', next_id)
-    next_id = assign_model_entity_ids(scope.model, 2, 'id', next_id)
+    matid = 'id'
+    next_id = assign_model_entity_ids(scope.model, 0, matid, 1)
+    next_id = assign_model_entity_ids(scope.model, 1, matid, next_id)
+    next_id = assign_model_entity_ids(scope.model, 2, matid, next_id)
+    scope.matid_property_name = matid
 
     scope.mesh_collection = None
     mesh_manager = scope.model.meshes()
     mesh_collections = mesh_manager.collectionsWithAssociations()
     if len(mesh_collections) == 1:
       scope.mesh_collection = mesh_collections[0]
-      scope.mesh_points = scope.mesh_collection.points()
+      # Get mesh points - only from 2D entities since that's what gets
+      # written to the .2dm file
+      scope.mesh_points = scope.mesh_collection.cells(smtk.mesh.Dims2).points()
       #print 'Using meshCollection', scope.mesh_collection
     else:
       print 'WARNING: expecting 1 mesh, instead there are', len(mesh_collections)
