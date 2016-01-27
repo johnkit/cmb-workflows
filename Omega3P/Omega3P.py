@@ -82,6 +82,9 @@ def ExportCMB(spec):
         write_modelinfo(scope)
         write_finiteelement(scope)
         write_pregion(scope)
+        write_eigensolver(scope)
+        write_port(scope)
+        write_postprocess(scope)
         completed = True
 
     print 'Export complete'
@@ -231,6 +234,62 @@ def write_pregion(scope):
         scope.output.write('  Reference: %s\n' % ent_string)
         scope.output.write('  Order: %d\n' % order)
         scope.output.write('}\n')
+
+# ---------------------------------------------------------------------
+def write_eigensolver(scope):
+    '''Writes EigenSolver section to output stream
+
+    '''
+    att = scope.sim_atts.findAttributes('EigenSolver')[0]
+    scope.output.write('\n')
+    scope.output.write('EigenSolver:\n')
+    scope.output.write('{\n')
+
+    num_item = att.findInt('NumEigenvalues')
+    scope.output.write('  NumEigenvalues: %d\n' % num_item.value(0))
+    freq_item = att.findDouble('FrequencyShift')
+    scope.output.write('  FrequencyShift: %g\n' % freq_item.value(0))
+
+    scope.output.write('}\n')
+
+# ---------------------------------------------------------------------
+def write_port(scope):
+    '''Writes Port sections to output stream
+
+    '''
+    atts = scope.sim_atts.findAttributes('Port')
+    if not atts:
+        return
+
+    # Traverse attributes
+    for att in atts:
+        ent_string = format_entity_string(scope, att)
+        if not ent_string:
+            continue  # warning?
+
+        mode_item = att.findInt('NumberOfModes')
+        num_modes = mode_item.value(0)
+
+        scope.output.write('\n')
+        scope.output.write('Port:\n')
+        scope.output.write('{\n')
+        scope.output.write('  Reference: %s\n' % ent_string)
+        scope.output.write('  NumberOfModes: %d\n' % num_modes)
+        scope.output.write('}\n')
+
+# ---------------------------------------------------------------------
+def write_postprocess(scope):
+    '''Writes PostProcess section to output stream
+
+    '''
+    att = scope.sim_atts.findAttributes('PostProcess')[0]
+    scope.output.write('\n')
+    scope.output.write('PostProcess:\n')
+    scope.output.write('{\n')
+    item = att.find('ModeFiles')
+    toggle = 'on' if item.isEnabled() else 'off'
+    scope.output.write('  Toggle: %s\n' % toggle)
+    scope.output.write('}\n')
 
 # ---------------------------------------------------------------------
 def format_entity_string(scope, att):
