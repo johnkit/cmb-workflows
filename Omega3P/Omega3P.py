@@ -81,6 +81,7 @@ def ExportCMB(spec):
     with open(output_path, 'w') as scope.output:
         write_modelinfo(scope)
         write_finiteelement(scope)
+        write_pregion(scope)
         completed = True
 
     print 'Export complete'
@@ -204,6 +205,32 @@ def write_finiteelement(scope):
     scope.output.write('  CurvedSurfaces: %s\n' % curved_surfaces)
 
     scope.output.write('}\n')
+
+# ---------------------------------------------------------------------
+def write_pregion(scope):
+    '''Writes PRegion section to output stream
+
+    '''
+    atts = scope.sim_atts.findAttributes('RegionHighOrder')
+    if not atts:
+        return
+
+    # Traverse attributes
+    for att in atts:
+        ent_string = format_entity_string(scope, att)
+        if not ent_string:
+            continue  # warning?
+
+        order_item = att.findInt('RegionHighOrder')
+        order = order_item.value(0)
+
+        scope.output.write('\n')
+        scope.output.write('PRegion:\n')
+        scope.output.write('{\n')
+        scope.output.write('  Type: Material\n')
+        scope.output.write('  Reference: %s\n' % ent_string)
+        scope.output.write('  Order: %d\n' % order)
+        scope.output.write('}\n')
 
 # ---------------------------------------------------------------------
 def format_entity_string(scope, att):
