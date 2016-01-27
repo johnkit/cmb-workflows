@@ -296,13 +296,13 @@ def write_section(scope, att_type):
 
     if att.definition().associationMask() == 0x0:
       write_items(scope, att, format_list)
-      return
+      continue
 
     # (else)
     model_ent_item = att.associations()
     if model_ent_item is None:
       print 'Expecting model association for attribute', att.name()
-      return True
+      continue
 
     # Special handling for material models
     #  - Skip materials not associated with any domains
