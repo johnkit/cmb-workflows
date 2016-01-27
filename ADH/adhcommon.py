@@ -223,8 +223,8 @@ def init_scope(spec):
       ent_ref = model_ent_item.value(i)
       ent_id = str(ent_ref.entity())
       scope.material_dict[ent_id] = material_index
-      print 'Stored Material string %d for model ent %s' % \
-        (material_index, ent_id)
+      # print 'Stored Material string %d for model ent %s' % \
+      #   (material_index, ent_id)
 
   scope.bc_dict = dict()
   bc_index = 0
@@ -249,7 +249,7 @@ def init_scope(spec):
   for constituent_att in constituent_att_list:
     con_index = len(scope.constituent_dict) + 1
     scope.constituent_dict[constituent_att.id()] = con_index
-    #print 'Added ID %d for constituent %s' % (con_index, constituent_att.name())
+    #print 'Added ID %d for constituent %s' % (con_index, constituent_att.id())
 
   # Define function dict only, initialized adhoc
   scope.function_dict = dict()
@@ -282,7 +282,8 @@ def write_section(scope, att_type):
   # Sort list by id
   att_list.sort(key=lambda x: x.id())
   for att in att_list:
-    #print 'att', att.name(), 'mask',
+    # if att_type == 'Constituent':
+    #   print 'att', att.name(), 'mask'
     format_list = scope.format_table.get(att.type())
     if format_list is None:
       msg = 'empty format list for %s' % att.type()
@@ -860,8 +861,8 @@ def assign_model_entity_ids(model, dimension, property_name='id', first=1):
   entity_id = first
   for entity in entity_list:
     model.setIntegerProperty(entity, property_name, entity_id)
-    print 'Assigned \"%s\" %d to model entity %s (dimension %d)' % \
-      (property_name, entity_id, entity, dimension)
+    # print 'Assigned \"%s\" %d to model entity %s (dimension %d)' % \
+    #   (property_name, entity_id, entity, dimension)
     entity_id += 1
 
   return entity_id
