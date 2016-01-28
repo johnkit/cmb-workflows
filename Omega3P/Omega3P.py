@@ -122,7 +122,7 @@ def write_boundarycondition(scope):
     scope.output.write('  BoundaryCondition: {\n')
 
     # Traverse attributes and write BoundaryCondition contents
-    impedance_list = list()  # need to save these for SurfaceMaterial
+    surface_material_list = list()  # for saving SurfaceMaterial info
     for att in atts:
         ent_string = format_entity_string(scope, att)
         if not ent_string:
@@ -135,21 +135,21 @@ def write_boundarycondition(scope):
             name = name_list[index]
         scope.output.write('    %s: %s\n' % (name, ent_string))
 
-        # For Impedance BC, also save text to write as SurfaceMaterial
-        if name == 'Impedance':
-            sigma_item = att.findDouble('Sigma')
+        # Check for sigma item
+        sigma_item = att.findDouble('Sigma')
+        if sigma_item is not None:
             sigma = sigma_item.value(0)
             line1 = '    ReferenceNumber: %s\n' % ent_string
             line2 = '    Sigma: %g\n' % sigma
             text = line1 + line2
-            impedance_list.append(text)
+            surface_material_list.append(text)
     scope.output.write('  }\n')
 
-    # Traverse impedance_list and write SurfaceMaterial entries
-    for impedance_string in impedance_list:
+    # Traverse surface_material_list and write SurfaceMaterial entries
+    for surface_material_string in surface_material_list:
         scope.output.write('\n')
         scope.output.write('  SurfaceMaterial: {\n')
-        scope.output.write(impedance_string)
+        scope.output.write(surface_material_string)
         scope.output.write('  }\n')
 
 # ---------------------------------------------------------------------
