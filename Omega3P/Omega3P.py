@@ -12,9 +12,18 @@
 """
 Export script for Omega3P workflows
 """
+import imp
 import os
 import sys
 import smtk
+
+# Explicitly load nersc.py, so that it reloads each time
+module_name = 'nersc'
+abs_path = os.path.abspath(__file__)
+abs_dir = os.path.dirname(abs_path)
+module_args = imp.find_module(module_name, [abs_dir])
+imp.load_module(module_name, *module_args)
+nersc = sys.modules.get(module_name)
 
 
 ExportScope = type('ExportScope', (object,), dict())
@@ -56,15 +65,14 @@ def ExportCMB(spec):
         msg = 'More than one ExportSpec instance -- ignoring all'
         print 'WARNING:', msg
         scope.logger.addWarning(msg)
-        print 'Abort export - check logger'
         return False
 
     # (else)
-    att = att_list[0]
+    export_spec_att = att_list[0]
 
     # Initialize output file
     output_path = None
-    item = att.find('OutputFile')
+    item = export_spec_att.find('OutputFile')
     if item is not None:
         file_item = smtk.to_concrete(item)
         output_path = file_item.value(0)
@@ -72,7 +80,7 @@ def ExportCMB(spec):
 
     if not output_path:
         msg = 'No output file specified'
-        print 'WARNING:', msg
+        print 'ERROR:', msg
         scope.logger.addWarning(msg)
         print 'Abort export - check logger'
         return False
@@ -87,7 +95,18 @@ def ExportCMB(spec):
         write_postprocess(scope)
         completed = True
 
-    print 'Export complete'
+    print 'Export completion status: %s' % completed
+    if not completed:
+        return completed
+
+    # (else)
+    # Check for NERSCSimulation item
+    sim_item = export_spec_att.find('NERSCSimulation')
+    if sim_item is not None and sim_item.isEnabled():
+        scope.output_file = output_path
+        completed = nersc.submit_omega3p(scope, sim_item)
+        print 'Submit to NERSC status: %s' % completed
+
     return completed
 
 # ---------------------------------------------------------------------
@@ -99,7 +118,8 @@ def write_modelinfo(scope):
     scope.output.write('{\n')
     urls = scope.model_manager.stringProperty(scope.model_ent, 'url')
     if urls:
-        scope.output.write('  File: %s\n\n' % urls[0])
+        scope.model_file = urls[0]
+        scope.output.write('  File: %s\n\n' % scope.model_file)
 
     write_boundarycondition(scope)
     write_materials(scope)
