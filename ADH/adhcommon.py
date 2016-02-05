@@ -108,45 +108,46 @@ class CardFormat:
 
 
 # ---------------------------------------------------------------------
-# Returns integer id for input string, intended to be used with UUID
-# strings. The ExportScope object should be pass in as the first argument.
-def get_unique_id(self, tag):
-  '''
-  '''
-  if not hasattr(self, 'uid_dict'):
-    self.uid_dict = dict()
-
-  uid = self.uid_dict.get(tag)
-  if uid is None:
-    uid = len(self.uid_dict)
-    self.uid_dict[tag] = uid
-  return uid
-
-
-# ---------------------------------------------------------------------
 ExportScope = type('ExportScope', (object,), dict())
 def init_scope(spec):
   '''Returns ExportScope object initialized to input spec
 
   Contains:
   * logger
-  * manager
-  * model
-  * gridinfo
-  * export_manager
+  * manager (smtk::attribute::System)
+  * export_manager  (smtk::attribute::System)
   * output_directory
-  * output_file
+  * output_filebase == common prefix for output files
   '''
   scope = ExportScope()
   scope.logger = spec.getLogger()
   scope.manager = spec.getSimulationAttributes()
-  scope.model = None
   if scope.manager is not None:
     scope.model = scope.manager.refModelManager()
-  scope.gridinfo = None
-  # if scope.model is not None:
-  #   scope.gridinfo = scope.model.gridInfo()
-  scope.output_filename = 'output.bc'  # default
+
+    # Assign unique ids to all model cells
+    # (although only *required* for face entities)
+    matid = 'id'
+    next_id = assign_model_entity_ids(scope.model, 0, matid, 1)
+    next_id = assign_model_entity_ids(scope.model, 1, matid, next_id)
+    next_id = assign_model_entity_ids(scope.model, 2, matid, next_id)
+    scope.matid_property_name = matid
+
+    scope.mesh_collection = None
+    mesh_manager = scope.model.meshes()
+    mesh_collections = mesh_manager.collectionsWithAssociations()
+    if len(mesh_collections) == 1:
+      scope.mesh_collection = mesh_collections[0]
+      # Get mesh points - only from 2D entities since that's what gets
+      # written to the .2dm file
+      scope.mesh_points = scope.mesh_collection.cells(smtk.mesh.Dims2).points()
+      #print 'Using meshCollection', scope.mesh_collection
+    else:
+      print 'WARNING: expecting 1 mesh, instead there are', len(mesh_collections)
+  else:
+    print 'System attributes not associated with model'
+
+  scope.output_filebase = 'output'  # default
   scope.output_directory = os.getcwd() # default
   scope.analysis_types = list()
   scope.categories = list()
@@ -162,10 +163,21 @@ def init_scope(spec):
     else:
       att = att_list[0]
 
+      # Legacy/deprecated
       item = att.find('OutputFile')
       if item is not None:
         file_item = smtk.to_concrete(item)
-        scope.output_filename = file_item.value(0)
+        filename = file_item.value(0)
+        scope.output_filebase = os.path.splitext(filename)[0]
+        scope.output_filename = filename
+
+      item = att.find('FileBase')
+      if item is not None:
+        string_item = smtk.to_concrete(item)
+        scope.output_filebase = string_item.value(0)
+        # String off ending ".bc", in case it was included
+        if scope.output_filebase.endswith('.bc'):
+          scope.output_filebase = scope.output_filebase[0:-3]
 
       item = att.find('OutputDirectory')
       if item is not None:
@@ -185,6 +197,11 @@ def init_scope(spec):
   scope.categories = list(categories)
 
   # Initialize ID dictionaries (material, bc, constituent, function)
+
+  # Use material_dict to store <model entity uuid, material index>
+  # Assigning one material id to each material attribute
+  # Use UUID for the key, since multiple python wrappers can be
+  # created for the same model entity
   scope.material_dict = dict()
   material_index = 0
   material_att_list = scope.manager.findAttributes('Material')
@@ -203,11 +220,11 @@ def init_scope(spec):
 
     material_index += 1
     for i in range(model_ent_item.numberOfValues()):
-      uuid_string = model_ent_item.valueAsString(i)
-      model_ent_id = get_unique_id(scope, uuid_string)
-      scope.material_dict[model_ent_id] = material_index
-      print 'Added Material ID %d for model ent %d (%s)' % \
-        (material_index, model_ent_id, uuid_string)
+      ent_ref = model_ent_item.value(i)
+      ent_id = str(ent_ref.entity())
+      scope.material_dict[ent_id] = material_index
+      # print 'Stored Material string %d for model ent %s' % \
+      #   (material_index, ent_id)
 
   scope.bc_dict = dict()
   bc_index = 0
@@ -232,7 +249,7 @@ def init_scope(spec):
   for constituent_att in constituent_att_list:
     con_index = len(scope.constituent_dict) + 1
     scope.constituent_dict[constituent_att.id()] = con_index
-    #print 'Added ID %d for constituent %s' % (con_index, constituent_att.name())
+    #print 'Added ID %d for constituent %s' % (con_index, constituent_att.id())
 
   # Define function dict only, initialized adhoc
   scope.function_dict = dict()
@@ -265,7 +282,8 @@ def write_section(scope, att_type):
   # Sort list by id
   att_list.sort(key=lambda x: x.id())
   for att in att_list:
-    #print 'att', att.name(), 'mask',
+    # if att_type == 'Constituent':
+    #   print 'att', att.name(), 'mask'
     format_list = scope.format_table.get(att.type())
     if format_list is None:
       msg = 'empty format list for %s' % att.type()
@@ -279,11 +297,13 @@ def write_section(scope, att_type):
 
     if att.definition().associationMask() == 0x0:
       write_items(scope, att, format_list)
+      continue
 
+    # (else)
     model_ent_item = att.associations()
     if model_ent_item is None:
       print 'Expecting model association for attribute', att.name()
-      return True
+      continue
 
     # Special handling for material models
     #  - Skip materials not associated with any domains
@@ -292,8 +312,7 @@ def write_section(scope, att_type):
       scope.output.write('! material -- %s\n' % att.name())
 
     for i in range(model_ent_item.numberOfValues()):
-      ent_uuid = model_ent_item.valueAsString(i)
-      ent_id = get_unique_id(scope, ent_uuid)
+      ent_id = model_ent_item.valueAsString(i)
       ok = write_items(scope, att, format_list, ent_id)
 
   return True
@@ -597,12 +616,14 @@ def write_MTS_cards(scope):
         continue
 
       for i in range(model_ent_item.numberOfValues()):
-        ent_uuid = model_ent_item.valueAsString(i)
-        ent_id = get_unique_id(scope, ent_uuid)
+        ent_ref = model_ent_item.value(i)
+        ent = ent_ref.entity()
+        ent_id = str(ent)
         material_id = scope.material_dict.get(ent_id, 0)
         #print 'Retrieved material id %d for entity %d' % \
         #  (material_id, ent_id)
-        t = (material_id, ent_id)
+        mesh_file_id = scope.model.integerProperty(ent, 'id')[0]
+        t = (mesh_file_id, material_id)
         mts_list.append(t)
     mts_list.sort()
     for t in mts_list:
@@ -618,14 +639,12 @@ def write_bc_sets(scope):
   bc_list = sorted(scope.bc_dict.items())
   #print 'sorted', bc_list
 
-  # Get model dimension
-  api_status = smtk.model.GridInfo.ApiStatus()
-
-  print 'Todo get dimension from gridInfo'
-  dimension = 2
-  """
-  dimension = scope.gridinfo.dimension(api_status)
-  """
+  # Determine mesh dimension
+  dimension = 3
+  meshset3D = scope.mesh_collection.meshes(smtk.mesh.Dims3)
+  if meshset3D.is_empty():
+    dimension = 2
+  #print 'mesh dimension', dimension
 
   for bc_id, bc_index in bc_list:
     bc_att = scope.manager.findAttribute(bc_id)
@@ -643,31 +662,37 @@ def write_EGS_cards(scope, bc_att):
   '''
   Writes edge element cards for given boundary condition attribute
   '''
-  print 'Write EGS cards for att ', bc_att.name()
+  print 'DEBUG: Write EGS cards for att ', bc_att.name()
   bc_id = scope.bc_dict.get(bc_att.id())
   if bc_id is None:
     print 'WARNING: No id found for BC %s' % bc_att.name()
 
-  # Get grid items
-  api_status = smtk.model.GridInfo.ApiStatus()
-  grid_item_set = set()
-  #model_ent_list = bc_att.associatedEntitiesSet()
   model_ent_item = bc_att.associations()
   if model_ent_item is None:
     return
 
-  for i in range(model_ent_item.numberOfValues()):
-    ent_uuid = model_ent_item.valueAsString(i)
-    ent_id = get_unique_id(scope, ent_uuid)
+  # Instantiate mesh tessellation class for edge data
+  # Set vtk connectivity to off, since we can presume that all
+  # mesh edges have 2 points.
+  tess = smtk.mesh.Tessellation(False, False)
 
-    print 'Todo need grid edges for model entity ', ent_id
-    """
-    ent_grid_items = scope.gridinfo.edgeGridItems(ent_id, api_status)
-    #print 'grid items', len(ent_grid_items)
-    for grid_item in ent_grid_items:
+  # Traverse model entities
+  for i in range(model_ent_item.numberOfValues()):
+    model_ent = model_ent_item.value(i)
+    #scope.output.write('! model edge %s\n' % model_ent.entity())
+    meshset = scope.mesh_collection.findAssociatedMeshes(model_ent, smtk.mesh.Dims1)
+    if meshset.is_empty():
+      print 'WARNING: meshset is empty for model ent', model_ent.entity()
+      continue
+
+    tess.extract(meshset, scope.mesh_points)
+    conn = tess.connectivity()
+
+    # With vtk Connectivity off, conn is [first-id, second-id]*
+    for i in range(0, len(conn), 2):
       scope.output.write('EGS %d %d %d\n' % \
-        (grid_item[0]+1, grid_item[1]+1, bc_id))
-    """
+        (conn[i]+1, conn[i+1]+1, bc_id))
+
 
 # ---------------------------------------------------------------------
 def write_FCS_cards(scope, bc_att):
@@ -679,15 +704,15 @@ def write_FCS_cards(scope, bc_att):
     print 'WARNING: No id found for BC %s' % bc_att.name()
 
   # Get grid items
-  api_status = smtk.model.GridInfo.ApiStatus()
-  grid_item_set = set()
   model_ent_item = bc_att.associations()
   if model_ent_item is None:
     return
 
+  grid_item_set = set()
   for i in range(model_ent_item.numberOfValues()):
-    ent_uuid = model_ent_item.valueAsString(i)
-    ent_id = get_unique_id(scope, ent_uuid)
+    ent_ref = model_ent_item.value(i)
+    ent = ent_ref.entity()
+    ent_id = str(ent)
 
     print 'Todo need grid boundary for model entity ', ent_id
     """
@@ -719,6 +744,7 @@ def write_NDS_cards(scope, bc_att):
   '''
   Writes node cards for given boundary condition attribute
   '''
+  print 'DEBUG: Write NDS cards for att ', bc_att.name()
   bc_id = scope.bc_dict.get(bc_att.id())
   if bc_id is None:
     msg = 'No id found for BC %s' % bc_att.name()
@@ -726,28 +752,28 @@ def write_NDS_cards(scope, bc_att):
     scope.logger.addWarning(msg)
     return
 
-  api_status = smtk.model.GridInfo.ApiStatus()
-  node_id_set = set()
   model_ent_item = bc_att.associations()
   if model_ent_item is None:
     return
 
-  for i in range(model_ent_item.numberOfValues()):
-    ent_uuid = model_ent_item.valueAsString(i)
-    ent_id = get_unique_id(scope, ent_uuid)
+  node_id_set = set()
 
-    print 'Todo need grid boundary for model entity ', ent_id
-    """
-    vertex_id_list = list()
-    point_id_list = scope.gridinfo.pointIds(model_ent.id(), \
-      smtk.model.GridInfo.ALL_POINTS, api_status)
-    if api_status.returnType != smtk.model.GridInfo.OK:
-      msg = 'GridInfo error: %s' % api_status.errorMessage
-      print 'WARNING:', msg
-      scope.logger.addWarning(msg)
+  # Instantiate mesh tessellation class for edge data
+  # Turn off vtk connectivity and cell types
+  tess = smtk.mesh.Tessellation(False, False)
+
+  for i in range(model_ent_item.numberOfValues()):
+    model_ent = model_ent_item.value(i)
+    #scope.output.write('! model edge %s\n' % model_ent.entity())
+    meshset = scope.mesh_collection.findAssociatedMeshes(model_ent, smtk.mesh.Dims1)
+    if meshset.is_empty():
+      print 'WARNING: meshset is empty for model ent', model_ent.entity()
       continue
-    node_id_set.update(point_id_list)
-    """
+
+    tess.extract(meshset, scope.mesh_points)
+    conn = tess.connectivity()
+    node_id_set.update(conn)
+
   for node_id in sorted(node_id_set):
     scope.output.write('NDS %d %d\n' % (node_id+1, bc_id))
 
@@ -814,3 +840,29 @@ def find_subgroup_item(group_item, group_index, item_name):
       return smtk.attribute.to_concrete(item)
   # else
   return None
+
+
+# ---------------------------------------------------------------------
+# Assigns integer ids to model entities of given dimension
+# Returns the NEXT UNUSED ID. So if no ids are assigned, returns first
+def assign_model_entity_ids(model, dimension, property_name='id', first=1):
+  celltype_dict = {
+    0: smtk.model.VERTEX,
+    1: smtk.model.EDGE,
+    2: smtk.model.FACE,
+    3: smtk.model.VOLUME
+  }
+  celltype = celltype_dict.get(dimension)
+  if celltype is None:
+    print 'Unrecognized dimension', dimension
+    return first
+
+  entity_list = model.entitiesMatchingFlags(celltype, True)
+  entity_id = first
+  for entity in entity_list:
+    model.setIntegerProperty(entity, property_name, entity_id)
+    # print 'Assigned \"%s\" %d to model entity %s (dimension %d)' % \
+    #   (property_name, entity_id, entity, dimension)
+    entity_id += 1
+
+  return entity_id

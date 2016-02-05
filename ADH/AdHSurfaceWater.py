@@ -150,9 +150,23 @@ def ExportCMB(spec):
     else:
       print 'Categories:', sorted(list(scope.categories))
 
+    # Write mesh file
+    if scope.mesh_collection is None:
+      print 'WARNING: No mesh collection; cannot write .2dm file'
+    else:
+      mesh_filename = scope.output_filebase + '.2dm'
+      mesh_path = os.path.join(scope.output_directory, mesh_filename)
+      print 'Writing mesh data to', mesh_path
+      mesh_writer = smtk.io.MeshExport2DM()
+      status = mesh_writer.write( \
+        scope.mesh_collection, scope.model, scope.matid_property_name, mesh_path)
+      print 'mesh write returned status', status
+
     # Open output file and start exporting content
     completed = False
-    with open(scope.output_filename, 'w') as scope.output:
+    bc_filename = scope.output_filebase + '.bc'
+    bc_path = os.path.join(scope.output_directory, bc_filename)
+    with open(bc_path, 'w') as scope.output:
       scope.output.write('OP SW2\n')
       n = len(scope.constituent_dict)
       scope.output.write('OP TRN %d\n' % n)
@@ -178,7 +192,7 @@ def ExportCMB(spec):
 
       # Last line
       scope.output.write('END\n')
-      print 'Wrote', scope.output_filename
+      print 'Wrote', bc_path
       completed = True
 
     if not completed:
