@@ -27,7 +27,8 @@
                   <DefaultValue>localhost:8080</DefaultValue>
                 </String>
                 <String Name="NERSCAccountName" Label="NERSC account name" Version="0" />
-                <String Name="NERSCAccountPassword" Label="NERSC account password" Version="0" />
+                <String Name="NERSCAccountPassword" Label="NERSC account password"
+                        Secure="true" Version="0" />
                 <String Name="Machine" Label="NERSC Machine">
                   <DiscreteInfo DefaultIndex="0">
                     <Value Enum="Cori (Cray XC40)">Cori</Value>
@@ -40,7 +41,7 @@
                 </Int>
                 <Int Name="Timeout" Label="Time limit" Units="min" Version="0">
                   <DefaultValue>5</DefaultValue>
-                  <RangeInfo><Min Includive="true">1</Min></RangeInfo>
+                  <RangeInfo><Min Inclusive="true">1</Min></RangeInfo>
                 </Int>
               </ItemDefinitions>
             </Group>
