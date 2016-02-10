@@ -29,6 +29,9 @@ class CumulusClient():
     self._client = None
     self._cluster_id = None
     self._girder_url = girder_url
+    self._input_folder_id = None
+    self._job_id = None
+    self._output_folder_id = None
     self._private_folder_id = None
     self._script_id = None
     self._session = requests.Session()
@@ -90,17 +93,17 @@ class CumulusClient():
         print r.text
 
       if sleeps > 9:
-        self.fail('Cluster never moved into running state')
+        raise Exception('Cluster never moved into running state')
       sleeps += 1
 
   # ---------------------------------------------------------------------
-  def create_omega3p_script(self, omega3p_path, name=None, number_of_nodes=1):
+  def create_omega3p_script(self, omega3p_filename, name=None, number_of_nodes=1):
     '''Creates script to submit omega3p job
     '''
     command = 'srun -n %d /project/projectdirs/ace3p/{{machine}}/omega3p %s' % \
-      (number_of_nodes, omega3p_path)
+      (number_of_nodes, omega3p_filename)
     if name is None:
-      name = os.path.basename(omega3p_path)
+      name = omega3p_filename
     body = {
       'commands': [command],
       'name': name
@@ -110,14 +113,94 @@ class CumulusClient():
     print 'script_id', self._script_id
 
   # ---------------------------------------------------------------------
+  def create_input(self, input_paths, folder_name='input_files'):
+    '''Uploads input files
+    '''
+    folder_id = self.get_folder(self._private_folder_id, folder_name)
+    if folder_id is None:
+      return
+    print 'input_folder_id', folder_id
+    self._input_folder_id = folder_id
+
+    def upload_file(path):
+      size = os.path.getsize(path)
+      with open(path, 'rb') as fp:
+        self._client.uploadFile(
+          self._input_folder_id, fp, path, size, parentType='folder')
+
+    for input_path in input_paths:
+      if not input_path or not os.path.exists(input_path):
+        raise Exception('Input file not found: %s' % input_path)
+      upload_file(input_path)
+
+  # ---------------------------------------------------------------------
+  def create_output_folder(self, folder_name='output_files'):
+    '''
+    '''
+    folder_id = self.get_folder(self._private_folder_id, folder_name)
+    print 'output_folder_id', folder_id
+    self._output_folder_id = folder_id
+
+  # ---------------------------------------------------------------------
+  def create_job(self, job_name='CumulusJob', tail=None):
+    '''
+    '''
+    body = {
+      'name': job_name,
+      'scriptId': self._script_id,
+      'output': [{
+        'folderId': self._output_folder_id,
+        'path': '.'
+      }],
+      'input': [
+        {
+          'folderId': self._input_folder_id,
+          'path': '.'
+        }
+      ]
+    }
+
+    if tail:
+      body['output'].append({
+        "path": tail,
+        "tail": True
+      })
+
+    job = self._client.post('jobs', data=json.dumps(body))
+    self._job_id = job['_id']
+    print 'job_id', self._job_id
+
+  # ---------------------------------------------------------------------
   def finalize(self):
     '''Closes/deletes any current resources
 
     '''
-    if self._script_id is not None:
-      url = 'scripts/%s' % self._script_id
-      self._client.delete(url)
+    resource_info = {
+      'jobs': [self._job_id],
+      'scripts': [self._script_id],
+      'folder': [self._input_folder_id, self._output_folder_id]
+    }
+    for resource_type, id_list in resource_info.items():
+      for resource_id in id_list:
+        url = '%s/%s' % (resource_type, resource_id)
+        self._client.delete(url)
 
-    if self._cluster_id is not None:
-      url = 'clusters/%s' % self._cluster_id
-      self._client.delete(url)
+  # ---------------------------------------------------------------------
+  def get_folder(self, parent_id, name):
+    '''Returns folder_id, creating one if needed
+    '''
+    # Check if folder already exists
+    folder_list = self._client.listFolder(parent_id, name=name)
+    if folder_list:
+      folder = folder_list[0]
+      #print 'found folder %s: %s' % (name, str(folder))
+      return folder['_id']
+
+    # (else)
+    try:
+      r = self._client.createFolder(parent_id, name)
+      return r['_id']
+    except HttpError as e:
+      print e.responseText
+
+    return None

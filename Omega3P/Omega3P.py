@@ -69,6 +69,7 @@ def ExportCMB(spec):
 
     # (else)
     export_spec_att = att_list[0]
+    scope.model_path = None
 
     # Initialize output file
     output_path = None
@@ -103,7 +104,7 @@ def ExportCMB(spec):
     # Check for NERSCSimulation item
     sim_item = export_spec_att.find('NERSCSimulation')
     if sim_item is not None and sim_item.isEnabled():
-        scope.output_file = output_path
+        scope.output_path = output_path
         completed = nersc.submit_omega3p(scope, sim_item)
         print 'Submit to NERSC status: %s' % completed
 
@@ -118,8 +119,24 @@ def write_modelinfo(scope):
     scope.output.write('{\n')
     urls = scope.model_manager.stringProperty(scope.model_ent, 'url')
     if urls:
-        scope.model_file = urls[0]
+        url = urls[0]
+
+        # Get model filename
+        scope.model_file = os.path.basename(url)
+        print 'scope.model_file', scope.model_file
         scope.output.write('  File: %s\n\n' % scope.model_file)
+
+        # Get full path to model
+        if os.path.isabs(url):
+            scope.model_path = url
+        else:
+            smtk_urls = scope.model_manager.stringProperty(
+                scope.model_ent, 'smtk_url')
+            if smtk_urls:
+                smtk_url = smtk_urls[0]
+                model_path = os.path.join(smtk_url, url)
+                scope.model_path = os.path.abspath(model_path)
+        print 'scope.model_path', scope.model_path
 
     write_boundarycondition(scope)
     write_materials(scope)
