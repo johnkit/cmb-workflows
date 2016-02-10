@@ -12,6 +12,7 @@
 
 import json
 import os
+import sys
 import time
 
 import requests
@@ -123,10 +124,11 @@ class CumulusClient():
     self._input_folder_id = folder_id
 
     def upload_file(path):
+      name = os.path.basename(path)
       size = os.path.getsize(path)
       with open(path, 'rb') as fp:
         self._client.uploadFile(
-          self._input_folder_id, fp, path, size, parentType='folder')
+          self._input_folder_id, fp, name, size, parentType='folder')
 
     for input_path in input_paths:
       if not input_path or not os.path.exists(input_path):
@@ -169,6 +171,70 @@ class CumulusClient():
     job = self._client.post('jobs', data=json.dumps(body))
     self._job_id = job['_id']
     print 'job_id', self._job_id
+
+  # ---------------------------------------------------------------------
+  def submit_job(self, machine, project_account, timeout_minutes,
+    queue='debug', tail=None, number_of_nodes=1):
+    '''
+    '''
+    body = {
+      'machine': machine,
+      'account': project_account,
+      'numberOfNodes': number_of_nodes,
+      'maxWallTime': {
+        'hours': 0,
+        'minutes': timeout_minutes,
+        'seconds': 0
+      },
+      'queue': queue
+    }
+    url = 'clusters/%s/job/%s/submit' % (self._cluster_id, self._job_id)
+    self._client.put(url, data=json.dumps(body))
+    print 'Job submitted'
+
+    log_offset = 0
+    job_timeout = 60 * timeout_minutes
+    start = time.time()
+    while True:
+      time.sleep(2)
+
+      # Provide some feedback at startup
+      if log_offset == 0:
+        sys.stdout.write('.')
+
+      #print 'Checking status'
+      r = self._client.get('jobs/%s' % self._job_id)
+      #print r
+
+      if r['status'] in ['error', 'unexpectederror']:
+        r = self._client.get('jobs/%s/log' % self._job_id)
+        raise Exception(str(r))
+      elif r['status'] == 'complete':
+        break
+
+      # Tail log file
+      if tail:
+        params = {
+          'offset': log_offset,
+          'path': tail
+        }
+        #print 'Checking tail'
+        r = self._client.get('jobs/%s/output' % self._job_id, parameters=params)
+        #print r
+        output = r['content']
+
+        if output and log_offset == 0:
+          print  # end the user feedback dots
+
+        log_offset += len(output)
+
+        for l in output:
+          print l
+
+      sys.stdout.flush()
+
+      if time.time() - start > job_timeout:
+        raise Exception('Job timeout')
 
   # ---------------------------------------------------------------------
   def finalize(self):
