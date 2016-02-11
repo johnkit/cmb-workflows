@@ -18,6 +18,7 @@ import imp
 import os
 import sys
 import traceback
+import shutil
 
 import requests
 import smtk
@@ -55,16 +56,41 @@ def submit_omega3p(scope, sim_item):
 
   sim_item = smtk.attribute.to_concrete(sim_item)
   try:
-    if not os.path.exists(scope.model_path):
-      raise Exception('Cannot find model file at %s' % scope.model_path)
+    # Verify input files
+    check_file(scope.model_path, 'Cannot find model file at %s')
+    check_file(scope.output_path, 'Cannot find Omega3P file at %s')
 
-    if not os.path.exists(scope.output_path):
-      raise Exception('Cannot find Omega3P file at %s' % scope.output_path)
+    # Todo confirm that project repository is not null?
+    # Todo confirm that machine name is non null?
 
+    # Setup results directory
+    setup_results_directory(scope, sim_item)
+
+    # Start NERSC session
     login_nersc(scope, sim_item)
+
+    # Initialize CumulusClient
     scope.cumulus = create_cumulus_client(scope, sim_item)
 
-    raise Exception('ERROR: Submission to NERSC not yet implemented')
+    # Create cluster
+    machine = get_string(sim_item, 'Machine')
+    print 'machine', machine
+    if not machine:
+      raise Exception('Machine name not specified')
+    scope.cumulus.create_cluster(machine)
+
+    # Create run script
+    omega3p_filename = os.path.basename(scope.output_path)
+    scope.cumulus.create_omega3p_script(omega3p_filename)
+
+    # Setup I/O folders & files
+    scope.cumulus.create_input([scope.output_path, scope.model_path])
+    scope.cumulus.create_output_folder(scope.results_directory)
+
+    create_job(scope, sim_item)
+    submit_job(scope, sim_item)
+
+    scope.cumulus.download_results(scope.results_directory)
   except Exception as ex:
     traceback.print_exc()
     ok = False
@@ -92,12 +118,12 @@ def login_nersc(scope, sim_item):
   scope.newt_sessionid = None
 
   # Check user inputs
-  username = _get_string(sim_item, 'NERSCAccountName')
+  username = get_string(sim_item, 'NERSCAccountName')
   #print 'username', username
   if not username:
     raise Exception('ERROR: NERSC account name not specified')
 
-  password = _get_string(sim_item, 'NERSCAccountPassword')
+  password = get_string(sim_item, 'NERSCAccountPassword')
   #print 'password', password
   if not password:
     raise Exception('ERROR: NERSC account password not specified')
@@ -122,7 +148,55 @@ def create_cumulus_client(scope, sim_item):
   return CumulusClient(cumulus_host, scope.newt_sessionid)
 
 # ---------------------------------------------------------------------
-def _get_string(group_item, name):
+def create_job(scope, sim_item):
+  '''
+  '''
+  # Check for tail file
+  tail = get_string(sim_item, 'TailFile')
+  scope.cumulus.create_job(tail=tail)
+
+# ---------------------------------------------------------------------
+def submit_job(scope, sim_item):
+  '''
+  '''
+  # Get inputs
+  machine = get_string(sim_item, 'Machine')
+  project_repo = get_string(sim_item, 'NERSCRepository')
+  timeout_minutes = get_integer(sim_item, 'Timeout')
+  tail = get_string(sim_item, 'TailFile')
+  scope.cumulus.submit_job(machine, project_repo, timeout_minutes, tail=tail)
+
+# ---------------------------------------------------------------------
+def check_file(path, error_message_format=None):
+  '''Confirms that file exists at given path
+
+  Throws an exception if file not found
+  '''
+  if not error_message_format:
+    error_message_format = 'Cannot find file at %s'
+  if not os.path.isfile(path):
+    raise Exception(error_message_format % scope.model_path)
+
+# ---------------------------------------------------------------------
+def get_integer(group_item, name):
+  '''Looks for IntItem contained by group.
+
+  Returns either integer value or None if not found
+  '''
+  item = group_item.find(name)
+  if not item:
+    print 'WARNING: item \"%s\" not found' % name
+    return None
+
+  concrete_item = smtk.attribute.to_concrete(item)
+  if concrete_item.type() != smtk.attribute.Item.INT:
+    print 'WARNING: item \"%s\" not an integer item' % name
+    return None
+
+  return concrete_item.value(0)
+
+# ---------------------------------------------------------------------
+def get_string(group_item, name):
   '''Looks for StringItem contained by group.
 
   Returns either string or None if not found
@@ -138,3 +212,27 @@ def _get_string(group_item, name):
     return None
 
   return concrete_item.value(0)
+
+# ---------------------------------------------------------------------
+def setup_results_directory(scope, sim_item):
+  '''Creates and/or clears results directory
+  '''
+  item = sim_item.find('ResultsDirectory')
+  group_item = smtk.attribute.to_concrete(item)
+
+  item = group_item.find('ResultsDirectoryPath')
+  dir_item = smtk.attribute.to_concrete(item)
+  dir_value = dir_item.value(0)
+  if not dir_value:
+    raise Exception("Results directory not specified")
+
+  # Check if we should erase the directory first
+  item = group_item.find('ClearResultsDirectory')
+  if item.isEnabled() and os.path.isdir(dir_value):
+    shutil.rmtree(dir_value)
+
+  # Create directory if needed
+  if not os.path.isdir(dir_value):
+    os.makedirs(dir_value)
+
+  scope.results_directory = dir_value

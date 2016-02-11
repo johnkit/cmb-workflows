@@ -66,7 +66,7 @@ class CumulusClient():
     if len(r) != 1:
       raise Exception('Wrong number of users; should be 1 got %s' % len(r))
     self._private_folder_id = r[0]['_id']
-    print 'private folder id', self._private_folder_id
+    print 'private_folder_id', self._private_folder_id
 
   # ---------------------------------------------------------------------
   def create_cluster(self, machine_name, cluster_name=None):
@@ -100,8 +100,8 @@ class CumulusClient():
         break
       elif r['status'] == 'error':
         r = self._client.get('clusters/%s/log' % self._cluster_id)
-        print 'Error creating cluster'
-        print r.text
+        print r
+        raise Exception('ERROR creating cluster')
 
       if sleeps > 9:
         raise Exception('Cluster never moved into running state')
@@ -270,8 +270,9 @@ class CumulusClient():
     }
     for resource_type, id_list in resource_info.items():
       for resource_id in id_list:
-        url = '%s/%s' % (resource_type, resource_id)
-        self._client.delete(url)
+        if resource_id is not None:
+          url = '%s/%s' % (resource_type, resource_id)
+          self._client.delete(url)
 
     self._input_folder_id = None
     self._job_id = None

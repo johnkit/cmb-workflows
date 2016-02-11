@@ -14,7 +14,7 @@
                Version="0" NumberOfRequiredGroups="1">
           <ItemDefinitions>
             <String Name="CumulusHost" Label="Cumulus host" Version="0">
-              <DefaultValue>localhost:8080</DefaultValue>
+              <DefaultValue>http://localhost:8080</DefaultValue>
             </String>
             <String Name="NERSCRepository" Label="Project repository" Version="0" />
             <String Name="NERSCAccountName" Label="NERSC account name" Version="0" />
@@ -22,8 +22,8 @@
                     Secure="true" Version="0" />
             <String Name="Machine" Label="NERSC Machine">
               <DiscreteInfo DefaultIndex="0">
-                <Value Enum="Cori (Cray XC40)">Cori</Value>
-                <Value Enum="Edison (Cray XC30)">Edison</Value>
+                <Value Enum="Cori (Cray XC40)">cori</Value>
+                <Value Enum="Edison (Cray XC30)">edison</Value>
               </DiscreteInfo>
             </String>
             <Int Name="NumberOfNodes" Label="Number of nodes" Version="0">
