@@ -97,6 +97,7 @@ def ExportCMB(spec):
         completed = True
 
     print 'Export completion status: %s' % completed
+    sys.stdout.flush()
     if not completed:
         return completed
 

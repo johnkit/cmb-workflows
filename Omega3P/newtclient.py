@@ -9,6 +9,7 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
+print 'Loading newtclient'
 
 import requests
 
@@ -24,8 +25,6 @@ class NewtClient():
 
   # ---------------------------------------------------------------------
   def __init__(self, base_url):
-    if not base_url.endswith('/'):
-      base_url = base_url + '/'
     self._base_url = base_url
     self._session_id = None
 
@@ -52,6 +51,12 @@ class NewtClient():
     url = '%s/login/' % self._base_url
     r = requests.post(url, data=credentials)
     js = r.json()
+    if not js.get('auth'):
+      print 'NERSC url', url
+      print 'credentials', credentials
+      print 'NERSC response', r.text
+      raise Exception('Login to NERSC failed')
+
     self._session_id = js.get('newt_sessionid')
     return r.json()
 

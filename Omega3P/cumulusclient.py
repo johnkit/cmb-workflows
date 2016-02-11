@@ -9,6 +9,7 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
+print 'Loading cumulusclient'
 
 import json
 import os
