@@ -20,11 +20,14 @@
             <String Name="NERSCAccountName" Label="NERSC account name" Version="0" />
             <String Name="NERSCAccountPassword" Label="NERSC account password"
                     Secure="true" Version="0" />
-            <String Name="Machine" Label="NERSC Machine">
+            <String Name="Machine" Label="NERSC Machine" Version="0">
               <DiscreteInfo DefaultIndex="0">
                 <Value Enum="Cori (Cray XC40)">cori</Value>
                 <Value Enum="Edison (Cray XC30)">edison</Value>
               </DiscreteInfo>
+            </String>
+            <String Name="Queue" Label="Queue" Version="0">
+              <DefaultValue>debug</DefaultValue>
             </String>
             <Int Name="NumberOfNodes" Label="Number of nodes" Version="0">
               <DefaultValue>1</DefaultValue>
@@ -38,11 +41,10 @@
               <ItemDefinitions>
                 <Directory Name="ResultsDirectoryPath" Label="Path"
                            Version="0" NumberOfRequiredValues="1" ShouldExist="false" />
-                <Void Name="ClearResultsDirectory" Label="Clear current contents" />
+                <Void Name="ClearResultsDirectory" Label="Clear current contents" Version="0" />
               </ItemDefinitions>
             </Group>
-            <String Name="TailFile" Label="Tail Filename" Version="0"
-                    AdvanceLevel="1">
+            <String Name="TailFile" Label="Tail Filename" Version="0" AdvanceLevel="1">
               <DefaultValue>omega3p_results/omega3p.log</DefaultValue>
             </String>
           </ItemDefinitions>

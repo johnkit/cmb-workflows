@@ -257,6 +257,8 @@ class CumulusClient():
     self._client.downloadFolderRecursive(
       self._output_folder_id, destination_folder)
 
+    print 'Downloaded files to %s' % destination_folder
+
   # ---------------------------------------------------------------------
   def release_resources(self):
     '''Closes/deletes any current resources

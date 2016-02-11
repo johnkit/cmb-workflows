@@ -140,6 +140,7 @@
       <ItemDefinitions>
         <Double Name="Epsilon" Label="Relative Permittivity" Version="0" >
           <BriefDescription>Real Component of Relative Permittivity</BriefDescription>
+          <DefaultValue>1.0</DefaultValue>
           <RangeInfo>
             <Min Inclusive="false">0</Min>
           </RangeInfo>
@@ -153,6 +154,7 @@
         </Double>
         <Double Name="Mu" Label="Relative Permeability" Version="0" >
           <BriefDescription>Real Component of Relative Permeability</BriefDescription>
+          <DefaultValue>1.0</DefaultValue>
           <RangeInfo>
             <Min Inclusive="false">0</Min>
           </RangeInfo>

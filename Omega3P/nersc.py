@@ -62,6 +62,7 @@ def submit_omega3p(scope, sim_item):
 
     # Todo confirm that project repository is not null?
     # Todo confirm that machine name is non null?
+    # Todo confirm that queue is non null?
 
     # Setup results directory
     setup_results_directory(scope, sim_item)
@@ -157,14 +158,19 @@ def create_job(scope, sim_item):
 
 # ---------------------------------------------------------------------
 def submit_job(scope, sim_item):
-  '''
+  '''Run the job
+
+  Call this after create_job()
   '''
   # Get inputs
   machine = get_string(sim_item, 'Machine')
+  number_of_nodes = get_integer(sim_item, 'NumberOfNodes')
   project_repo = get_string(sim_item, 'NERSCRepository')
-  timeout_minutes = get_integer(sim_item, 'Timeout')
+  queue = get_string(sim_item, 'Queue')
   tail = get_string(sim_item, 'TailFile')
-  scope.cumulus.submit_job(machine, project_repo, timeout_minutes, tail=tail)
+  timeout_minutes = get_integer(sim_item, 'Timeout')
+  scope.cumulus.submit_job(machine, project_repo, timeout_minutes, \
+    queue=queue, tail=tail, number_of_nodes=number_of_nodes)
 
 # ---------------------------------------------------------------------
 def check_file(path, error_message_format=None):
