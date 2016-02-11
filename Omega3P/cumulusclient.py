@@ -20,8 +20,17 @@ from girder_client import GirderClient, HttpError
 
 class CumulusClient():
   '''Application interface to cumulus-based client for HPC systems
-  supporting NEWT API
+  supporting NEWT API.
 
+  Note: the methods must be called in a specific order!
+    create_cluster()
+    create_omega3p_script()
+    create_input()
+    create_output_folder()
+    create_job()
+    submit_job()
+    download_results()
+    release_resources()
   '''
   # ---------------------------------------------------------------------
   def __init__(self, girder_url, newt_sessionid):
@@ -237,11 +246,23 @@ class CumulusClient():
         raise Exception('Job timeout')
 
   # ---------------------------------------------------------------------
-  def finalize(self):
+  def download_results(self, destination_folder):
+    '''Downloads all output files to a local directory
+
+    '''
+    if not os.path.exists(destination_folder):
+      os.makedirs(destination_folder)
+
+    self._client.downloadFolderRecursive(
+      self._output_folder_id, destination_folder)
+
+  # ---------------------------------------------------------------------
+  def release_resources(self):
     '''Closes/deletes any current resources
 
     '''
     resource_info = {
+      'clusters': [self._cluster_id],
       'jobs': [self._job_id],
       'scripts': [self._script_id],
       'folder': [self._input_folder_id, self._output_folder_id]
@@ -250,6 +271,11 @@ class CumulusClient():
       for resource_id in id_list:
         url = '%s/%s' % (resource_type, resource_id)
         self._client.delete(url)
+
+    self._input_folder_id = None
+    self._job_id = None
+    self._output_folder_id = None
+    self._script_id = None
 
   # ---------------------------------------------------------------------
   def get_folder(self, parent_id, name):
