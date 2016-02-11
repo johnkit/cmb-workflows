@@ -4,7 +4,7 @@
   <attribute id="simbuilder" role="template">
     <SMTK_AttributeSystem Version="2">
       <Includes>
-        <File>Omega3P.sbt</File>
+        <File>omega3p-simbuilder.sbt</File>
       </Includes>
     </SMTK_AttributeSystem>
   </attribute>
