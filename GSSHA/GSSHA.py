@@ -89,7 +89,7 @@ def write_project_file(scope):
     '''
     tab = 25
     # Use str.format() method to set first column width
-    text_formatter = '{:<%s}{:}\n' % tab
+    scope.text_formatter = '{:<%s}{:}\n' % tab
 
     filename = '%s.prj' % scope.project_name
     path = os.path.join(scope.project_path, filename)
@@ -97,8 +97,61 @@ def write_project_file(scope):
     with open(path, 'w') as out:
         out.write('GSSHAPROJECT\n')
         # Todo WMS version
-        line = text_formatter.format('PROJECT_PATH', scope.project_path)
+        line = scope.text_formatter.format('PROJECT_PATH', scope.project_path)
         out.write(line)
+        completed &= write_grid_specs(scope, out)
+        completed &= write_time_specs(scope, out)
+        # completed &= write_outlet_point(scope, out)
+        # completed &= write_output_frequencies(scope, out)
+        # completed &= write_input(scope, out)
+        # completed &= write_output(scope, out)
         completed = True
 
     return completed
+
+# ---------------------------------------------------------------------
+def write_grid_specs(scope, out):
+    '''Writes grid cards
+    '''
+    write_header('grid specs', out)
+    att = scope.sim_atts.findAttributes('computation')[0]
+    group_item = att.findGroup('computation-group')
+
+    item = group_item.find('output-units')
+    value = 'METRIC'  # default
+    if item.isEnabled():
+        value = smtk.attribute.to_concrete.value(0)
+    line = '{}\n'.format(value)
+    out.write(line)
+    return True
+
+# ---------------------------------------------------------------------
+def write_time_specs(scope, out):
+    '''Writes time specification cards
+    '''
+    write_header('time specs', out)
+    att = scope.sim_atts.findAttributes('computation')[0]
+    group_item = att.findGroup('computation-group')
+
+    item = group_item.find('total-time')
+    total_time = smtk.attribute.to_concrete(item).value(0)
+    line = scope.text_formatter.format('TOT_TIME', total_time)
+    out.write(line)
+
+    item = group_item.find('time-step')
+    time_step = smtk.attribute.to_concrete(item).value(0)
+    line = scope.text_formatter.format('TIMESTEP', time_step)
+    out.write(line)
+
+    return True
+
+# ---------------------------------------------------------------------
+def write_header(title, out):
+    '''
+    '''
+    comment = '##################'
+    comment_line = '%s\n' % comment
+    out.write(comment_line)
+    title_line = '#{:^16s}#\n'.format(title)
+    out.write(title_line)
+    out.write(comment_line)
