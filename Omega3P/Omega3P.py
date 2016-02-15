@@ -73,9 +73,8 @@ def ExportCMB(spec):
 
     # Initialize output file
     output_path = None
-    item = export_spec_att.find('OutputFile')
-    if item is not None:
-        file_item = smtk.to_concrete(item)
+    file_item = export_spec_att.findFile('OutputFile')
+    if file_item is not None:
         output_path = file_item.value(0)
         #print 'output_path', output_path
 
@@ -94,6 +93,7 @@ def ExportCMB(spec):
         write_eigensolver(scope)
         write_port(scope)
         write_postprocess(scope)
+        print 'Wrote output file %s' % output_path
         completed = True
 
     print 'Export completion status: %s' % completed
@@ -167,10 +167,32 @@ def write_boundarycondition(scope):
             continue  # warning?
 
         type_item = att.findString('Type')
-        index = type_item.discreteIndex(0)
-        name = 'Unknown'
-        if index < len(name_list):
-            name = name_list[index]
+        name = type_item.value(0)
+
+        # Periodic BC is special case
+        if name == 'Periodic':
+            # Write master item
+            scope.output.write('    Periodic_M: %s\n' % ent_string)
+
+            # Write slave item
+            slave_item = att.findModelEntity('SlaveSurface')
+            ent_ref = slave_item.value(0)
+            if ent_ref:
+                ent = ent_ref.entity()
+                prop_idlist = scope.model_manager.integerProperty(ent, 'pedigree id')
+                if prop_idlist:
+                    scope.output.write('    Periodic_S: %s\n' % prop_idlist[0])
+            else:
+                print 'WARNING: No slave surface specified for Periodic BC'
+
+            # Write relative phase angle
+            phase_item = att.findDouble('Theta')
+            phase = phase_item.value(0)
+            scope.output.write('    Theta: %f\n' % phase)
+
+            # This completes Periodic case
+            continue
+
         scope.output.write('    %s: %s\n' % (name, ent_string))
 
         # Check for sigma item
