@@ -17,6 +17,65 @@ import os
 import sys
 import smtk
 
+# Import formatters module explicitly, so that it always reloads
+module_name = 'formatters'
+abs_path = os.path.abspath(__file__)
+abs_dir = os.path.dirname(abs_path)
+module_args = imp.find_module(module_name, [abs_dir])
+imp.load_module(module_name, *module_args)
+formatters = sys.modules.get(module_name)
+
+# ---------------------------------------------------------------------
+#
+# Dictionary of formatters for project file cards
+# Arguments are: (card, attribute type, item path, **kwargs)
+#
+# ---------------------------------------------------------------------
+fmt = formatters.ProjectCardFormat
+format_table = {
+  'Grid specs': [
+    fmt('METRIC', 'computation', 'computation-group/output-units', no_value=True),
+    fmt('GRIDSIZE', 'grid', 'grid/gridsize'),
+    fmt('ROWS', 'grid', 'grid/rows'),
+    fmt('COLS', 'grid', 'grid/columns')
+  ],
+  'Outlet point info': [],  # Todo
+  'Time specs': [
+    fmt('TOT_TIME', 'computation', 'computation-group/total-time'),
+    fmt('TIMESTEP', 'computation', 'computation-group/time-step')
+  ],
+  'Output frequencies': [
+    fmt('MAP_FREQ', 'computation', 'output-frequencies/map-frequency'),
+    fmt('HYD_FREQ', 'computation', 'output-frequencies/hyd-frequency'),
+    fmt('MAP_TYPE', 'computation', 'output-frequencies/map-type'),
+    fmt('OVERTYPE', 'overland-flow', 'overland-flow/computation-method')
+  ],
+  'Input': [
+    fmt('PRECIP_UNIF', 'precipitation', 'precipitation/rainfall-events',
+        if_value='uniform', no_value=True, set_condition='uniform-precip'),
+    fmt('RAIN_INTENSITY', 'precipitation', 'precipitation/rainfall-events/intensity',
+        if_condition='uniform-precip'),
+    fmt('RAIN_DURATION', 'precipitation', 'precipitation/rainfall-events/duration',
+        if_condition='uniform-precip'),
+    fmt('START_DATE', 'precipitation', 'precipitation/rainfall-events/start',
+        if_condition='uniform-precip', is_date=True),
+    fmt('START_TIME', 'precipitation', 'precipitation/rainfall-events/start',
+        if_condition='uniform-precip', is_time=True)
+  ],
+  'Output': []  # Todo
+}
+
+# List the order to write sections
+section_list = [
+    'Grid specs',
+    'Time specs',
+    'Outlet point info',
+    'Output frequencies',
+    'Input',
+    'Output'
+]
+
+
 ExportScope = type('ExportScope', (object,), dict())
 # ---------------------------------------------------------------------
 def ExportCMB(spec):
@@ -86,72 +145,26 @@ def ExportCMB(spec):
 # ---------------------------------------------------------------------
 def write_project_file(scope):
     '''Writes project file
-    '''
-    tab = 25
-    # Use str.format() method to set first column width
-    scope.text_formatter = '{:<%s}{:}\n' % tab
 
+    Basically traverses format_table and calls write() method for each entry.
+    '''
     filename = '%s.prj' % scope.project_name
     path = os.path.join(scope.project_path, filename)
     completed = False
     with open(path, 'w') as out:
         out.write('GSSHAPROJECT\n')
         # Todo WMS version
-        line = scope.text_formatter.format('PROJECT_PATH', scope.project_path)
-        out.write(line)
-        completed &= write_grid_specs(scope, out)
-        completed &= write_time_specs(scope, out)
-        # completed &= write_outlet_point(scope, out)
-        # completed &= write_output_frequencies(scope, out)
-        # completed &= write_input(scope, out)
-        # completed &= write_output(scope, out)
+        formatters.write_value(out, 'PROJECT_PATH', scope.project_path)
+        # Todo NON_ORTHO_CHANNELS
+
+        for section_title in section_list:
+            fmt_list = format_table.get(section_title)
+            if fmt_list is None:
+                print 'WARNING: section %s not found in format_table' % section_title
+            formatters.write_section_title(section_title, out)
+            for fmt in fmt_list:
+                fmt.write(out, scope.sim_atts)
         completed = True
+        print 'Wrote project file', path
 
     return completed
-
-# ---------------------------------------------------------------------
-def write_grid_specs(scope, out):
-    '''Writes grid cards
-    '''
-    write_header('grid specs', out)
-    att = scope.sim_atts.findAttributes('computation')[0]
-    group_item = att.findGroup('computation-group')
-
-    item = group_item.find('output-units')
-    value = 'METRIC'  # default
-    if item.isEnabled():
-        value = smtk.attribute.to_concrete.value(0)
-    line = '{}\n'.format(value)
-    out.write(line)
-    return True
-
-# ---------------------------------------------------------------------
-def write_time_specs(scope, out):
-    '''Writes time specification cards
-    '''
-    write_header('time specs', out)
-    att = scope.sim_atts.findAttributes('computation')[0]
-    group_item = att.findGroup('computation-group')
-
-    item = group_item.find('total-time')
-    total_time = smtk.attribute.to_concrete(item).value(0)
-    line = scope.text_formatter.format('TOT_TIME', total_time)
-    out.write(line)
-
-    item = group_item.find('time-step')
-    time_step = smtk.attribute.to_concrete(item).value(0)
-    line = scope.text_formatter.format('TIMESTEP', time_step)
-    out.write(line)
-
-    return True
-
-# ---------------------------------------------------------------------
-def write_header(title, out):
-    '''
-    '''
-    comment = '##################'
-    comment_line = '%s\n' % comment
-    out.write(comment_line)
-    title_line = '#{:^16s}#\n'.format(title)
-    out.write(title_line)
-    out.write(comment_line)
