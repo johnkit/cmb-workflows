@@ -17,15 +17,6 @@ import os
 import sys
 import smtk
 
-# Explicitly load nersc.py, so that it reloads each time
-module_name = 'nersc'
-abs_path = os.path.abspath(__file__)
-abs_dir = os.path.dirname(abs_path)
-module_args = imp.find_module(module_name, [abs_dir])
-imp.load_module(module_name, *module_args)
-nersc = sys.modules.get(module_name)
-
-
 ExportScope = type('ExportScope', (object,), dict())
 # ---------------------------------------------------------------------
 def ExportCMB(spec):
@@ -105,6 +96,15 @@ def ExportCMB(spec):
     # Check for NERSCSimulation item
     sim_item = export_spec_att.find('NERSCSimulation')
     if sim_item is not None and sim_item.isEnabled():
+        # Import nersc module (only when needed)
+        # Use imp module to reload each time
+        module_name = 'nersc'
+        abs_path = os.path.abspath(__file__)
+        abs_dir = os.path.dirname(abs_path)
+        module_args = imp.find_module(module_name, [abs_dir])
+        imp.load_module(module_name, *module_args)
+        nersc = sys.modules.get(module_name)
+
         scope.output_path = output_path
         completed = nersc.submit_omega3p(scope, sim_item)
         print 'Submit to NERSC status: %s' % completed
