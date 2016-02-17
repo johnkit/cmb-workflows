@@ -27,9 +27,10 @@
               <BriefDescription>Impedance Surface Conductivity.</BriefDescription>
               <DefaultValue>5.8e7</DefaultValue>
             </Double>
-            <Double Name="Theta" Label="Phase" Version="0"
+            <Double Name="Theta" Label="Theta (Relative Phase Angle)" Version="0"
                     AdvanceLevel="0" NumberOfRequiredValues="1">
               <BriefDescription>Relative Phase Between Master and Slave Surfaces</BriefDescription>
+              <DefaultValue>0.0</DefaultValue>
             </Double>
             <Int Name="NumModes" Label="Number of Modes" Version="0" Optional="true"
                     AdvanceLevel="0" NumberOfRequiredValues="1">
@@ -41,27 +42,27 @@
             </ModelEntity>
           </ChildrenDefinitions>
           <DiscreteInfo>
-            <Value>Electric</Value>
-            <Value>Magnetic</Value>
+            <Value Enum="Electric">Electric</Value>
+            <Value Enum="Magnetic">Magnetic</Value>
             <Structure>
-              <Value>Exterior</Value>
+              <Value Enum="Exterior">Exterior</Value>
                 <Items><Item>Sigma</Item></Items>
             </Structure>
             <Structure>
-              <Value>Impedance</Value>
+              <Value Enum="Impedance">Impedance</Value>
               <Items>
                 <Item>Sigma</Item>
               </Items>
             </Structure>
-             <Value>Absorbing</Value>
+             <Value Enum="Absorbing">Absorbing</Value>
             <Structure>
-              <Value>Waveguide</Value>
+              <Value Enum="Waveguide">Waveguide</Value>
               <Items>
                 <Item>NumModes</Item>
               </Items>
             </Structure>
             <Structure>
-              <Value>Periodic</Value>
+              <Value Enum="Periodic">Periodic</Value>
               <Items>
                 <Item>Theta</Item>
                 <Item>SlaveSurface</Item>
@@ -140,6 +141,7 @@
       <ItemDefinitions>
         <Double Name="Epsilon" Label="Relative Permittivity" Version="0" >
           <BriefDescription>Real Component of Relative Permittivity</BriefDescription>
+          <DefaultValue>1.0</DefaultValue>
           <RangeInfo>
             <Min Inclusive="false">0</Min>
           </RangeInfo>
@@ -153,6 +155,7 @@
         </Double>
         <Double Name="Mu" Label="Relative Permeability" Version="0" >
           <BriefDescription>Real Component of Relative Permeability</BriefDescription>
+          <DefaultValue>1.0</DefaultValue>
           <RangeInfo>
             <Min Inclusive="false">0</Min>
           </RangeInfo>

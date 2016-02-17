@@ -17,15 +17,6 @@ import os
 import sys
 import smtk
 
-# Explicitly load nersc.py, so that it reloads each time
-module_name = 'nersc'
-abs_path = os.path.abspath(__file__)
-abs_dir = os.path.dirname(abs_path)
-module_args = imp.find_module(module_name, [abs_dir])
-imp.load_module(module_name, *module_args)
-nersc = sys.modules.get(module_name)
-
-
 ExportScope = type('ExportScope', (object,), dict())
 # ---------------------------------------------------------------------
 def ExportCMB(spec):
@@ -69,12 +60,12 @@ def ExportCMB(spec):
 
     # (else)
     export_spec_att = att_list[0]
+    scope.model_path = None
 
     # Initialize output file
     output_path = None
-    item = export_spec_att.find('OutputFile')
-    if item is not None:
-        file_item = smtk.to_concrete(item)
+    file_item = export_spec_att.findFile('OutputFile')
+    if file_item is not None:
         output_path = file_item.value(0)
         #print 'output_path', output_path
 
@@ -93,9 +84,11 @@ def ExportCMB(spec):
         write_eigensolver(scope)
         write_port(scope)
         write_postprocess(scope)
+        print 'Wrote output file %s' % output_path
         completed = True
 
     print 'Export completion status: %s' % completed
+    sys.stdout.flush()
     if not completed:
         return completed
 
@@ -103,7 +96,16 @@ def ExportCMB(spec):
     # Check for NERSCSimulation item
     sim_item = export_spec_att.find('NERSCSimulation')
     if sim_item is not None and sim_item.isEnabled():
-        scope.output_file = output_path
+        # Import nersc module (only when needed)
+        # Use imp module to reload each time
+        module_name = 'nersc'
+        abs_path = os.path.abspath(__file__)
+        abs_dir = os.path.dirname(abs_path)
+        module_args = imp.find_module(module_name, [abs_dir])
+        imp.load_module(module_name, *module_args)
+        nersc = sys.modules.get(module_name)
+
+        scope.output_path = output_path
         completed = nersc.submit_omega3p(scope, sim_item)
         print 'Submit to NERSC status: %s' % completed
 
@@ -118,8 +120,24 @@ def write_modelinfo(scope):
     scope.output.write('{\n')
     urls = scope.model_manager.stringProperty(scope.model_ent, 'url')
     if urls:
-        scope.model_file = urls[0]
+        url = urls[0]
+
+        # Get model filename
+        scope.model_file = os.path.basename(url)
+        print 'scope.model_file', scope.model_file
         scope.output.write('  File: %s\n\n' % scope.model_file)
+
+        # Get full path to model
+        if os.path.isabs(url):
+            scope.model_path = url
+        else:
+            smtk_urls = scope.model_manager.stringProperty(
+                scope.model_ent, 'smtk_url')
+            if smtk_urls:
+                smtk_url = smtk_urls[0]
+                model_path = os.path.join(smtk_url, url)
+                scope.model_path = os.path.abspath(model_path)
+        print 'scope.model_path', scope.model_path
 
     write_boundarycondition(scope)
     write_materials(scope)
@@ -149,10 +167,32 @@ def write_boundarycondition(scope):
             continue  # warning?
 
         type_item = att.findString('Type')
-        index = type_item.discreteIndex(0)
-        name = 'Unknown'
-        if index < len(name_list):
-            name = name_list[index]
+        name = type_item.value(0)
+
+        # Periodic BC is special case
+        if name == 'Periodic':
+            # Write master item
+            scope.output.write('    Periodic_M: %s\n' % ent_string)
+
+            # Write slave item
+            slave_item = att.findModelEntity('SlaveSurface')
+            ent_ref = slave_item.value(0)
+            if ent_ref:
+                ent = ent_ref.entity()
+                prop_idlist = scope.model_manager.integerProperty(ent, 'pedigree id')
+                if prop_idlist:
+                    scope.output.write('    Periodic_S: %s\n' % prop_idlist[0])
+            else:
+                print 'WARNING: No slave surface specified for Periodic BC'
+
+            # Write relative phase angle
+            phase_item = att.findDouble('Theta')
+            phase = phase_item.value(0)
+            scope.output.write('    Theta: %f\n' % phase)
+
+            # This completes Periodic case
+            continue
+
         scope.output.write('    %s: %s\n' % (name, ent_string))
 
         # Check for sigma item
