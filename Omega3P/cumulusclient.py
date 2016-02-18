@@ -26,10 +26,12 @@ class CumulusClient():
   Note: the methods must be called in a specific order!
     create_cluster()
     create_omega3p_script()
-    create_input()
-    create_output_folder()
     create_job()
+    upload_inputs()
     submit_job()
+
+  Then optionally:
+    monitor_job()
     download_results()
     release_resources()
   '''
@@ -41,6 +43,7 @@ class CumulusClient():
     self._cluster_id = None
     self._girder_url = girder_url
     self._input_folder_id = None
+    self._job_folder_id = None
     self._job_id = None
     self._output_folder_id = None
     self._private_folder_id = None
@@ -67,6 +70,12 @@ class CumulusClient():
       raise Exception('Wrong number of users; should be 1 got %s' % len(r))
     self._private_folder_id = r[0]['_id']
     print 'private_folder_id', self._private_folder_id
+
+  # ---------------------------------------------------------------------
+  def job_id(self):
+    '''Returns current job id (which may be None)
+    '''
+    return self._job_id
 
   # ---------------------------------------------------------------------
   def create_cluster(self, machine_name, cluster_name=None):
@@ -125,7 +134,7 @@ class CumulusClient():
 
   # ---------------------------------------------------------------------
   def create_input(self, input_paths, folder_name='input_files'):
-    '''Uploads input files
+    '''DEPRECATED Uploads input files
     '''
     folder_id = self.get_folder(self._private_folder_id, folder_name)
     if folder_id is None:
@@ -147,19 +156,36 @@ class CumulusClient():
 
   # ---------------------------------------------------------------------
   def create_output_folder(self, folder_name='output_files'):
-    '''
+    '''DEPRECATED
     '''
     folder_id = self.get_folder(self._private_folder_id, folder_name)
     print 'output_folder_id', folder_id
     self._output_folder_id = folder_id
 
   # ---------------------------------------------------------------------
-  def create_job(self, job_name='CumulusJob', tail=None):
+  def create_job(self, job_name, tail=None):
     '''
     '''
+    # Make sure job_name isn't null
+    if not job_name:
+      job_name = 'CumulusJob'
+
+    # Create job
     body = {
       'name': job_name,
-      'scriptId': self._script_id,
+      'scriptId': self._script_id
+    }
+    job = self._client.post('jobs', data=json.dumps(body))
+    self._job_id = job['_id']
+    print 'job_id', self._job_id
+
+    # Create job folders
+    self._job_folder_id = self.get_folder(self._private_folder_id, self._job_id)
+    self._input_folder_id = self.get_folder(self._job_folder_id, 'input_files')
+    self._output_folder_id = self.get_folder(self._job_folder_id, 'output_files')
+
+    # Can now update job with folder and tail info
+    body = {
       'output': [{
         'folderId': self._output_folder_id,
         'path': '.'
@@ -178,13 +204,31 @@ class CumulusClient():
         "tail": True
       })
 
-    job = self._client.post('jobs', data=json.dumps(body))
-    self._job_id = job['_id']
-    print 'job_id', self._job_id
+    path = 'jobs/%s' % self._job_id
+    self._client.patch(path, data=json.dumps(body))
+
+  # ---------------------------------------------------------------------
+  def upload_inputs(self, input_paths):
+    '''Uploads input files to input folder
+    '''
+    if not self._input_folder_id:
+      raise Exception('Input folder missing')
+
+    def upload_file(path):
+      name = os.path.basename(path)
+      size = os.path.getsize(path)
+      with open(path, 'rb') as fp:
+        self._client.uploadFile(
+          self._input_folder_id, fp, name, size, parentType='folder')
+
+    for input_path in input_paths:
+      if not input_path or not os.path.exists(input_path):
+        raise Exception('Input file not found: %s' % input_path)
+      upload_file(input_path)
 
   # ---------------------------------------------------------------------
   def submit_job(self, machine, project_account, timeout_minutes,
-    queue='debug', tail=None, number_of_nodes=1):
+    queue='debug', number_of_nodes=1):
     '''
     '''
     body = {
@@ -200,8 +244,12 @@ class CumulusClient():
     }
     url = 'clusters/%s/job/%s/submit' % (self._cluster_id, self._job_id)
     self._client.put(url, data=json.dumps(body))
-    print 'Job submitted'
+    print 'Submitted job', self._job_id
 
+  # ---------------------------------------------------------------------
+  def monitor_job(self, tail=None):
+    '''Periodically monitors job status
+    '''
     log_offset = 0
     job_timeout = 60 * timeout_minutes
     start = time.time()
@@ -268,7 +316,7 @@ class CumulusClient():
       'clusters': [self._cluster_id],
       'jobs': [self._job_id],
       'scripts': [self._script_id],
-      'folder': [self._input_folder_id, self._output_folder_id]
+      'folder': [self._job_folder]
     }
     for resource_type, id_list in resource_info.items():
       for resource_id in id_list:
@@ -277,6 +325,7 @@ class CumulusClient():
           self._client.delete(url)
 
     self._input_folder_id = None
+    self._job_folder_id = None
     self._job_id = None
     self._output_folder_id = None
     self._script_id = None

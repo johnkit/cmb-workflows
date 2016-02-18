@@ -13,6 +13,10 @@
                Optional="true" IsEnabledByDefault="false"
                Version="0" NumberOfRequiredGroups="1">
           <ItemDefinitions>
+            <String Name="JobName" Label="Name" Version="0">
+              <BriefDescription>Label you can use to track your job</BriefDescription>
+              <DefaultValue>Omega3P</DefaultValue>
+            </String>
             <String Name="CumulusHost" Label="Cumulus host" Version="0">
               <DefaultValue>http://localhost:8080</DefaultValue>
             </String>
