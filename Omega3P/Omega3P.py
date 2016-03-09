@@ -139,6 +139,7 @@ def write_modelinfo(scope):
                 scope.model_path = os.path.abspath(model_path)
         print 'scope.model_path', scope.model_path
 
+    write_hformulation(scope)
     write_boundarycondition(scope)
     write_materials(scope)
 
@@ -158,6 +159,14 @@ def write_boundarycondition(scope):
         'Waveguide', 'Periodic']
 
     scope.output.write('  BoundaryCondition: {\n')
+
+    # First write HFormulation if item is enabled
+    hform_atts = scope.sim_atts.findAttributes('HForumulation')
+    if hform_atts:
+        hform_att = hform_atts[0]
+        hform_item = hform_att.findVoid('HForumulation')
+        if hform_item and hform_item.isEnabled():
+            scope.output.write('    HFormulation: 1\n')
 
     # Traverse attributes and write BoundaryCondition contents
     surface_material_list = list()  # for saving SurfaceMaterial info
@@ -211,6 +220,21 @@ def write_boundarycondition(scope):
         scope.output.write('  SurfaceMaterial: {\n')
         scope.output.write(surface_material_string)
         scope.output.write('  }\n')
+
+# ---------------------------------------------------------------------
+def write_hformulation(scope):
+    '''Writes HFormulation property if item is checked
+
+    '''
+    atts = scope.sim_atts.findAttributes('HForumulation')
+    if not atts:
+        return
+
+    # (else)
+    hform_att = atts[0]
+    hform_item = hform_att.findVoid('HForumulation')
+    if hform_item and hform_item.isEnabled():
+        scope.output.write('    HFormulation: 1\n')
 
 # ---------------------------------------------------------------------
 def write_materials(scope):

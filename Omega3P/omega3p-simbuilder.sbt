@@ -73,6 +73,13 @@
       </ItemDefinitions>
    </AttDef>
 
+   <AttDef Type="HFormulation" Label="HFormulation" Version="0">
+    <ItemDefinitions>
+      <Void Name="HFormation" Label="HFormulation" Version="0"
+            Optional="true" IsEnabledByDefault="false" />
+    </ItemDefinitions>
+   </AttDef>
+
    <AttDef Type="Port" Label="Port" BaseType="" Version="0" Unique="true">
       <AssociationsDef Name="PortAssociations" Version="0" NumberOfRequiredValues="0" Extensible="true">
         <MembershipMask>face</MembershipMask>
@@ -184,11 +191,24 @@
         <View Title="Analysis" />
       </Views>
     </View>
-    <View Type="Attribute" Title="Boundary Conditions" ModelEntityFilter="f">
+
+    <View Type="Group" Title="Boundary Conditions" Style="Tiled">
+      <Views>
+        <View Title="HFormulation" />
+        <View Title="Surface Properties" />
+      </Views>
+    </View>
+    <View Type="Instanced" Title="HFormulation">
+      <InstancedAttributes>
+        <Att Name="HForumulation" Type="HFormulation" />
+      </InstancedAttributes>
+    </View>
+    <View Type="Attribute" Title="Surface Properties" ModelEntityFilter="f">
       <AttributeTypes>
         <Att Type="SurfaceProperty" />
       </AttributeTypes>
     </View>
+
     <View Type="Attribute" Title="Ports" ModelEntityFilter="f">
       <AttributeTypes>
         <Att Type="Port" />
