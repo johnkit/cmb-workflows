@@ -13,7 +13,7 @@
                Optional="true" IsEnabledByDefault="false"
                Version="0" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <String Name="JobName" Label="Name" Version="0">
+            <String Name="JobName" Label="Job Name" Version="0">
               <BriefDescription>Label you can use to track your job</BriefDescription>
               <DefaultValue>Omega3P</DefaultValue>
             </String>
@@ -41,13 +41,6 @@
               <DefaultValue>5</DefaultValue>
               <RangeInfo><Min Inclusive="true">1</Min></RangeInfo>
             </Int>
-            <Group Name="ResultsDirectory" Label="Results Directory">
-              <ItemDefinitions>
-                <Directory Name="ResultsDirectoryPath" Label="Path"
-                           Version="0" NumberOfRequiredValues="1" ShouldExist="false" />
-                <Void Name="ClearResultsDirectory" Label="Clear current contents" Version="0" />
-              </ItemDefinitions>
-            </Group>
             <String Name="TailFile" Label="Tail Filename" Version="0" AdvanceLevel="1">
               <DefaultValue>omega3p_results/omega3p.log</DefaultValue>
             </String>

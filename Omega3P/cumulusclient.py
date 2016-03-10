@@ -15,6 +15,7 @@ import json
 import os
 import sys
 import time
+import uuid
 
 import requests
 from girder_client import GirderClient, HttpError
@@ -166,26 +167,21 @@ class CumulusClient():
   def create_job(self, job_name, tail=None):
     '''
     '''
+    # Create job folders
+    folder_name = uuid.uuid4().hex  # unique name
+    self._job_folder_id = self.get_folder(self._private_folder_id, folder_name)
+    print 'Created job folder', folder_name
+    self._input_folder_id = self.get_folder(self._job_folder_id, 'input_files')
+    self._output_folder_id = self.get_folder(self._job_folder_id, 'output_files')
+
     # Make sure job_name isn't null
     if not job_name:
       job_name = 'CumulusJob'
 
-    # Create job
+    # Create job spec
     body = {
       'name': job_name,
-      'scriptId': self._script_id
-    }
-    job = self._client.post('jobs', data=json.dumps(body))
-    self._job_id = job['_id']
-    print 'job_id', self._job_id
-
-    # Create job folders
-    self._job_folder_id = self.get_folder(self._private_folder_id, self._job_id)
-    self._input_folder_id = self.get_folder(self._job_folder_id, 'input_files')
-    self._output_folder_id = self.get_folder(self._job_folder_id, 'output_files')
-
-    # Can now update job with folder and tail info
-    body = {
+      'scriptId': self._script_id,
       'output': [{
         'folderId': self._output_folder_id,
         'path': '.'
@@ -204,8 +200,9 @@ class CumulusClient():
         "tail": True
       })
 
-    path = 'jobs/%s' % self._job_id
-    self._client.patch(path, data=json.dumps(body))
+    job = self._client.post('jobs', data=json.dumps(body))
+    self._job_id = job['_id']
+    print 'Created job_id', self._job_id
 
   # ---------------------------------------------------------------------
   def upload_inputs(self, input_paths):
