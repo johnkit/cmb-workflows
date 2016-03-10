@@ -125,7 +125,7 @@ def write_modelinfo(scope):
         # Get model filename
         scope.model_file = os.path.basename(url)
         print 'scope.model_file', scope.model_file
-        scope.output.write('  File: %s\n\n' % scope.model_file)
+        scope.output.write('  File: %s\n' % scope.model_file)
 
         # Get full path to model
         if os.path.isabs(url):
@@ -139,7 +139,9 @@ def write_modelinfo(scope):
                 scope.model_path = os.path.abspath(model_path)
         print 'scope.model_path', scope.model_path
 
-    write_hformulation(scope)
+    write_boolean(scope, 'Tolerant')
+    scope.output.write('\n')
+
     write_boundarycondition(scope)
     write_materials(scope)
 
@@ -161,12 +163,7 @@ def write_boundarycondition(scope):
     scope.output.write('  BoundaryCondition: {\n')
 
     # First write HFormulation if item is enabled
-    hform_atts = scope.sim_atts.findAttributes('HForumulation')
-    if hform_atts:
-        hform_att = hform_atts[0]
-        hform_item = hform_att.findVoid('HForumulation')
-        if hform_item and hform_item.isEnabled():
-            scope.output.write('    HFormulation: 1\n')
+    write_boolean(scope, 'HFormulation', indent='    ')
 
     # Traverse attributes and write BoundaryCondition contents
     surface_material_list = list()  # for saving SurfaceMaterial info
@@ -222,19 +219,26 @@ def write_boundarycondition(scope):
         scope.output.write('  }\n')
 
 # ---------------------------------------------------------------------
-def write_hformulation(scope):
-    '''Writes HFormulation property if item is checked
+def write_boolean(scope, att_type, item_name=None, output_name=None, indent='  '):
+    '''Writes boolean property if item is checked
 
+    Attribute should be a singleton
     '''
-    atts = scope.sim_atts.findAttributes('HForumulation')
+    print 'write_boolean', att_type
+    atts = scope.sim_atts.findAttributes(att_type)
     if not atts:
         return
 
     # (else)
-    hform_att = atts[0]
-    hform_item = hform_att.findVoid('HForumulation')
-    if hform_item and hform_item.isEnabled():
-        scope.output.write('    HFormulation: 1\n')
+    att = atts[0]
+    if not item_name:
+        item_name = att_type
+    item = att.find(item_name)
+
+    if not output_name:
+        output_name = att_type
+    if item and item.isEnabled():
+        scope.output.write('%s%s: 1\n' % (indent, output_name))
 
 # ---------------------------------------------------------------------
 def write_materials(scope):

@@ -10,6 +10,13 @@
   </Analyses>
   <!--**********  Attribute Definitions ***********-->
   <Definitions>
+   <AttDef Type="Tolerant" Label="Tolerant" Version="0">
+    <ItemDefinitions>
+      <Void Name="Tolerant" Label="Tolerant" Version="0"
+            Optional="true" IsEnabledByDefault="false" />
+    </ItemDefinitions>
+   </AttDef>
+
     <AttDef Type="SurfaceProperty"
             Label="Surface Boundary Condition"
             BaseType="" Version="0" Unique="true">
@@ -75,7 +82,7 @@
 
    <AttDef Type="HFormulation" Label="HFormulation" Version="0">
     <ItemDefinitions>
-      <Void Name="HFormation" Label="HFormulation" Version="0"
+      <Void Name="HFormulation" Label="HFormulation" Version="0"
             Optional="true" IsEnabledByDefault="false" />
     </ItemDefinitions>
    </AttDef>
@@ -221,11 +228,17 @@
     </View>
     <View Type="Group" Title="Analysis" Style="Tiled">
       <Views>
+        <View Title="Tolerant" />
         <View Title="FiniteElement" />
         <View Title="EigenSolver" />
         <View Title="Post Process" />
         <View Title="High Order Regions" />
       </Views>
+    </View>
+    <View Type="Instanced" Title="Tolerant">
+      <InstancedAttributes>
+        <Att Name="Tolerant" Type="Tolerant" />
+      </InstancedAttributes>
     </View>
     <View Type="Instanced" Title="FiniteElement">
       <InstancedAttributes>
