@@ -75,7 +75,10 @@ def submit_omega3p(scope, sim_item):
 
     # Create run script
     omega3p_filename = os.path.basename(scope.output_path)
-    scope.cumulus.create_omega3p_script(omega3p_filename)
+    number_of_nodes = get_integer(sim_item, 'NumberOfNodes')
+    if not number_of_nodes:
+      number_of_nodes = 1
+    scope.cumulus.create_omega3p_script(omega3p_filename, number_of_nodes=number_of_nodes)
 
     # Create job and upload files
     create_job(scope, sim_item)
