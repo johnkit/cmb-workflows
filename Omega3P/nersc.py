@@ -87,10 +87,13 @@ def submit_omega3p(scope, sim_item):
     # Submit job
     submit_job(scope, sim_item)
     #print 'Submitted job', scope.cumulus.job_id()
+  except HttpError as err:
+    print 'ERROR', err.responseText
+    raise
   except Exception as ex:
     print 'Exception', ex
     traceback.print_exc()
-    ok = False
+    raise
   finally:
     #release_resources(scope)
     if scope.nersc:
@@ -118,12 +121,12 @@ def login_nersc(scope, sim_item):
 
   # Check user inputs
   username = get_string(sim_item, 'NERSCAccountName')
-  #print 'username', username
+  print 'username', username
   if not username:
     raise Exception('ERROR: NERSC account name not specified')
 
   password = get_string(sim_item, 'NERSCAccountPassword')
-  #print 'password', password
+  print 'password length', len(password)
   if not password:
     raise Exception('ERROR: NERSC account password not specified')
 

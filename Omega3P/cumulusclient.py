@@ -87,17 +87,26 @@ class CumulusClient():
       user_name = user.get('firstName', 'user')
       cluster_name = '%s.%s' % (machine_name, user_name)
 
-    body = {
-      'config': {
-        'host': machine_name
-      },
-      'name': cluster_name,
-      'type': 'newt'
-    }
+    cluster = None
+    cluster_list = self._client.get('clusters')
+    for extant_cluster in cluster_list:
+      if extant_cluster['name'] == cluster_name:
+        cluster = extant_cluster
+        self._cluster_id = extant_cluster['_id']
+        break
 
-    r = self._client.post('clusters', data=json.dumps(body))
-    self._cluster_id = r['_id']
-    print 'cluster_id', self._cluster_id
+    if not cluster:
+      body = {
+        'config': {
+          'host': machine_name
+        },
+        'name': cluster_name,
+        'type': 'newt'
+      }
+
+      r = self._client.post('clusters', data=json.dumps(body))
+      self._cluster_id = r['_id']
+      print 'cluster_id', self._cluster_id
 
     # Now test the connection
     r = self._client.put('clusters/%s/start' % self._cluster_id)
