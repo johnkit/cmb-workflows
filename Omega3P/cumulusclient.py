@@ -127,11 +127,11 @@ class CumulusClient():
       sleeps += 1
 
   # ---------------------------------------------------------------------
-  def create_omega3p_script(self, omega3p_filename, name=None, number_of_nodes=1):
+  def create_omega3p_script(self, omega3p_filename, name=None, number_of_tasks=1):
     '''Creates script to submit omega3p job
     '''
-    command = 'srun -n %d /project/projectdirs/ace3p/{{machine}}/omega3p %s' % \
-      (number_of_nodes, omega3p_filename)
+    command = 'srun -n %s /project/projectdirs/ace3p/{{machine}}/omega3p %s' % \
+      (number_of_tasks, omega3p_filename)
     if name is None:
       name = omega3p_filename
     body = {
@@ -233,8 +233,14 @@ class CumulusClient():
       upload_file(input_path)
 
   # ---------------------------------------------------------------------
-  def submit_job(self, machine, project_account, timeout_minutes,
-    queue='debug', number_of_nodes=1):
+  def submit_job(self,
+    machine,
+    project_account,
+    timeout_minutes,
+    queue='debug',
+    qos = None,
+    number_of_nodes=1,
+    job_output_dir=None):
     '''
     '''
     body = {
@@ -246,8 +252,12 @@ class CumulusClient():
         'minutes': timeout_minutes,
         'seconds': 0
       },
-      'queue': queue
+      'queue': queue,
     }
+    if qos:
+      body['qualityOfService'] = qos
+    if job_output_dir:
+      body['jobOutputDir'] = job_output_dir
     url = 'clusters/%s/job/%s/submit' % (self._cluster_id, self._job_id)
     self._client.put(url, data=json.dumps(body))
     print 'Submitted job', self._job_id

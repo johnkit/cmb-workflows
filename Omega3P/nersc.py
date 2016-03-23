@@ -75,10 +75,8 @@ def submit_omega3p(scope, sim_item):
 
     # Create run script
     omega3p_filename = os.path.basename(scope.output_path)
-    number_of_nodes = get_integer(sim_item, 'NumberOfNodes')
-    if not number_of_nodes:
-      number_of_nodes = 1
-    scope.cumulus.create_omega3p_script(omega3p_filename, number_of_nodes=number_of_nodes)
+    number_of_tasks = get_integer(sim_item, 'NumberOfTasks')
+    scope.cumulus.create_omega3p_script(omega3p_filename, number_of_tasks=number_of_tasks)
 
     # Create job and upload files
     create_job(scope, sim_item)
@@ -167,10 +165,18 @@ def submit_job(scope, sim_item):
   machine = get_string(sim_item, 'Machine')
   number_of_nodes = get_integer(sim_item, 'NumberOfNodes')
   project_repo = get_string(sim_item, 'NERSCRepository')
-  queue = get_string(sim_item, 'Queue')
+
+  # Parse Queue input into separate queue & qos
+  queue = 'debug'  # default
+  qos = None
+  queue_string = get_string(sim_item, 'Queue')
+  if queue_string != 'debug':
+    queue = 'regular'
+    qos = queue_string
+
   timeout_minutes = get_integer(sim_item, 'Timeout')
   scope.cumulus.submit_job(machine, project_repo, timeout_minutes, \
-    queue=queue, number_of_nodes=number_of_nodes)
+    queue=queue, qos=qos, number_of_nodes=number_of_nodes)
 
 # ---------------------------------------------------------------------
 def check_file(path, error_message_format=None):
@@ -184,7 +190,7 @@ def check_file(path, error_message_format=None):
     raise Exception(error_message_format % scope.model_path)
 
 # ---------------------------------------------------------------------
-def get_integer(group_item, name):
+def get_integer(group_item, name, default_value):
   '''Looks for IntItem contained by group.
 
   Returns either integer value or None if not found
