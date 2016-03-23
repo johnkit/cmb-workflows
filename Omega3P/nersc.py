@@ -20,6 +20,8 @@ import sys
 import traceback
 import shutil
 
+from girder_client import HttpError
+
 import requests
 import smtk
 
@@ -190,7 +192,7 @@ def check_file(path, error_message_format=None):
     raise Exception(error_message_format % scope.model_path)
 
 # ---------------------------------------------------------------------
-def get_integer(group_item, name, default_value):
+def get_integer(group_item, name):
   '''Looks for IntItem contained by group.
 
   Returns either integer value or None if not found

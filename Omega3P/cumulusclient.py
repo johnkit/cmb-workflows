@@ -108,6 +108,12 @@ class CumulusClient():
       self._cluster_id = r['_id']
       print 'cluster_id', self._cluster_id
 
+    # Reset the state of the cluster
+    body = {
+      'status':  'created'
+    }
+    r = self._client.patch('clusters/%s' % self._cluster_id, data=json.dumps(body))
+
     # Now test the connection
     r = self._client.put('clusters/%s/start' % self._cluster_id)
     sleeps = 0
@@ -258,6 +264,7 @@ class CumulusClient():
       body['qualityOfService'] = qos
     if job_output_dir:
       body['jobOutputDir'] = job_output_dir
+      print 'Setting jobOutputDir', job_output_dir
     url = 'clusters/%s/job/%s/submit' % (self._cluster_id, self._job_id)
     self._client.put(url, data=json.dumps(body))
     print 'Submitted job', self._job_id

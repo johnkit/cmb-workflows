@@ -40,7 +40,7 @@ subdirectory for each job.
             <String Name="Queue" Label="Queue" Version="0">
               <DiscreteInfo DefaultIndex="0">
                 <Value Enum="debug">debug</Value>
-                <Value Enum="regular">regular</Value>
+                <Value Enum="regular">normal</Value>
                 <Value Enum="premium">premium</Value>
                 <Value Enum="low priority">low</Value>
                 <Value Enum="scavenger">scavenger</Value>
