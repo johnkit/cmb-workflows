@@ -262,6 +262,7 @@ class CumulusClient():
     }
     if qos:
       body['qualityOfService'] = qos
+    #print 'jobOutputDir', job_output_dir
     if job_output_dir:
       body['jobOutputDir'] = job_output_dir
       print 'Setting jobOutputDir', job_output_dir

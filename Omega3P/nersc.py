@@ -176,9 +176,12 @@ def submit_job(scope, sim_item):
     queue = 'regular'
     qos = queue_string
 
+  job_output_dir = get_string(sim_item, 'JobDirectory')
+
   timeout_minutes = get_integer(sim_item, 'Timeout')
   scope.cumulus.submit_job(machine, project_repo, timeout_minutes, \
-    queue=queue, qos=qos, number_of_nodes=number_of_nodes)
+    queue=queue, qos=qos, number_of_nodes=number_of_nodes, \
+    job_output_dir=job_output_dir)
 
 # ---------------------------------------------------------------------
 def check_file(path, error_message_format=None):
@@ -202,6 +205,9 @@ def get_integer(group_item, name):
     print 'WARNING: item \"%s\" not found' % name
     return None
 
+  if not item.isEnabled():
+    return None
+
   concrete_item = smtk.attribute.to_concrete(item)
   if concrete_item.type() != smtk.attribute.Item.INT:
     print 'WARNING: item \"%s\" not an integer item' % name
@@ -218,6 +224,9 @@ def get_string(group_item, name):
   item = group_item.find(name)
   if not item:
     print 'WARNING: item \"%s\" not found' % name
+    return None
+
+  if not item.isEnabled():
     return None
 
   concrete_item = smtk.attribute.to_concrete(item)
