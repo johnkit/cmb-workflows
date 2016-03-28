@@ -43,7 +43,7 @@
                     AdvanceLevel="0" NumberOfRequiredValues="1">
               <BriefDescription>Number of Modes Loaded on Port</BriefDescription>
             </Int>
-            <ModelEntity Name="SlaveSurface" Label="Slave Surface" Version="0"
+            <ModelEntity Name="MasterSurface" Label="Master Surface" Version="0"
                     AdvanceLevel="0" NumberOfRequiredValues="1">
               <MembershipMask>face</MembershipMask>
             </ModelEntity>
@@ -71,8 +71,8 @@
             <Structure>
               <Value Enum="Periodic">Periodic</Value>
               <Items>
+                <Item>MasterSurface</Item>
                 <Item>Theta</Item>
-                <Item>SlaveSurface</Item>
               </Items>
             </Structure>
           </DiscreteInfo>

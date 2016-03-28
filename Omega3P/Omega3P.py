@@ -177,17 +177,17 @@ def write_boundarycondition(scope):
 
         # Periodic BC is special case
         if name == 'Periodic':
-            # Write master item
-            scope.output.write('    Periodic_M: %s\n' % ent_string)
-
             # Write slave item
-            slave_item = att.findModelEntity('SlaveSurface')
+            scope.output.write('    Periodic_S: %s\n' % ent_string)
+
+            # Write master item
+            slave_item = att.findModelEntity('MasterSurface')
             ent_ref = slave_item.value(0)
             if ent_ref:
                 ent = ent_ref.entity()
                 prop_idlist = scope.model_manager.integerProperty(ent, 'pedigree id')
                 if prop_idlist:
-                    scope.output.write('    Periodic_S: %s\n' % prop_idlist[0])
+                    scope.output.write('    Periodic_M: %s\n' % prop_idlist[0])
             else:
                 print 'WARNING: No slave surface specified for Periodic BC'
 
