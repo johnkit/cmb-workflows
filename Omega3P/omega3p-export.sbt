@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <SMTK_AttributeSystem Version="2">
   <Definitions>
-    <AttDef Type="ExportSpec" Lavel="Simulation" BaseType="" Version="0">
+    <AttDef Type="ExportSpec" Label="Settings" BaseType="" Version="0">
       <ItemDefinitions>
         <String Name="AnalysisTypes" Label="Analysis Types" Version="0" AdvanceLevel="99" NumberOfRequiredValues="1" Extensible="true" />
         <File Name="OutputFile" Label="Output File (*.o3p, *.omega3p)" Version="0"
@@ -68,12 +68,13 @@ subdirectory for each job.
      </AttDef>
    </Definitions>
   <Views>
-    <View Type="Group" Title="Export" TopLevel="true">
+    <View Type="Group" Title="Export" TopLevel="true"
+          Style="Tiled" FilterByCategory="false">
       <Views>
-        <View Title="ExportSpec" />
+        <View Title="Export Settings" />
       </Views>
     </View>
-    <View Type="Instanced" Title="ExportSpec">
+    <View Type="Instanced" Title="Export Settings">
       <InstancedAttributes>
         <Att Name="Options" Type="ExportSpec" />
       </InstancedAttributes>

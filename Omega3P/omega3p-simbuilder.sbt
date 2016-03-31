@@ -187,7 +187,8 @@
 
   <!--********** Workflow Views ***********-->
   <Views>
-    <View Type="Group" Title="SimBuilder" TopLevel="true" TabPosition="North">
+    <View Type="Group" Title="SimBuilder" TopLevel="true" TabPosition="North"
+          FilterByAdvanceLevel="false" FilterByCategory="false">
       <DefaultColor>1., 1., 0.5, 1.</DefaultColor>
       <InvalidColor>1, 0.5, 0.5, 1</InvalidColor>
       <AdvancedFontEffects />
