@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<cmb-resources>
+  <!-- Simulation Attributes -->
+  <attribute id="simbuilder" role="template">
+    <SMTK_AttributeSystem Version="2">
+      <Includes>
+        <File>gssha-simbuilder.sbt</File>
+      </Includes>
+    </SMTK_AttributeSystem>
+  </attribute>
+
+  <!-- Export Attributes -->
+  <attribute id="export" role="template">
+    <SMTK_AttributeSystem Version="2">
+      <Definitions>
+        <AttDef Type="ExportSpec" Lavel="Simulation" BaseType="" Version="0">
+          <ItemDefinitions>
+            <String Name="AnalysisTypes" Label="Analysis Types" Version="0" AdvanceLevel="99" NumberOfRequiredValues="1" Extensible="true" />
+            <File Name="PythonScript" Label="Python script" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1"
+                  ShouldExist="true" FileFilters="Python files (*.py);;All files (*.*)" />
+            <String Name="ProjectName" Label="Project Name" Version="0">
+              <BriefDescription>Name (prefix) to use for all GSSHA files</BriefDescription>
+            </String>
+            <Directory Name="ProjectPath" Label="Project Path"
+                       Version="0" NumberOfRequiredValues="1" ShouldExist="false">
+              <BriefDescription>Filesystem folder for all GSSHA files</BriefDescription>
+            </Directory>
+          </ItemDefinitions>
+         </AttDef>
+       </Definitions>
+      <Views>
+        <View Type="Group" Title="Export" TopLevel="true">
+          <Views>
+            <View Title="ExportSpec" />
+          </Views>
+        </View>
+        <View Type="Instanced" Title="ExportSpec">
+          <InstancedAttributes>
+            <Att Name="Options" Type="ExportSpec" />
+          </InstancedAttributes>
+        </View>
+      </Views>
+
+    </SMTK_AttributeSystem>
+  </attribute>
+</cmb-resources>
