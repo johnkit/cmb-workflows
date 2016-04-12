@@ -20,6 +20,8 @@ import sys
 import traceback
 import shutil
 
+from girder_client import HttpError
+
 import requests
 import smtk
 
@@ -60,13 +62,6 @@ def submit_omega3p(scope, sim_item):
     check_file(scope.model_path, 'Cannot find model file at %s')
     check_file(scope.output_path, 'Cannot find Omega3P file at %s')
 
-    # Todo confirm that project repository is not null?
-    # Todo confirm that machine name is non null?
-    # Todo confirm that queue is non null?
-
-    # Setup results directory
-    setup_results_directory(scope, sim_item)
-
     # Start NERSC session
     login_nersc(scope, sim_item)
 
@@ -82,21 +77,27 @@ def submit_omega3p(scope, sim_item):
 
     # Create run script
     omega3p_filename = os.path.basename(scope.output_path)
-    scope.cumulus.create_omega3p_script(omega3p_filename)
+    number_of_tasks = get_integer(sim_item, 'NumberOfTasks')
+    scope.cumulus.create_omega3p_script(omega3p_filename, number_of_tasks=number_of_tasks)
 
-    # Setup I/O folders & files
-    scope.cumulus.create_input([scope.output_path, scope.model_path])
-    scope.cumulus.create_output_folder(scope.results_directory)
-
+    # Create job and upload files
     create_job(scope, sim_item)
-    submit_job(scope, sim_item)
+    scope.cumulus.upload_inputs([scope.output_path, scope.model_path])
 
-    scope.cumulus.download_results(scope.results_directory)
+    # Submit job
+    submit_job(scope, sim_item)
+    #print 'Submitted job', scope.cumulus.job_id()
+  except HttpError as err:
+    print 'ERROR', err.responseText
+    raise
   except Exception as ex:
+    print 'Exception', ex
     traceback.print_exc()
-    ok = False
+    raise
   finally:
-    release_resources(scope)
+    #release_resources(scope)
+    if scope.nersc:
+      scope.nersc.logout()
 
   return ok
 
@@ -120,12 +121,12 @@ def login_nersc(scope, sim_item):
 
   # Check user inputs
   username = get_string(sim_item, 'NERSCAccountName')
-  #print 'username', username
+  print 'username', username
   if not username:
     raise Exception('ERROR: NERSC account name not specified')
 
   password = get_string(sim_item, 'NERSCAccountPassword')
-  #print 'password', password
+  print 'password length', len(password)
   if not password:
     raise Exception('ERROR: NERSC account password not specified')
 
@@ -152,9 +153,9 @@ def create_cumulus_client(scope, sim_item):
 def create_job(scope, sim_item):
   '''
   '''
-  # Check for tail file
+  job_name = get_string(sim_item, 'JobName')
   tail = get_string(sim_item, 'TailFile')
-  scope.cumulus.create_job(tail=tail)
+  scope.cumulus.create_job(job_name, tail=tail)
 
 # ---------------------------------------------------------------------
 def submit_job(scope, sim_item):
@@ -166,11 +167,21 @@ def submit_job(scope, sim_item):
   machine = get_string(sim_item, 'Machine')
   number_of_nodes = get_integer(sim_item, 'NumberOfNodes')
   project_repo = get_string(sim_item, 'NERSCRepository')
-  queue = get_string(sim_item, 'Queue')
-  tail = get_string(sim_item, 'TailFile')
+
+  # Parse Queue input into separate queue & qos
+  queue = 'debug'  # default
+  qos = None
+  queue_string = get_string(sim_item, 'Queue')
+  if queue_string != 'debug':
+    queue = 'regular'
+    qos = queue_string
+
+  job_output_dir = get_string(sim_item, 'JobDirectory')
+
   timeout_minutes = get_integer(sim_item, 'Timeout')
   scope.cumulus.submit_job(machine, project_repo, timeout_minutes, \
-    queue=queue, tail=tail, number_of_nodes=number_of_nodes)
+    queue=queue, qos=qos, number_of_nodes=number_of_nodes, \
+    job_output_dir=job_output_dir)
 
 # ---------------------------------------------------------------------
 def check_file(path, error_message_format=None):
@@ -194,6 +205,9 @@ def get_integer(group_item, name):
     print 'WARNING: item \"%s\" not found' % name
     return None
 
+  if not item.isEnabled():
+    return None
+
   concrete_item = smtk.attribute.to_concrete(item)
   if concrete_item.type() != smtk.attribute.Item.INT:
     print 'WARNING: item \"%s\" not an integer item' % name
@@ -212,6 +226,9 @@ def get_string(group_item, name):
     print 'WARNING: item \"%s\" not found' % name
     return None
 
+  if not item.isEnabled():
+    return None
+
   concrete_item = smtk.attribute.to_concrete(item)
   if concrete_item.type() != smtk.attribute.Item.STRING:
     print 'WARNING: item \"%s\" not a string item' % name
@@ -221,7 +238,7 @@ def get_string(group_item, name):
 
 # ---------------------------------------------------------------------
 def setup_results_directory(scope, sim_item):
-  '''Creates and/or clears results directory
+  '''DEPRECATED Creates and/or clears results directory
   '''
   item = sim_item.find('ResultsDirectory')
   group_item = smtk.attribute.to_concrete(item)

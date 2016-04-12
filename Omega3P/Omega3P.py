@@ -125,7 +125,7 @@ def write_modelinfo(scope):
         # Get model filename
         scope.model_file = os.path.basename(url)
         print 'scope.model_file', scope.model_file
-        scope.output.write('  File: %s\n\n' % scope.model_file)
+        scope.output.write('  File: %s\n' % scope.model_file)
 
         # Get full path to model
         if os.path.isabs(url):
@@ -138,6 +138,9 @@ def write_modelinfo(scope):
                 model_path = os.path.join(smtk_url, url)
                 scope.model_path = os.path.abspath(model_path)
         print 'scope.model_path', scope.model_path
+
+    write_boolean(scope, 'Tolerant')
+    scope.output.write('\n')
 
     write_boundarycondition(scope)
     write_materials(scope)
@@ -159,6 +162,9 @@ def write_boundarycondition(scope):
 
     scope.output.write('  BoundaryCondition: {\n')
 
+    # First write HFormulation if item is enabled
+    write_boolean(scope, 'HFormulation', indent='    ')
+
     # Traverse attributes and write BoundaryCondition contents
     surface_material_list = list()  # for saving SurfaceMaterial info
     for att in atts:
@@ -171,17 +177,17 @@ def write_boundarycondition(scope):
 
         # Periodic BC is special case
         if name == 'Periodic':
-            # Write master item
-            scope.output.write('    Periodic_M: %s\n' % ent_string)
-
             # Write slave item
-            slave_item = att.findModelEntity('SlaveSurface')
+            scope.output.write('    Periodic_S: %s\n' % ent_string)
+
+            # Write master item
+            slave_item = att.findModelEntity('MasterSurface')
             ent_ref = slave_item.value(0)
             if ent_ref:
                 ent = ent_ref.entity()
                 prop_idlist = scope.model_manager.integerProperty(ent, 'pedigree id')
                 if prop_idlist:
-                    scope.output.write('    Periodic_S: %s\n' % prop_idlist[0])
+                    scope.output.write('    Periodic_M: %s\n' % prop_idlist[0])
             else:
                 print 'WARNING: No slave surface specified for Periodic BC'
 
@@ -211,6 +217,28 @@ def write_boundarycondition(scope):
         scope.output.write('  SurfaceMaterial: {\n')
         scope.output.write(surface_material_string)
         scope.output.write('  }\n')
+
+# ---------------------------------------------------------------------
+def write_boolean(scope, att_type, item_name=None, output_name=None, indent='  '):
+    '''Writes boolean property if item is checked
+
+    Attribute should be a singleton
+    '''
+    print 'write_boolean', att_type
+    atts = scope.sim_atts.findAttributes(att_type)
+    if not atts:
+        return
+
+    # (else)
+    att = atts[0]
+    if not item_name:
+        item_name = att_type
+    item = att.find(item_name)
+
+    if not output_name:
+        output_name = att_type
+    if item and item.isEnabled():
+        scope.output.write('%s%s: 1\n' % (indent, output_name))
 
 # ---------------------------------------------------------------------
 def write_materials(scope):

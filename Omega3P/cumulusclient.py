@@ -15,6 +15,7 @@ import json
 import os
 import sys
 import time
+import uuid
 
 import requests
 from girder_client import GirderClient, HttpError
@@ -26,10 +27,12 @@ class CumulusClient():
   Note: the methods must be called in a specific order!
     create_cluster()
     create_omega3p_script()
-    create_input()
-    create_output_folder()
     create_job()
+    upload_inputs()
     submit_job()
+
+  Then optionally:
+    monitor_job()
     download_results()
     release_resources()
   '''
@@ -41,6 +44,7 @@ class CumulusClient():
     self._cluster_id = None
     self._girder_url = girder_url
     self._input_folder_id = None
+    self._job_folder_id = None
     self._job_id = None
     self._output_folder_id = None
     self._private_folder_id = None
@@ -69,6 +73,12 @@ class CumulusClient():
     print 'private_folder_id', self._private_folder_id
 
   # ---------------------------------------------------------------------
+  def job_id(self):
+    '''Returns current job id (which may be None)
+    '''
+    return self._job_id
+
+  # ---------------------------------------------------------------------
   def create_cluster(self, machine_name, cluster_name=None):
     '''
     '''
@@ -77,17 +87,32 @@ class CumulusClient():
       user_name = user.get('firstName', 'user')
       cluster_name = '%s.%s' % (machine_name, user_name)
 
-    body = {
-      'config': {
-        'host': machine_name
-      },
-      'name': cluster_name,
-      'type': 'newt'
-    }
+    cluster = None
+    cluster_list = self._client.get('clusters')
+    for extant_cluster in cluster_list:
+      if extant_cluster['name'] == cluster_name:
+        cluster = extant_cluster
+        self._cluster_id = extant_cluster['_id']
+        break
 
-    r = self._client.post('clusters', data=json.dumps(body))
-    self._cluster_id = r['_id']
-    print 'cluster_id', self._cluster_id
+    if not cluster:
+      body = {
+        'config': {
+          'host': machine_name
+        },
+        'name': cluster_name,
+        'type': 'newt'
+      }
+
+      r = self._client.post('clusters', data=json.dumps(body))
+      self._cluster_id = r['_id']
+      print 'cluster_id', self._cluster_id
+
+    # Reset the state of the cluster
+    body = {
+      'status':  'created'
+    }
+    r = self._client.patch('clusters/%s' % self._cluster_id, data=json.dumps(body))
 
     # Now test the connection
     r = self._client.put('clusters/%s/start' % self._cluster_id)
@@ -108,11 +133,11 @@ class CumulusClient():
       sleeps += 1
 
   # ---------------------------------------------------------------------
-  def create_omega3p_script(self, omega3p_filename, name=None, number_of_nodes=1):
+  def create_omega3p_script(self, omega3p_filename, name=None, number_of_tasks=1):
     '''Creates script to submit omega3p job
     '''
-    command = 'srun -n %d /project/projectdirs/ace3p/{{machine}}/omega3p %s' % \
-      (number_of_nodes, omega3p_filename)
+    command = 'srun -n %s /project/projectdirs/ace3p/{{machine}}/omega3p %s' % \
+      (number_of_tasks, omega3p_filename)
     if name is None:
       name = omega3p_filename
     body = {
@@ -125,7 +150,7 @@ class CumulusClient():
 
   # ---------------------------------------------------------------------
   def create_input(self, input_paths, folder_name='input_files'):
-    '''Uploads input files
+    '''DEPRECATED Uploads input files
     '''
     folder_id = self.get_folder(self._private_folder_id, folder_name)
     if folder_id is None:
@@ -147,16 +172,28 @@ class CumulusClient():
 
   # ---------------------------------------------------------------------
   def create_output_folder(self, folder_name='output_files'):
-    '''
+    '''DEPRECATED
     '''
     folder_id = self.get_folder(self._private_folder_id, folder_name)
     print 'output_folder_id', folder_id
     self._output_folder_id = folder_id
 
   # ---------------------------------------------------------------------
-  def create_job(self, job_name='CumulusJob', tail=None):
+  def create_job(self, job_name, tail=None):
     '''
     '''
+    # Create job folders
+    folder_name = uuid.uuid4().hex  # unique name
+    self._job_folder_id = self.get_folder(self._private_folder_id, folder_name)
+    print 'Created job folder', folder_name
+    self._input_folder_id = self.get_folder(self._job_folder_id, 'input_files')
+    self._output_folder_id = self.get_folder(self._job_folder_id, 'output_files')
+
+    # Make sure job_name isn't null
+    if not job_name:
+      job_name = 'CumulusJob'
+
+    # Create job spec
     body = {
       'name': job_name,
       'scriptId': self._script_id,
@@ -180,11 +217,36 @@ class CumulusClient():
 
     job = self._client.post('jobs', data=json.dumps(body))
     self._job_id = job['_id']
-    print 'job_id', self._job_id
+    print 'Created job_id', self._job_id
 
   # ---------------------------------------------------------------------
-  def submit_job(self, machine, project_account, timeout_minutes,
-    queue='debug', tail=None, number_of_nodes=1):
+  def upload_inputs(self, input_paths):
+    '''Uploads input files to input folder
+    '''
+    if not self._input_folder_id:
+      raise Exception('Input folder missing')
+
+    def upload_file(path):
+      name = os.path.basename(path)
+      size = os.path.getsize(path)
+      with open(path, 'rb') as fp:
+        self._client.uploadFile(
+          self._input_folder_id, fp, name, size, parentType='folder')
+
+    for input_path in input_paths:
+      if not input_path or not os.path.exists(input_path):
+        raise Exception('Input file not found: %s' % input_path)
+      upload_file(input_path)
+
+  # ---------------------------------------------------------------------
+  def submit_job(self,
+    machine,
+    project_account,
+    timeout_minutes,
+    queue='debug',
+    qos = None,
+    number_of_nodes=1,
+    job_output_dir=None):
     '''
     '''
     body = {
@@ -196,12 +258,22 @@ class CumulusClient():
         'minutes': timeout_minutes,
         'seconds': 0
       },
-      'queue': queue
+      'queue': queue,
     }
+    if qos:
+      body['qualityOfService'] = qos
+    #print 'jobOutputDir', job_output_dir
+    if job_output_dir:
+      body['jobOutputDir'] = job_output_dir
+      print 'Setting jobOutputDir', job_output_dir
     url = 'clusters/%s/job/%s/submit' % (self._cluster_id, self._job_id)
     self._client.put(url, data=json.dumps(body))
-    print 'Job submitted'
+    print 'Submitted job', self._job_id
 
+  # ---------------------------------------------------------------------
+  def monitor_job(self, tail=None):
+    '''Periodically monitors job status
+    '''
     log_offset = 0
     job_timeout = 60 * timeout_minutes
     start = time.time()
@@ -268,7 +340,7 @@ class CumulusClient():
       'clusters': [self._cluster_id],
       'jobs': [self._job_id],
       'scripts': [self._script_id],
-      'folder': [self._input_folder_id, self._output_folder_id]
+      'folder': [self._job_folder]
     }
     for resource_type, id_list in resource_info.items():
       for resource_id in id_list:
@@ -277,6 +349,7 @@ class CumulusClient():
           self._client.delete(url)
 
     self._input_folder_id = None
+    self._job_folder_id = None
     self._job_id = None
     self._output_folder_id = None
     self._script_id = None

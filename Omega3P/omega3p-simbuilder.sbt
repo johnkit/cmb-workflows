@@ -10,6 +10,13 @@
   </Analyses>
   <!--**********  Attribute Definitions ***********-->
   <Definitions>
+   <AttDef Type="Tolerant" Label="Tolerant" Version="0">
+    <ItemDefinitions>
+      <Void Name="Tolerant" Label="Tolerant" Version="0"
+            Optional="true" IsEnabledByDefault="false" />
+    </ItemDefinitions>
+   </AttDef>
+
     <AttDef Type="SurfaceProperty"
             Label="Surface Boundary Condition"
             BaseType="" Version="0" Unique="true">
@@ -36,7 +43,7 @@
                     AdvanceLevel="0" NumberOfRequiredValues="1">
               <BriefDescription>Number of Modes Loaded on Port</BriefDescription>
             </Int>
-            <ModelEntity Name="SlaveSurface" Label="Slave Surface" Version="0"
+            <ModelEntity Name="MasterSurface" Label="Master Surface" Version="0"
                     AdvanceLevel="0" NumberOfRequiredValues="1">
               <MembershipMask>face</MembershipMask>
             </ModelEntity>
@@ -64,13 +71,20 @@
             <Structure>
               <Value Enum="Periodic">Periodic</Value>
               <Items>
+                <Item>MasterSurface</Item>
                 <Item>Theta</Item>
-                <Item>SlaveSurface</Item>
               </Items>
             </Structure>
           </DiscreteInfo>
         </String>
       </ItemDefinitions>
+   </AttDef>
+
+   <AttDef Type="HFormulation" Label="HFormulation" Version="0">
+    <ItemDefinitions>
+      <Void Name="HFormulation" Label="HFormulation" Version="0"
+            Optional="true" IsEnabledByDefault="false" />
+    </ItemDefinitions>
    </AttDef>
 
    <AttDef Type="Port" Label="Port" BaseType="" Version="0" Unique="true">
@@ -173,7 +187,8 @@
 
   <!--********** Workflow Views ***********-->
   <Views>
-    <View Type="Group" Title="SimBuilder" TopLevel="true" TabPosition="North">
+    <View Type="Group" Title="SimBuilder" TopLevel="true" TabPosition="North"
+          FilterByAdvanceLevel="false" FilterByCategory="false">
       <DefaultColor>1., 1., 0.5, 1.</DefaultColor>
       <InvalidColor>1, 0.5, 0.5, 1</InvalidColor>
       <AdvancedFontEffects />
@@ -184,11 +199,24 @@
         <View Title="Analysis" />
       </Views>
     </View>
-    <View Type="Attribute" Title="Boundary Conditions" ModelEntityFilter="f">
+
+    <View Type="Group" Title="Boundary Conditions" Style="Tiled">
+      <Views>
+        <View Title="HFormulation" />
+        <View Title="Surface Properties" />
+      </Views>
+    </View>
+    <View Type="Instanced" Title="HFormulation">
+      <InstancedAttributes>
+        <Att Name="HForumulation" Type="HFormulation" />
+      </InstancedAttributes>
+    </View>
+    <View Type="Attribute" Title="Surface Properties" ModelEntityFilter="f">
       <AttributeTypes>
         <Att Type="SurfaceProperty" />
       </AttributeTypes>
     </View>
+
     <View Type="Attribute" Title="Ports" ModelEntityFilter="f">
       <AttributeTypes>
         <Att Type="Port" />
@@ -201,11 +229,17 @@
     </View>
     <View Type="Group" Title="Analysis" Style="Tiled">
       <Views>
+        <View Title="Tolerant" />
         <View Title="FiniteElement" />
         <View Title="EigenSolver" />
         <View Title="Post Process" />
         <View Title="High Order Regions" />
       </Views>
+    </View>
+    <View Type="Instanced" Title="Tolerant">
+      <InstancedAttributes>
+        <Att Name="Tolerant" Type="Tolerant" />
+      </InstancedAttributes>
     </View>
     <View Type="Instanced" Title="FiniteElement">
       <InstancedAttributes>
