@@ -102,11 +102,14 @@ class ProjectCardFormat:
 
     att = None
 
-    if isinstance(att_or_system, smtk.attribute.Attribute):
+    # Check input type (don't forget shared pointer type!)
+    if isinstance(att_or_system, smtk.attribute.Attribute) or \
+      isinstance(att_or_system, smtk.AttributePtr):
       att = att_or_system
 
-    elif isinstance(att_or_system, smtk.attribute.System):
-      # If system provided, then there should be a single attribute instance.
+    # If attribute system passed in, look for 1 attribute instance
+    elif isinstance(att_or_system, smtk.attribute.System) or \
+      isinstance(att_or_system, smtk.SystemPtr):
       sim_atts = att_or_system
       att_list = sim_atts.findAttributes(self.att_type)
       if not att_list:
@@ -119,6 +122,11 @@ class ProjectCardFormat:
 
       # (else)
       att = att_list[0]
+
+    if att is None:
+      # Safety first
+      print 'Invalid input: att_or_system is not attribute or attribute system'
+      return False
 
     item = att.itemAtPath(self.item_path, '/')
     if item is None:
