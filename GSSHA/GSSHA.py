@@ -95,17 +95,18 @@ def ExportCMB(spec):
     if scope.sim_atts is not None:
         scope.model_manager = scope.sim_atts.refModelManager()
 
+    export_spec_att = None
     scope.export_atts = spec.getExportAttributes()
     if scope.export_atts is not None:
         att_list = scope.export_atts.findAttributes('ExportSpec')
-    if not att_list:
+        if att_list:
+            export_spec_att = att_list[0]
+
+    if export_spec_att is None:
         msg = 'No ExportSpec instance -- cannot export'
         print 'WARNING:', msg
         scope.logger.addError(msg)
         return False
-
-    # (else)
-    export_spec_att = att_list[0]
 
     # Get project name
     project_name_item = export_spec_att.findString('ProjectName')

@@ -1,0 +1,539 @@
+<?xml version="1.0"?>
+<cmb-resources>
+  <attribute id="simbuilder" role="instance">
+    <SMTK_AttributeSystem Version="2">
+      <!--**********  Category and Analysis Information ***********-->
+      <Categories>
+        <Cat>Overland Flow</Cat>
+      </Categories>
+      <Analyses>
+        <Analysis Type="Overland Flow">
+          <Cat>Overland Flow</Cat>
+        </Analysis>
+      </Analyses>
+      <!--**********  Attribute Definitions ***********-->
+      <Definitions>
+        <AttDef Type="computation" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Group Name="computation-group" Label="Computation parameters" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Int Name="output-units" Label="Output units" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DiscreteInfo DefaultIndex="0">
+                    <Value Enum="Metric">0</Value>
+                    <Value Enum="English">0</Value>
+                  </DiscreteInfo>
+                </Int>
+                <Int Name="total-time" Label="Total time (min)" Version="0" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DefaultValue>500</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="false">0</Min>
+                  </RangeInfo>
+                </Int>
+                <Int Name="time-step" Label="Time step (sec)" Version="0" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DefaultValue>10</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="false">0</Min>
+                  </RangeInfo>
+                </Int>
+                <Double Name="event-min-flow" Label="Min flow end of event" Version="0" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DefaultValue>0</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">0</Min>
+                  </RangeInfo>
+                </Double>
+                <Group Name="end-time" Label="End Time" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredGroups="1">
+                  <ItemDefinitions>
+                    <Int Name="year" Label="Year" Version="0" NumberOfRequiredValues="1">
+                      <Categories>
+                        <Cat>Overland Flow</Cat>
+                      </Categories>
+                      <DefaultValue>2050</DefaultValue>
+                    </Int>
+                    <Int Name="month" Label="Month" Version="0" NumberOfRequiredValues="1">
+                      <Categories>
+                        <Cat>Overland Flow</Cat>
+                      </Categories>
+                      <DiscreteInfo DefaultIndex="0">
+                        <Value Enum="Jan">1</Value>
+                        <Value Enum="Feb">2</Value>
+                        <Value Enum="Mar">3</Value>
+                        <Value Enum="Apr">4</Value>
+                        <Value Enum="May">5</Value>
+                        <Value Enum="Jun">6</Value>
+                        <Value Enum="Jul">7</Value>
+                        <Value Enum="Aug">8</Value>
+                        <Value Enum="Sep">9</Value>
+                        <Value Enum="Oct">10</Value>
+                        <Value Enum="Nov">11</Value>
+                        <Value Enum="Dec">12</Value>
+                      </DiscreteInfo>
+                    </Int>
+                    <Int Name="day" Label="Day" Version="0" NumberOfRequiredValues="1">
+                      <Categories>
+                        <Cat>Overland Flow</Cat>
+                      </Categories>
+                      <DefaultValue>1</DefaultValue>
+                      <RangeInfo>
+                        <Min Inclusive="true">1</Min>
+                        <Max Inclusive="true">31</Max>
+                      </RangeInfo>
+                    </Int>
+                    <Int Name="hour" Label="Hour" Version="0" NumberOfRequiredValues="1">
+                      <Categories>
+                        <Cat>Overland Flow</Cat>
+                      </Categories>
+                      <DefaultValue>0</DefaultValue>
+                      <RangeInfo>
+                        <Min Inclusive="true">0</Min>
+                        <Max Inclusive="true">23</Max>
+                      </RangeInfo>
+                    </Int>
+                    <Int Name="minute" Label="Minute" Version="0" NumberOfRequiredValues="1">
+                      <Categories>
+                        <Cat>Overland Flow</Cat>
+                      </Categories>
+                      <DefaultValue>0</DefaultValue>
+                      <RangeInfo>
+                        <Min Inclusive="true">0</Min>
+                        <Max Inclusive="true">59</Max>
+                      </RangeInfo>
+                    </Int>
+                  </ItemDefinitions>
+                </Group>
+                <Int Name="number-of-threads" Label="Number of Threads" Version="0" Optional="true" IsEnabledByDefault="false" AdvanceLevel="1" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DefaultValue>1</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="false">0</Min>
+                  </RangeInfo>
+                </Int>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="output-frequencies" Label="Output frequencies" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Int Name="map-frequency" Label="Map Frequency" Version="0" NumberOfRequiredValues="1" Units="min">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DefaultValue>5</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="false">0</Min>
+                  </RangeInfo>
+                </Int>
+                <Int Name="hyd-frequency" Label="Hydrograph Frequency" Version="0" NumberOfRequiredValues="1" Units="min">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DefaultValue>5</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="false">0</Min>
+                  </RangeInfo>
+                </Int>
+                <Int Name="map-type" Label="Output format" Version="0" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DiscreteInfo DefaultIndex="0">
+                    <Value Enum="ASCII grid sequence">0</Value>
+                    <Value Enum="WMS gridded dataset">1</Value>
+                  </DiscreteInfo>
+                </Int>
+              </ItemDefinitions>
+            </Group>
+          </ItemDefinitions>
+        </AttDef>
+        <AttDef Type="grid" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Group Name="grid" Label="Grid" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Double Name="gridsize" Label="Grid size (m)" Version="0" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DefaultValue>100</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="false">0</Min>
+                  </RangeInfo>
+                </Double>
+                <Int Name="rows" Label="Rows" Version="0" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DefaultValue>10</DefaultValue>
+                </Int>
+                <Int Name="columns" Label="Colums" Version="0" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DefaultValue>10</DefaultValue>
+                </Int>
+              </ItemDefinitions>
+            </Group>
+          </ItemDefinitions>
+        </AttDef>
+        <AttDef Type="overland-flow" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Group Name="overland-flow" Label="Overland flow" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <String Name="computation-method" Label="Computation method" Version="0" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DiscreteInfo DefaultIndex="0">
+                    <Value Enum="Explicit">EXPLICIT</Value>
+                    <Value Enum="ADE">ADE</Value>
+                    <Value Enum="ADE-PC">ADE-PC</Value>
+                  </DiscreteInfo>
+                </String>
+                <File Name="elevation-file" Label="Elevation File" Version="0" NumberOfRequiredValues="1" ShouldExist="true" FileFilters="Elevation files (*.ele);;All files (*.*)">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                </File>
+                <Void Name="overbank flow" Label="Enable overbank flow" Version="0" Optional="true" IsEnabledByDefault="false">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                </Void>
+                <Double Name="max-courant-number" Label="Max Courant Number" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <DefaultValue>0.059999999999999998</DefaultValue>
+                </Double>
+                <File Name="initial-depth" Label="Initial depth file" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1" ShouldExist="true" FileFilters="Input hot start files (*.idp);;All files (*.*)">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                </File>
+                <File Name="read-ov-hotstart" Label="Input hot start file" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1" ShouldExist="true" FileFilters="Input hot start files (*.idp);;All files (*.*)">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                </File>
+                <Void Name="write-ov-hotstart" Label="Write final overland depths" Version="0" Optional="true" IsEnabledByDefault="false">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                </Void>
+                <String Name="roughness" Label="Roughness model" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <ChildrenDefinitions>
+                    <Double Name="mannings-n" Label="Manning's n" Version="0" NumberOfRequiredValues="1">
+                      <Categories>
+                        <Cat>Overland Flow</Cat>
+                      </Categories>
+                      <DefaultValue>0.10000000000000001</DefaultValue>
+                      <RangeInfo>
+                        <Min Inclusive="true">0</Min>
+                        <Max Inclusive="true">1</Max>
+                      </RangeInfo>
+                    </Double>
+                    <File Name="roughness-file" Label="Roughness File" Version="0" NumberOfRequiredValues="1" ShouldExist="true" FileFilters="Roughness files (*.ovn);;All files (*.*)">
+                      <Categories>
+                        <Cat>Overland Flow</Cat>
+                      </Categories>
+                    </File>
+                  </ChildrenDefinitions>
+                  <DiscreteInfo DefaultIndex="0">
+                    <Structure>
+                      <Value Enum="File">ROUGHNESS</Value>
+                      <Items>
+                        <Item>roughness-file</Item>
+                      </Items>
+                    </Structure>
+                    <Structure>
+                      <Value Enum="Uniform">MANNING_N</Value>
+                      <Items>
+                        <Item>mannings-n</Item>
+                      </Items>
+                    </Structure>
+                  </DiscreteInfo>
+                </String>
+                <Void Name="ov-boundary" Label="Apply overland boundaries" Version="0" Optional="true" IsEnabledByDefault="false">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <BriefDescription>Do overland boundaries according to the OVERLAND_BOUNDARY table</BriefDescription>
+                </Void>
+                <File Name="embankment" Label="Embankment file" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1" ShouldExist="true" FileFilters="Embankment files (*.dik);;All files (*.*)">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <BriefDescription>Set up no-flow embankments between overland grid cells</BriefDescription>
+                </File>
+                <File Name="lowspot" Label="Lowspot file" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1" ShouldExist="true" FileFilters="Lowspot files (*.lsp);;All files (*.*)">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <BriefDescription>Set up low spots for overtopping on the embankments</BriefDescription>
+                </File>
+              </ItemDefinitions>
+            </Group>
+          </ItemDefinitions>
+        </AttDef>
+        <AttDef Type="precipitation" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Group Name="precipitation" Label="Rainfall event(s)" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <String Name="rainfall-events" Label="Format" Version="0" NumberOfRequiredValues="1">
+                  <Categories>
+                    <Cat>Overland Flow</Cat>
+                  </Categories>
+                  <ChildrenDefinitions>
+                    <Int Name="duration" Label="Duration (min)" Version="0" NumberOfRequiredValues="1">
+                      <Categories>
+                        <Cat>Overland Flow</Cat>
+                      </Categories>
+                      <DefaultValue>60</DefaultValue>
+                      <RangeInfo>
+                        <Min Inclusive="true">0</Min>
+                      </RangeInfo>
+                    </Int>
+                    <Double Name="intensity" Label="Intensity (mm/hr)" Version="0" NumberOfRequiredValues="1">
+                      <Categories>
+                        <Cat>Overland Flow</Cat>
+                      </Categories>
+                      <DefaultValue>10</DefaultValue>
+                      <RangeInfo>
+                        <Min Inclusive="true">0</Min>
+                      </RangeInfo>
+                    </Double>
+                    <Group Name="start" Label="Start date/time" Version="0" NumberOfRequiredGroups="1">
+                      <ItemDefinitions>
+                        <Int Name="year" Label="Year" Version="0" NumberOfRequiredValues="1">
+                          <Categories>
+                            <Cat>Overland Flow</Cat>
+                          </Categories>
+                          <DefaultValue>2015</DefaultValue>
+                          <RangeInfo>
+                            <Min Inclusive="true">1900</Min>
+                          </RangeInfo>
+                        </Int>
+                        <Int Name="month" Label="Month" Version="0" NumberOfRequiredValues="1">
+                          <Categories>
+                            <Cat>Overland Flow</Cat>
+                          </Categories>
+                          <DiscreteInfo DefaultIndex="0">
+                            <Value Enum="Jan">1</Value>
+                            <Value Enum="Feb">2</Value>
+                            <Value Enum="Mar">3</Value>
+                            <Value Enum="Apr">4</Value>
+                            <Value Enum="May">5</Value>
+                            <Value Enum="Jun">6</Value>
+                            <Value Enum="Jul">7</Value>
+                            <Value Enum="Aug">8</Value>
+                            <Value Enum="Sep">9</Value>
+                            <Value Enum="Oct">10</Value>
+                            <Value Enum="Nov">11</Value>
+                            <Value Enum="Dec">12</Value>
+                          </DiscreteInfo>
+                        </Int>
+                        <Int Name="day" Label="Day" Version="0" NumberOfRequiredValues="1">
+                          <Categories>
+                            <Cat>Overland Flow</Cat>
+                          </Categories>
+                          <DefaultValue>1</DefaultValue>
+                          <RangeInfo>
+                            <Min Inclusive="true">1</Min>
+                            <Max Inclusive="true">31</Max>
+                          </RangeInfo>
+                        </Int>
+                        <Int Name="hour" Label="Hour" Version="0" NumberOfRequiredValues="1">
+                          <Categories>
+                            <Cat>Overland Flow</Cat>
+                          </Categories>
+                          <DefaultValue>12</DefaultValue>
+                          <RangeInfo>
+                            <Min Inclusive="true">0</Min>
+                            <Max Inclusive="true">23</Max>
+                          </RangeInfo>
+                        </Int>
+                        <Int Name="minute" Label="Minute" Version="0" NumberOfRequiredValues="1">
+                          <Categories>
+                            <Cat>Overland Flow</Cat>
+                          </Categories>
+                          <DefaultValue>0</DefaultValue>
+                          <RangeInfo>
+                            <Min Inclusive="true">0</Min>
+                            <Max Inclusive="true">59</Max>
+                          </RangeInfo>
+                        </Int>
+                      </ItemDefinitions>
+                    </Group>
+                  </ChildrenDefinitions>
+                  <DiscreteInfo DefaultIndex="0">
+                    <Structure>
+                      <Value Enum="Uniform">uniform</Value>
+                      <Items>
+                        <Item>intensity</Item>
+                        <Item>duration</Item>
+                        <Item>start</Item>
+                      </Items>
+                    </Structure>
+                  </DiscreteInfo>
+                </String>
+              </ItemDefinitions>
+            </Group>
+          </ItemDefinitions>
+        </AttDef>
+      </Definitions>
+      <!--**********  Attribute Instances ***********-->
+      <Attributes>
+        <Att Name="Computation" Type="computation" ID="0a271f6a-a5bb-4101-b871-9ca3e40f6e1c">
+          <Items>
+            <Group Name="computation-group">
+              <Int Name="output-units" Enabled="true" Discrete="true">0</Int>
+              <Int Name="total-time">60</Int>
+              <Int Name="time-step">20</Int>
+              <Double Name="event-min-flow">1</Double>
+              <Group Name="end-time" Enabled="true">
+                <Int Name="year">2015</Int>
+                <Int Name="month" Discrete="true">5</Int>
+                <Int Name="day">30</Int>
+                <Int Name="hour">8</Int>
+                <Int Name="minute">0</Int>
+              </Group>
+              <Int Name="number-of-threads" Enabled="false">1</Int>
+            </Group>
+            <Group Name="output-frequencies">
+              <Int Name="map-frequency">6</Int>
+              <Int Name="hyd-frequency">4</Int>
+              <Int Name="map-type" Discrete="true">0</Int>
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="Grid" Type="grid" ID="5885f3a3-2329-4660-820e-7eb15e4cae3c">
+          <Items>
+            <Group Name="grid">
+              <Double Name="gridsize">99</Double>
+              <Int Name="rows">10</Int>
+              <Int Name="columns">10</Int>
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="OverlandFlow" Type="overland-flow" ID="ed0024df-f7ed-4646-98f7-643dfe63a267">
+          <Items>
+            <Group Name="overland-flow">
+              <String Name="computation-method" Discrete="true">0</String>
+              <File Name="elevation-file" />
+              <Void Name="overbank flow" Enabled="true" />
+              <Double Name="max-courant-number" Enabled="true">0.074999999999999997</Double>
+              <File Name="initial-depth" Enabled="false" />
+              <File Name="read-ov-hotstart" Enabled="false" />
+              <Void Name="write-ov-hotstart" Enabled="true" />
+              <String Name="roughness" Enabled="false" Discrete="true">
+                <ChildrenItems>
+                  <Double Name="mannings-n">0.10000000000000001</Double>
+                  <File Name="roughness-file" />
+                </ChildrenItems>0</String>
+              <Void Name="ov-boundary" Enabled="false" />
+              <File Name="embankment" Enabled="false" />
+              <File Name="lowspot" Enabled="false" />
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="Precipitation" Type="precipitation" ID="6f639304-dd98-4114-94ca-788300750d6f">
+          <Items>
+            <Group Name="precipitation">
+              <String Name="rainfall-events" Discrete="true">
+                <ChildrenItems>
+                  <Int Name="duration">100</Int>
+                  <Double Name="intensity">12</Double>
+                  <Group Name="start">
+                    <Int Name="year">2015</Int>
+                    <Int Name="month" Discrete="true">5</Int>
+                    <Int Name="day">15</Int>
+                    <Int Name="hour">12</Int>
+                    <Int Name="minute">0</Int>
+                  </Group>
+                </ChildrenItems>0</String>
+            </Group>
+          </Items>
+        </Att>
+      </Attributes>
+      <!--********** Workflow Views ***********-->
+      <Views>
+        <View Type="Group" Title="SimBuilder" TopLevel="true">
+          <Views>
+            <View Title="Job Control" />
+            <View Title="Overland Flow" />
+            <View Title="Grid" />
+            <View Title="Precipitation" />
+          </Views>
+        </View>
+        <View Type="Instanced" Title="Grid">
+          <InstancedAttributes>
+            <Att Name="Grid" Type="grid" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Job Control">
+          <InstancedAttributes>
+            <Att Name="Computation" Type="computation" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Overland Flow">
+          <InstancedAttributes>
+            <Att Name="OverlandFlow" Type="overland-flow" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Precipitation">
+          <InstancedAttributes>
+            <Att Name="Precipitation" Type="precipitation" />
+          </InstancedAttributes>
+        </View>
+      </Views>
+    </SMTK_AttributeSystem>
+  </attribute>
+  <attribute id="export" role="template">
+    <SMTK_AttributeSystem Version="2">
+      <!--**********  Category and Analysis Information ***********-->
+      <!--**********  Attribute Definitions ***********-->
+      <Definitions>
+        <AttDef Type="ExportSpec" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <String Name="AnalysisTypes" Label="Analysis Types" Version="0" AdvanceLevel="99" NumberOfRequiredValues="1" Extensible="true" />
+            <File Name="PythonScript" Label="Python script" Version="0" NumberOfRequiredValues="1" ShouldExist="true" FileFilters="Python files (*.py);;All files (*.*)" />
+            <String Name="ProjectName" Label="Project Name" Version="0" NumberOfRequiredValues="1">
+              <BriefDescription>Name (prefix) to use for all GSSHA files</BriefDescription>
+            </String>
+            <Directory Name="ProjectPath" Label="Project Path" Version="0" NumberOfRequiredValues="1">
+              <BriefDescription>Filesystem folder for all GSSHA files</BriefDescription>
+            </Directory>
+          </ItemDefinitions>
+        </AttDef>
+      </Definitions>
+      <!--**********  Attribute Instances ***********-->
+      <Attributes />
+      <!--********** Workflow Views ***********-->
+      <Views>
+        <View Type="Group" Title="Export" TopLevel="true">
+          <Views>
+            <View Title="ExportSpec" />
+          </Views>
+        </View>
+        <View Type="Instanced" Title="ExportSpec">
+          <InstancedAttributes>
+            <Att Name="Options" Type="ExportSpec" />
+          </InstancedAttributes>
+        </View>
+      </Views>
+    </SMTK_AttributeSystem>
+  </attribute>
+</cmb-resources>
