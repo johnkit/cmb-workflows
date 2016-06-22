@@ -4,7 +4,7 @@
   <attribute id="simbuilder" role="template">
     <SMTK_AttributeManager Version="1">
       <Includes>
-        <File>AdHShallowWater.sbt</File>
+        <File>internal/AdHShallowWater.sbt</File>
       </Includes>
     </SMTK_AttributeManager>
   </attribute>

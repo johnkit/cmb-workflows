@@ -2,7 +2,7 @@
 <cmb-resources>
   <!-- Include baseline template by reference -->
   <attribute id="simbuilder" role="template">
-    <include href="AdHSurfaceWater.sbt" />
+    <include href="internal/AdHSurfaceWater.sbt" />
   </attribute>
 
   <!-- Template for Export Dialog -->
