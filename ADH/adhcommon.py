@@ -112,91 +112,84 @@ ExportScope = type('ExportScope', (object,), dict())
 def init_scope(spec):
   '''Returns ExportScope object initialized to input spec
 
-  Contains:
-  * logger
-  * manager (smtk::attribute::System)
-  * export_manager  (smtk::attribute::System)
-  * output_directory
-  * output_filebase == common prefix for output files
   '''
   scope = ExportScope()
   scope.logger = spec.getLogger()
-  scope.manager = spec.getSimulationAttributes()
-  if scope.manager is not None:
-    scope.model = scope.manager.refModelManager()
+  scope.sim_atts = spec.getSimulationAttributes()
+  if not scope.sim_atts:
+    raise Exception('Missing Simulation Attributes')
+  scope.export_atts = spec.getExportAttributes()
+  if not scope.export_atts:
+    raise Exception('Missing Export Attributes')
 
-    # Assign unique ids to all model cells
-    # (although only *required* for face entities)
-    matid = 'id'
-    next_id = assign_model_entity_ids(scope.model, 0, matid, 1)
-    next_id = assign_model_entity_ids(scope.model, 1, matid, next_id)
-    next_id = assign_model_entity_ids(scope.model, 2, matid, next_id)
-    scope.matid_property_name = matid
-
-    scope.mesh_collection = None
-    mesh_manager = scope.model.meshes()
-    mesh_collections = mesh_manager.collectionsWithAssociations()
-    if len(mesh_collections) == 1:
-      scope.mesh_collection = mesh_collections[0]
-      # Get mesh points - only from 2D entities since that's what gets
-      # written to the .2dm file
-      scope.mesh_points = scope.mesh_collection.cells(smtk.mesh.Dims2).points()
-      #print 'Using meshCollection', scope.mesh_collection
-    else:
-      print 'WARNING: expecting 1 mesh, instead there are', len(mesh_collections)
-  else:
-    print 'System attributes not associated with model'
-
+  # Set scope properties to defaults
+  scope.mesh_collection = None
+  scope.model = None
   scope.output_filebase = 'output'  # default
   scope.output_directory = os.getcwd() # default
   scope.analysis_types = list()
   scope.categories = list()
 
-  # Traverse export attributes
-  scope.export_manager = spec.getExportAttributes()
-  if scope.export_manager is not None:
-    att_list = scope.export_manager.findAttributes('ExportSpec')
-    if len(att_list) > 1:
-      msg = 'More than one ExportSpec instance -- ignoring all'
-      print 'WARNING:', msg
-      scope.logger.addWarning(msg)
-    else:
-      att = att_list[0]
+  # Process export attribute
+  att_list = scope.export_atts.findAttributes('ExportSpec')
+  if len(att_list) > 1:
+    msg = 'More than one ExportSpec instance -- ignoring all'
+    raise Exception(msg)
 
-      # Legacy/deprecated
-      item = att.find('OutputFile')
-      if item is not None:
-        file_item = smtk.to_concrete(item)
-        filename = file_item.value(0)
-        scope.output_filebase = os.path.splitext(filename)[0]
-        scope.output_filename = filename
+  att = att_list[0]
 
-      item = att.find('FileBase')
-      if item is not None:
-        string_item = smtk.to_concrete(item)
-        scope.output_filebase = string_item.value(0)
-        # String off ending ".bc", in case it was included
-        if scope.output_filebase.endswith('.bc'):
-          scope.output_filebase = scope.output_filebase[0:-3]
+  # Get mesh
+  item = att.find('mesh')
+  if item is None:
+    raise Exception('Mesh attribute missing')
 
-      item = att.find('OutputDirectory')
-      if item is not None:
-        dir_item = smtk.to_concrete(item)
-        scope.output_directory = dir_item.value(0)
+  mesh_item = smtk.attribute.to_concrete(item)
+  m = mesh_item.numberOfValues()
+  if m == 0:
+    raise Exception('WARNING: No mesh specified')
 
-      item = att.find('AnalysisTypes')
-      if item is not None:
-        types_item = smtk.to_concrete(item)
-        for i in range(types_item.numberOfValues()):
-          scope.analysis_types.append(types_item.value(i))
+  meshset = mesh_item.value(0)
+  scope.mesh_collection = meshset.collection()
+  print 'mesh', scope.mesh_collection
+
+  # Get model
+  model_manager = scope.sim_atts.refModelManager()
+  model_uuid = scope.mesh_collection.associatedModel()
+  scope.model = smtk.model.Model(model_manager, model_uuid)
+  print 'model', scope.model
+
+  # Assign unique ids to all model cells
+  # (although only *required* for face entities)
+  matid = 'id'
+  #next_id = assign_model_entity_ids(model_manager, 0, matid, 1)
+  #next_id = assign_model_entity_ids(model_manager, 1, matid, next_id)
+  next_id = assign_model_entity_ids(model_manager, 2, matid, 1)
+  scope.matid_property_name = matid
+
+  # Output filebase
+  filebase_item = att.findString('FileBase')
+  if filebase_item is not None:
+    scope.output_filebase = filebase_item.value(0)
+    # String off ending ".bc", in case it was included
+    if scope.output_filebase.endswith('.bc'):
+      scope.output_filebase = scope.output_filebase[0:-3]
+
+  dir_item = att.findDirectory('OutputDirectory')
+  if dir_item is not None:
+    scope.output_directory = dir_item.value(0)
+
+  types_item = att.findString('AnalysisTypes')
+  if types_item is not None:
+    for i in range(types_item.numberOfValues()):
+      scope.analysis_types.append(types_item.value(i))
 
   # Make categories set
   categories = set()
   for analysis in scope.analysis_types:
-    categories.update(scope.manager.analysisCategories(analysis))
+    categories.update(scope.sim_atts.analysisCategories(analysis))
   scope.categories = list(categories)
 
-  # Initialize ID dictionaries (material, bc, constituent, function)
+  # # Initialize ID dictionaries (material, bc, constituent, function)
 
   # Use material_dict to store <model entity uuid, material index>
   # Assigning one material id to each material attribute
@@ -204,8 +197,8 @@ def init_scope(spec):
   # created for the same model entity
   scope.material_dict = dict()
   material_index = 0
-  material_att_list = scope.manager.findAttributes('Material')
-  material_att_list += scope.manager.findAttributes('SolidMaterial')
+  material_att_list = scope.sim_atts.findAttributes('Material')
+  material_att_list += scope.sim_atts.findAttributes('SolidMaterial')
   material_att_list.sort(key=lambda att:att.id())
 
   for material_att in material_att_list:
@@ -228,7 +221,7 @@ def init_scope(spec):
 
   scope.bc_dict = dict()
   bc_index = 0
-  bc_att_list = scope.manager.findAttributes('BoundaryCondition')
+  bc_att_list = scope.sim_atts.findAttributes('BoundaryCondition')
   bc_att_list.sort(key=lambda bc: bc.id())
   for bc_att in bc_att_list:
     model_ent_item = bc_att.associations()
@@ -244,7 +237,7 @@ def init_scope(spec):
   # Constituent dictionary <constituent_att.id(), constituent_index>
   # i.e., key == smtk attribute id, value == output index
   scope.constituent_dict = dict()
-  constituent_att_list = scope.manager.findAttributes('Constituent')
+  constituent_att_list = scope.sim_atts.findAttributes('Constituent')
   constituent_att_list.sort(key=lambda att: att.id())
   for constituent_att in constituent_att_list:
     con_index = len(scope.constituent_dict) + 1
@@ -255,7 +248,6 @@ def init_scope(spec):
   scope.function_dict = dict()
 
   return scope
-
 
 
 # ---------------------------------------------------------------------
@@ -272,7 +264,7 @@ def write_section(scope, att_type):
   '''
   print 'DEBUG: Writing section for attribute type: %s' % att_type
 
-  att_list = scope.manager.findAttributes(att_type)
+  att_list = scope.sim_atts.findAttributes(att_type)
   if att_list is None:
     msg = 'no %s attribute found' % att_type
     print 'WARNING:', msg
@@ -557,7 +549,7 @@ def write_functions(scope):
 
   # Get TimestepSize expression
   timestep_expression = None
-  time_att = scope.manager.findAttribute('Time')
+  time_att = scope.sim_atts.findAttribute('Time')
   if time_att:
     item = time_att.find('TimestepSize')
     if item:
@@ -565,7 +557,7 @@ def write_functions(scope):
       if ts_item.isExpression(0):
         timestep_expression = ts_item.expression(0)
 
-  fcn_list = scope.manager.findAttributes('SimExpression')
+  fcn_list = scope.sim_atts.findAttributes('SimExpression')
   fcn_list.sort(key=lambda f: f.id())
   for f in fcn_list:
     # Skip special case of TimeSeriesData
@@ -607,8 +599,9 @@ def write_MTS_cards(scope):
     '''
     Writes material id for each domain
     '''
+    model_uuid = str(scope.model.entity())
     mts_list = list()
-    att_list = scope.manager.findAttributes('SolidMaterial')
+    att_list = scope.sim_atts.findAttributes('SolidMaterial')
     for att in att_list:
       #ent_list = att.associatedEntitiesSet()
       model_ent_item = att.associations()
@@ -617,13 +610,17 @@ def write_MTS_cards(scope):
 
       for i in range(model_ent_item.numberOfValues()):
         ent_ref = model_ent_item.value(i)
+        # Check that entity is from the specified model
+        if str(ent_ref.owningModel().entity()) != model_uuid:
+          continue
+
         ent = ent_ref.entity()
         ent_id = str(ent)
         material_id = scope.material_dict.get(ent_id, 0)
-        #print 'Retrieved material id %d for entity %d' % \
-        #  (material_id, ent_id)
-        mesh_file_id = scope.model.integerProperty(ent, 'id')[0]
-        t = (mesh_file_id, material_id)
+        # print 'Retrieved material id %s for entity %s' % \
+        #   (material_id, ent_id)
+        mesh_file_id_list = ent_ref.integerProperty(scope.matid_property_name)
+        t = (mesh_file_id_list[0], material_id)
         mts_list.append(t)
     mts_list.sort()
     for t in mts_list:
@@ -647,7 +644,7 @@ def write_bc_sets(scope):
   #print 'mesh dimension', dimension
 
   for bc_id, bc_index in bc_list:
-    bc_att = scope.manager.findAttribute(bc_id)
+    bc_att = scope.sim_atts.findAttribute(bc_id)
     #print 'nds for att, id, index', bc_att.name(), bc_id, bc_index
     if bc_att.definition().isNodal():
       write_NDS_cards(scope, bc_att)
