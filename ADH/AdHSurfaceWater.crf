@@ -10,14 +10,14 @@
     <SMTK_AttributeSystem Version="2">
       <Definitions>
         <AttDef Type="ExportSpec" BaseType="" Version="0" Unique="true">
-          <AssociationsDef Name="model" Label="Model" Version="0"
-            NumberOfRequiredValues="1">
+          <AssociationsDef Name="model" Label="Model" Version="0" NumberOfRequiredValues="1">
             <MembershipMask>model</MembershipMask>
           </AssociationsDef>
           <ItemDefinitions>
             <String Name="AnalysisTypes" Label="Analysis Types" AdvanceLevel="99" Version="0"
-                    Extensible="true" NumberOfRequiredValues="1"/>
-            <MeshEntity Name="mesh" Label="Mesh" Version="0" NumberOfRequiredValues="1" />
+              Extensible="true" NumberOfRequiredValues="0"/>
+            <MeshEntity Name="mesh" Label="Mesh" Version="0" NumberOfRequiredValues="1"
+              Optional="true" IsEnabledByDefault="false" />
             <Directory Name="OutputDirectory" Label="Output Directory" Version="1" NumberOfRequiredValues="1" />
             <String Name="FileBase" Label="FileName Base" Version="1" NumberOfRequiredValues="1">
               <BriefDescription>Common base name for output files (.2dm, .bc)</BriefDescription>

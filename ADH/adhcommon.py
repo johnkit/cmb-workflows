@@ -138,32 +138,46 @@ def init_scope(spec):
 
   att = att_list[0]
 
-  # Get mesh
-  item = att.find('mesh')
-  if item is None:
-    raise Exception('Mesh attribute missing')
+  # Get model & mesh
+  model_ent_item = att.associations()
+  mesh_item = att.find('mesh')
+  if mesh_item:
+    mesh_item = smtk.attribute.to_concrete(mesh_item)
+  if mesh_item and mesh_item.isEnabled() and mesh_item.numberOfValues() > 0:
+    meshset = mesh_item.value(0)
+    scope.mesh_collection = meshset.collection()
+    print 'mesh', scope.mesh_collection
 
-  mesh_item = smtk.attribute.to_concrete(item)
-  m = mesh_item.numberOfValues()
-  if m == 0:
-    raise Exception('WARNING: No mesh specified')
+    # Get model that mesh is classified on
+    model_manager = scope.sim_atts.refModelManager()
+    model_uuid = scope.mesh_collection.associatedModel()
+    scope.model = smtk.model.Model(model_manager, model_uuid)
+    print 'model', scope.model
+  elif model_ent_item and model_ent_item.numberOfValues() > 0:
+    model_ent = model_ent_item.value(0)
+    scope.model = smtk.model.Model(model_ent)
+    print 'model', scope.model
+    print 'Using model\'s internal geometry for the mesh'
+    converter = smtk.io.ModelToMesh()
+    #print 'converter', converter
+    scope.mesh_collection = converter(scope.model)
+    print 'mesh', scope.mesh_collection
+  else:
+    raise Exception('WARNING: No model or mesh specified')
 
-  meshset = mesh_item.value(0)
-  scope.mesh_collection = meshset.collection()
-  print 'mesh', scope.mesh_collection
+  if scope.mesh_collection is None:
+    raise Exception('ERROR: unable to obtain mesh object')
 
-  # Get model
-  model_manager = scope.sim_atts.refModelManager()
-  model_uuid = scope.mesh_collection.associatedModel()
-  scope.model = smtk.model.Model(model_manager, model_uuid)
-  print 'model', scope.model
+  # Get mesh points - only from 2D entities since that is what gets
+  # written to the .2dm file
+  scope.mesh_points = scope.mesh_collection.cells(smtk.mesh.Dims2).points()
 
   # Assign unique ids to all model cells
   # (although only *required* for face entities)
   matid = 'id'
   #next_id = assign_model_entity_ids(model_manager, 0, matid, 1)
   #next_id = assign_model_entity_ids(model_manager, 1, matid, next_id)
-  next_id = assign_model_entity_ids(model_manager, 2, matid, 1)
+  next_id = assign_model_entity_ids(scope.model.manager(), 2, matid, 1)
   scope.matid_property_name = matid
 
   # Output filebase
@@ -274,8 +288,7 @@ def write_section(scope, att_type):
   # Sort list by id
   att_list.sort(key=lambda x: x.id())
   for att in att_list:
-    # if att_type == 'Constituent':
-    #   print 'att', att.name(), 'mask'
+    #print 'att', att.name()
     format_list = scope.format_table.get(att.type())
     if format_list is None:
       msg = 'empty format list for %s' % att.type()
@@ -293,7 +306,7 @@ def write_section(scope, att_type):
 
     # (else)
     model_ent_item = att.associations()
-    if model_ent_item is None:
+    if (model_ent_item is None) or (model_ent_item.numberOfValues() == 0):
       print 'Expecting model association for attribute', att.name()
       continue
 
@@ -303,9 +316,9 @@ def write_section(scope, att_type):
     if att.type() in ['Material', 'SolidMaterial']:
       scope.output.write('! material -- %s\n' % att.name())
 
-    for i in range(model_ent_item.numberOfValues()):
-      ent_id = model_ent_item.valueAsString(i)
-      ok = write_items(scope, att, format_list, ent_id)
+    # Get id from first model entity
+    ent_id = model_ent_item.valueAsString(0)
+    ok = write_items(scope, att, format_list, ent_id)
 
   return True
 
@@ -315,6 +328,8 @@ def render_card(scope, item, card_format, context_id=None, group_index=0):
   '''Generates one line (card) of output for input item
 
   '''
+  #print 'render_card for item', item.name()
+
   # Initially generate a list of strings
   output_list = list()
   output_list.append(card_format.opcode)

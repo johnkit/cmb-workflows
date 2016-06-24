@@ -145,8 +145,9 @@ def ExportCMB(spec):
     print 'Analysis types:', scope.analysis_types
     if not scope.analysis_types:
       msg = 'No analysis types selected'
-      print 'WARNING:', msg
-      scope.logger.addWarning(msg)
+      print 'ERROR:', msg
+      scope.logger.addError(msg)
+      return False
     else:
       print 'Categories:', sorted(list(scope.categories))
 
