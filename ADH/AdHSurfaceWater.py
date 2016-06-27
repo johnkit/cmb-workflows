@@ -145,8 +145,9 @@ def ExportCMB(spec):
     print 'Analysis types:', scope.analysis_types
     if not scope.analysis_types:
       msg = 'No analysis types selected'
-      print 'WARNING:', msg
-      scope.logger.addWarning(msg)
+      print 'ERROR:', msg
+      scope.logger.addError(msg)
+      return False
     else:
       print 'Categories:', sorted(list(scope.categories))
 
@@ -158,8 +159,11 @@ def ExportCMB(spec):
       mesh_path = os.path.join(scope.output_directory, mesh_filename)
       print 'Writing mesh data to', mesh_path
       mesh_writer = smtk.io.MeshExport2DM()
-      status = mesh_writer.write( \
-        scope.mesh_collection, scope.model, scope.matid_property_name, mesh_path)
+      status = mesh_writer.write(
+        scope.mesh_collection,
+        scope.model.manager(),
+        scope.matid_property_name,
+        mesh_path)
       print 'mesh write returned status', status
 
     # Open output file and start exporting content

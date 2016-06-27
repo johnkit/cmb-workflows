@@ -2,40 +2,45 @@
 <cmb-resources>
   <!-- Include baseline template by reference -->
   <attribute id="simbuilder" role="template">
-    <include href="AdHSurfaceWater.sbt" />
+    <include href="internal/AdHSurfaceWater.sbt" />
   </attribute>
 
   <!-- Template for Export Dialog -->
   <attribute id="export" role="template">
-    <SMTK_AttributeManager Version="1">
+    <SMTK_AttributeSystem Version="2">
       <Definitions>
         <AttDef Type="ExportSpec" BaseType="" Version="0" Unique="true">
+          <AssociationsDef Name="model" Label="Model" Version="0" NumberOfRequiredValues="1">
+            <MembershipMask>model</MembershipMask>
+          </AssociationsDef>
           <ItemDefinitions>
             <String Name="AnalysisTypes" Label="Analysis Types" AdvanceLevel="99" Version="0"
-                    Extensible="true" NumberOfRequiredValues="1"/>
+              Extensible="true" NumberOfRequiredValues="0"/>
+            <MeshEntity Name="mesh" Label="Mesh" Version="0" NumberOfRequiredValues="1"
+              Optional="true" IsEnabledByDefault="false" />
             <Directory Name="OutputDirectory" Label="Output Directory" Version="1" NumberOfRequiredValues="1" />
-            <String Name="FileBase" Label="File Base" Version="1" NumberOfRequiredValues="1">
+            <String Name="FileBase" Label="FileName Base" Version="1" NumberOfRequiredValues="1">
               <BriefDescription>Common base name for output files (.2dm, .bc)</BriefDescription>
             </String>
-            <File Name="PythonScript" Label="Python script" AdvanceLevel="1" Version="0"  NumberOfRequiredValues="1"
+            <File Name="PythonScript" Label="Python script" AdvanceLevel="0" Version="0"  NumberOfRequiredValues="1"
                   ShouldExist="true" FileFilters="Python files (*.py);;All files (*.*)">
               <DefaultValue>AdHSurfaceWater.py</DefaultValue>
             </File>
           </ItemDefinitions>
         </AttDef>
       </Definitions>
-      <Attributes />
-      <RootView Title="Export">
-        <DefaultColor>1., 1., 0.5, 1.</DefaultColor>
-        <InvalidColor>1, 0.5, 0.5, 1</InvalidColor>
-        <AdvancedFontEffects Bold="0" Italic="0" />
 
-        <InstancedView Title="ExportSpec">
+      <Attributes />
+
+      <Views>
+        <View Type="Instanced" Title="ExportSpec" TopLevel="true"
+          FilterByAdvanceLevel="false" FilterByCategory="false">
           <InstancedAttributes>
-            <Att Type="ExportSpec">Options</Att>
+            <Att Name="Export Specification" Type="ExportSpec">Options</Att>
           </InstancedAttributes>
-        </InstancedView>
-      </RootView>
-    </SMTK_AttributeManager>
+        </View>
+      </Views>
+
+    </SMTK_AttributeSystem>
   </attribute>
 </cmb-resources>
