@@ -633,7 +633,7 @@
               <RangeInfo>
                 <Min Inclusive="false">0.0</Min>
               </RangeInfo>
-              <DefaultValue>0.0</DefaultValue>
+              <DefaultValue>1.0</DefaultValue>
               <Categories>
                 <Cat>General</Cat>
               </Categories>
