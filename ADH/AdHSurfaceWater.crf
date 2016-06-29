@@ -16,8 +16,7 @@
           <ItemDefinitions>
             <String Name="AnalysisTypes" Label="Analysis Types" AdvanceLevel="99" Version="0"
               Extensible="true" NumberOfRequiredValues="0"/>
-            <MeshEntity Name="mesh" Label="Mesh" Version="0" NumberOfRequiredValues="1"
-              Optional="true" IsEnabledByDefault="false" />
+            <MeshEntity Name="mesh" Label="Mesh" Version="0" NumberOfRequiredValues="1" />
             <Directory Name="OutputDirectory" Label="Output Directory" Version="1" NumberOfRequiredValues="1" />
             <String Name="FileBase" Label="FileName Base" Version="1" NumberOfRequiredValues="1">
               <BriefDescription>Common base name for output files (.2dm, .bc)</BriefDescription>

@@ -261,6 +261,9 @@ def init_scope(spec):
   # Define function dict only, initialized adhoc
   scope.function_dict = dict()
 
+  # Second dictionary for constant values that must be specified as AdH function
+  scope.constant_function_dict = dict()
+
   return scope
 
 
@@ -555,6 +558,18 @@ def get_function_id(scope, exp_att):
 
 
 # ---------------------------------------------------------------------
+def get_constant_function_id(scope, value):
+  # Check if function already created for this value
+  fcn_id = scope.constant_function_dict.get(value)
+  if fcn_id is None:
+    fcn_id = len(scope.function_dict) + 1
+    scope.constant_function_dict[value] = fcn_id
+    # Add placeholder in main function_dict
+    scope.function_dict[value] = fcn_id
+    #print 'Assign function id %d to value %s' % (fcn_id, value)
+  return fcn_id
+
+# ---------------------------------------------------------------------
 def write_functions(scope):
   '''
   Writes functions, using info captured in scope.function_dict
@@ -590,7 +605,7 @@ def write_functions(scope):
     if fcn_id is None:
       continue
 
-    scope.output.write('! function -- %s\n' % name)
+    scope.output.write('! function: %s\n' % name)
 
     # Check if this is the TimeStepSize expression
     # Compare ids since they are wrapped objects
@@ -607,6 +622,29 @@ def write_functions(scope):
     scope.output.write('XY1 %d %d 0 0\n' % (fcn_id, num_vals))
     for i in range(num_vals):
       scope.output.write('%f %f\n' % (x_item.value(i), val_item.value(i)))
+
+  # Write constant functions
+  if scope.constant_function_dict:
+    # Get the end time value and units
+    group_item = smtk.attribute.to_concrete(time_att.find('EndTime'))
+    value_item = smtk.attribute.to_concrete(group_item.find('Value'))
+    end_time = value_item.value(0)
+    units_item = smtk.attribute.to_concrete(group_item.find('Units'))
+    end_units = units_item.value(0)
+    #print 'end time', end_time, 'units', end_units
+
+    # Use 0 for start time, since it might be specified in different units
+    start_time = 0.0
+
+    # Write functions
+    for value,fcn_id in scope.constant_function_dict.items():
+      val_string = ('%f' % value).rstrip('0').rstrip('.')
+      scope.output.write('!  constant-valued function: %s\n' % val_string)
+      scope.output.write('XY1 %d 2 %d %d\n' % \
+        (fcn_id, end_units, end_units))
+      # Use time = 0 for first row, since start time might be in different units
+      scope.output.write('%f %f\n' % (start_time, value))
+      scope.output.write('%f %f\n' % (end_time, value))
 
 
 # ---------------------------------------------------------------------
@@ -805,6 +843,12 @@ def get_values_as_strings(scope, item):
       if hasattr(item, 'isExpression') and item.isExpression(i):
         exp_att = item.expression(i)
         exp_id = get_function_id(scope, exp_att)
+        output_list.append('%d' % exp_id)
+      elif item.type() == smtk.attribute.Item.DOUBLE and \
+        item.allowsExpressions():
+
+        # Create expression for constant-valued item
+        exp_id = get_constant_function_id(scope, item.value(i))
         output_list.append('%d' % exp_id)
       elif hasattr(item, 'isDiscrete') and item.isDiscrete():
         index = item.discreteIndex(i)
