@@ -1,0 +1,53 @@
+//- Definitions for grid spacing and algorithms
+
+doctype xml
+SMTK_AttributeSystem(Version="2")
+
+  // Attribute Definitions
+  Definitions
+    AttDef(Type="geometry" Label="Geometry" BaseType="" Version="0")
+      ItemDefinitions
+        Double(Name="origin" Label="Lower Left Corner" Version="0"
+        NumberOfRequiredValues="2")
+          BriefDescription physical location of the lower left corner
+          ComponentLabels
+            Label x:
+            Label y:
+          DefaultValue 0.0
+        Double(Name="length" Label="Physical Length" Version="0"
+        NumberOfRequiredValues="2")
+          BriefDescription physical size of the geometry domain
+          ComponentLabels
+            Label x:
+            Label y:
+          DefaultValue 1.0
+          Range
+            Min(Inclusive="false") 0.0
+
+    AttDef(Type="grid" Label="Grid" BaseType="" Version="0")
+      ItemDefinitions
+        Int(Name="base-grid-size" Label="Base Grid Size" Version="0"
+        NumberOfRequiredValues="2")
+          BriefDescription number of grid cells at the base/coarsest refinement level
+          ComponentLabels
+            Label x:
+            Label y:
+          DefaultValue 64
+          Range
+            Min(Inclusive="true") 1
+        Int(Name="max-levels" Label="Maximum Levels" Version="0")
+          DefaultValue 1
+          Range
+            Min(Inclusive="true") 1
+        Int(Name="refinement-ratio" Label="Refinement Ratio")
+          ChildrenDefinitions
+            Int(Name="fixed-refinement-ratio" Label="Fixed Refinement Ratio")
+              DefaultValue 2
+              Range
+                Min(Inclusive="true") 1
+          DiscreteInfo(DefaultIndex="0")
+            Structure
+              Value(Enum="Fixed") fixed
+              Items
+                Item fixed-refinement-ratio
+                

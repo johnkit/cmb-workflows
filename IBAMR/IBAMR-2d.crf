@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<cmb-resources>
+  <!-- Simulation Template -->
+  <attribute id="simbuilder" role="template">
+    <include href="internal/ibamr-2d-simbuilder.sbt" />
+  </attribute>
+
+  <!-- Writer Template -->
+  <!-- todo -->
+</cmb-resources>
