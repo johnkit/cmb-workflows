@@ -56,24 +56,44 @@
         </Int>
         <Int Name="refinement-ratio" Label="Refinement Ratio">
           <ChildrenDefinitions>
-            <Int Name="fixed-refinement-ratio" Label="Fixed Refinement Ratio">
+            <Int Name="fixed-refinement" Label="Fixed Refinement Ratio">
               <DefaultValue>2</DefaultValue>
               <Range>
                 <Min Inclusive="true">1</Min>
               </Range>
             </Int>
+            <Group Name="general-refinement" Label="General Refinement Ratio" Extensible="true" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Int Name="refinement-ratio" Label="Refinement Ratio" NumberOfRequiredValues="2">
+                  <ComponentLabels>
+                    <Label>x:</Label>
+                    <Label>y:</Label>
+                  </ComponentLabels>
+                  <DefaultValue>2</DefaultValue>
+                  <Range>
+                    <Min Inclusive="true">1</Min>
+                  </Range>
+                </Int>
+              </ItemDefinitions>
+            </Group>
           </ChildrenDefinitions>
           <DiscreteInfo DefaultIndex="0">
             <Structure>
-              <Value Enum="Fixed">fixed</Value>
+              <Value Enum="Fixed Value">fixed</Value>
               <Items>
-                <Item>fixed-refinement-ratio</Item>
+                <Item>fixed-refinement</Item>
+              </Items>
+            </Structure>
+            <Structure>
+              <Value Enum="General">general</Value>
+              <Items>
+                <Item>general-refinement</Item>
               </Items>
             </Structure>
           </DiscreteInfo>
         </Int>
         <Double Name="mfac" Label="MFAC" Optional="true" IsEnabledByDefault="false">
-          <BriefDescription>ration of structural mesh width to Cartesian mesh width</BriefDescription>
+          <BriefDescription>ratio of structural mesh width to Cartesian mesh width</BriefDescription>
           <DefaultValue>2.0</DefaultValue>
           <RangeInfo>
             <Minimum Inclusive="false">0.0</Minimum>

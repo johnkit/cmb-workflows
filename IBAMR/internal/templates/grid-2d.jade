@@ -48,20 +48,35 @@ SMTK_AttributeSystem(Version="2")
             Min(Inclusive="true") 1
         Int(Name="refinement-ratio" Label="Refinement Ratio")
           ChildrenDefinitions
-            Int(Name="fixed-refinement-ratio" Label="Fixed Refinement Ratio")
+            Int(Name="fixed-refinement" Label="Fixed Refinement Ratio")
               DefaultValue 2
               Range
                 Min(Inclusive="true") 1
+            Group(Name="general-refinement" Label="General Refinement Ratio"
+              Extensible="true" NumberOfRequiredGroups="1")
+              ItemDefinitions
+                Int(Name="refinement-ratio" Label="Refinement Ratio"
+                  NumberOfRequiredValues="2")
+                  ComponentLabels
+                    Label x:
+                    Label y:
+                  DefaultValue 2
+                  Range
+                    Min(Inclusive="true") 1
           DiscreteInfo(DefaultIndex="0")
             Structure
-              Value(Enum="Fixed") fixed
+              Value(Enum="Fixed Value") fixed
               Items
-                Item fixed-refinement-ratio
+                Item fixed-refinement
+            Structure
+              Value(Enum="General") general
+              Items
+                Item general-refinement
                 
         Double(Name="mfac" Label="MFAC"
           Optional="true" IsEnabledByDefault="false")
           BriefDescription
-            | ration of structural mesh width to Cartesian mesh width
+            | ratio of structural mesh width to Cartesian mesh width
           DefaultValue 2.0
           RangeInfo
             Minimum(Inclusive="false") 0.0
