@@ -1,0 +1,57 @@
+//- Definitions for output
+
+doctype xml
+SMTK_AttributeSystem(Version="2")
+
+  // Attribute Definitions
+  Definitions
+    AttDef(Type="output" Label="Output" BaseType="" Version="0")
+      ItemDefinitions
+        Group(Name="log" Label="Log Output")
+          ItemDefinitions
+            File(Name="log-file" Label="Log File" NumberOfRequiredValues="1")
+              DefaultValue "IB2d.log"
+            Void(Name="log-all-nodes" Label="Log All Nodes"
+              Optional="true" IsEnabledByDefault="false")
+
+        Group(Name="visualization" Label="Visualization Output"
+          Optional="true" IsEnabledByDefault="true")
+          ItemDefinitions
+            Group(Name="visit" Label="VisIt" Optional="true" IsEnabledByDefault="true")
+              ItemDefinitions
+                Int(Name="number-procs-per-file" Label="Number of Process per File")
+                  DefaultValue 1
+                  RangeInfo
+                    Minimum(Inclusive="true") 1
+            Void(Name="exodus" Label="ExodusII" Optional="true" IsEnabledByDefault="true")
+            Void(Name="silo" Label="Silo" Optional="false" IsEnabledByDefault="true")
+            Directory(Name="directory" Label="Directory" NumberOfRequiredValues="1")
+              DefaultValue "viz_IB2d"
+
+        Group(Name="restart" Label="Restart Output"
+          Optional="true" IsEnabledByDefault="false")
+          ItemDefinitions
+            Int(Name="interval" Label="Restart Dump Interval")
+              DefaultValue 10
+              RangeInfo
+                Minimum(Inclusive="true") 1
+            Directory(Name="directory" Label="Directory" NumberOfRequiredValues="1")
+              DefaultValue "restart_IB2d"
+
+        Group(Name="hierarchy" Label="Hierarchy Data Output"
+          Optional="true" IsEnabledByDefault="false")
+          ItemDefinitions
+            Int(Name="interval" Label="Hierarchy Data Dump Interval")
+              DefaultValue 10
+              RangeInfo
+                Minimum(Inclusive="true") 1
+            Directory(Name="directory" Label="Directory" NumberOfRequiredValues="1")
+              DefaultValue "hier_data_IB2d"
+
+        Group(Name="timer" Label="Timer Output"
+          Optional="true" IsEnabledByDefault="false")
+          ItemDefinitions
+            Int(Name="interval" Label="Timer Parameters Dump Interval")
+              DefaultValue 10
+              RangeInfo
+                Minimum(Inclusive="true") 1

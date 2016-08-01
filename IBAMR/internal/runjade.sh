@@ -5,6 +5,8 @@ declare -a names=( \
   "grid-2d" \
   "velocity-2d" \
   "solver" \
+  "parameters" \
+  "output" \
   )
 subfolder="templates"
 

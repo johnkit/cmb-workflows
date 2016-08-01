@@ -1,0 +1,22 @@
+//- Definitions for physical and model parameters
+
+doctype xml
+SMTK_AttributeSystem(Version="2")
+
+  // Attribute Definitions
+  Definitions
+    AttDef(Type="parameters" Label="Physical Parameters" BaseType="" Version="0")
+      ItemDefinitions
+        Double(Name="viscosity" Label="Viscosity (mu)")
+          DefaultValue 0.01
+          RangeInfo
+            Minimum(Inclusive="true") 0.0
+        Double(Name="density" Label="Density (rho)")
+          DefaultValue 1.0
+          RangeInfo
+            Minimum(Inclusive="true") 0.0
+        //-Double(Name="length" Label="Basic Length of Computational Domain"
+          NumberOfRequiredValues="2")
+          DefaultValue 1.0
+          RangeInfo
+            Minimum(Inclusive="false") 0.0

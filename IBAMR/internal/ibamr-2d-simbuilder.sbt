@@ -8,6 +8,8 @@
     <File>templates/grid-2d.sbt</File>
     <File>templates/velocity-2d.sbt</File>
     <File>templates/solver.sbt</File>
+    <File>templates/parameters.sbt</File>
+    <File>templates/output.sbt</File>
   </Includes>
 
   <!-- View specifications -->
@@ -18,6 +20,8 @@
         <View Title="Grid"/>
         <View Title="BC"/>
         <View Title="Solver" />
+        <View Title="Parameters" />
+        <View Title="Output" />
       </Views>
     </View>
 
@@ -62,5 +66,18 @@
         <Att Name="solver" Type="solver" />
       </InstancedAttributes>
     </View>
+
+    <View Type="Instanced" Title="Parameters">
+      <InstancedAttributes>
+        <Att Name="parameters" Type="parameters" />
+      </InstancedAttributes>
+    </View>
+
+    <View Type="Instanced" Title="Output">
+      <InstancedAttributes>
+        <Att Name="output" Type="output" />
+      </InstancedAttributes>
+    </View>
+
   </Views>
 </SMTK_AttributeSystem>
