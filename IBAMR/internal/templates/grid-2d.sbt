@@ -38,6 +38,16 @@
             <Min Inclusive="true">1</Min>
           </Range>
         </Int>
+        <Int Name="periodic" Label="Periodic?" NumberOfRequiredValues="2">
+          <ComponentLabels>
+            <Label>x:</Label>
+            <Label>y:</Label>
+          </ComponentLabels>
+          <DiscreteInfo DefaultIndex="0">
+            <Value Enum="No">0</Value>
+            <Value Enum="Yes">1</Value>
+          </DiscreteInfo>
+        </Int>
         <Int Name="max-levels" Label="Maximum Levels" Version="0">
           <DefaultValue>1</DefaultValue>
           <Range>
@@ -62,6 +72,52 @@
             </Structure>
           </DiscreteInfo>
         </Int>
+        <Double Name="mfac" Label="MFAC" Optional="true" IsEnabledByDefault="false">
+          <BriefDescription>ration of structural mesh width to Cartesian mesh width</BriefDescription>
+          <DefaultValue>2.0</DefaultValue>
+          <RangeInfo>
+            <Minimum Inclusive="false">0.0</Minimum>
+          </RangeInfo>
+        </Double>
+        <String Name="element-type" Label="Element Type">
+          <DiscreteInfo DefaultIndex="1">
+            <Value>TRI3</Value>
+            <Value>TRI6</Value>
+            <Value>QUAD4</Value>
+            <Value>QUAD8</Value>
+            <Value>QUAD9</Value>
+          </DiscreteInfo>
+        </String>
+        <Int Name="pk1-dev-quad-order" Label="Quadrature Rule Order for Deviatoric Stress">
+          <DefaultValue>5</DefaultValue>
+          <RangeInfo>
+            <Minimum Inclusive="true">0</Minimum>
+            <Maximum Inclusive="true">43</Maximum>
+          </RangeInfo>
+        </Int>
+        <Int Name="pk1-dil-quad-order" Label="Quadrature Rule Order for Dilational Stress">
+          <DefaultValue>3</DefaultValue>
+          <RangeInfo>
+            <Minimum Inclusive="true">0</Minimum>
+            <Maximum Inclusive="true">43</Maximum>
+          </RangeInfo>
+        </Int>
+        <Double Name="efficiency-tolerance" Label="Efficiency Tolerance">
+          <BriefDescription>min % of tag cells in new patch level</BriefDescription>
+          <DefaultValue>0.85</DefaultValue>
+          <RangeInfo>
+            <Minimum Inclusive="true">0.0</Minimum>
+            <Maximum Inclusive="true">1.0</Maximum>
+          </RangeInfo>
+        </Double>
+        <Double Name="combine-efficiency" Label="Combine Efficiency">
+          <BriefDescription>chop box is sum of volumes of smaller boxes &lt; efficiency * vol of large box</BriefDescription>
+          <DefaultValue>0.85</DefaultValue>
+          <RangeInfo>
+            <Minimum Inclusive="true">0.0</Minimum>
+            <Maximum Inclusive="true">1.0</Maximum>
+          </RangeInfo>
+        </Double>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

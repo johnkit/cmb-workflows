@@ -3,6 +3,8 @@
 # List of templates in subfolder
 declare -a names=( \
   "grid-2d" \
+  "velocity-2d" \
+  "solver" \
   )
 subfolder="templates"
 
