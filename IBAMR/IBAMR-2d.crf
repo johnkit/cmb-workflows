@@ -6,5 +6,30 @@
   </attribute>
 
   <!-- Writer Template -->
-  <!-- todo -->
+  <!-- Export Attributes -->
+  <attribute id="export" role="template">
+    <SMTK_AttributeSystem Version="2">
+      <Definitions>
+        <AttDef Type="ExportSpec" Label="Simulation" BaseType="" Version="0">
+          <ItemDefinitions>
+            <!--String Name="AnalysisTypes" Label="Analysis Types" Version="0" AdvanceLevel="99" NumberOfRequiredValues="1" Extensible="true" /-->
+            <File Name="PythonScript" Label="Python script" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1"
+              ShouldExist="true" FileFilters="Python files (*.py);;All files (*.*)" />
+            <File Name="OutputFile" Label="Output File"
+              Version="0" NumberOfRequiredValues="1" ShouldExist="false">
+            </File>
+          </ItemDefinitions>
+         </AttDef>
+       </Definitions>
+      <Views>
+        <View Type="Instanced" Title="Export" TopLevel="true"
+          FilterByAdvanceLevel="false" FilterByCategory="false">
+          <InstancedAttributes>
+            <Att Name="Options" Type="ExportSpec" />
+          </InstancedAttributes>
+        </View>
+      </Views>
+    </SMTK_AttributeSystem>
+  </attribute>
+
 </cmb-resources>
