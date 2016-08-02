@@ -25,7 +25,7 @@
               </ItemDefinitions>
             </Group>
             <Void Name="exodus" Label="ExodusII" Optional="true" IsEnabledByDefault="true"></Void>
-            <Void Name="silo" Label="Silo" Optional="false" IsEnabledByDefault="true"></Void>
+            <Void Name="silo" Label="Silo" Optional="false" IsEnabledByDefault="false"></Void>
             <Directory Name="directory" Label="Directory" NumberOfRequiredValues="1">
               <DefaultValue>"viz_IB2d"</DefaultValue>
             </Directory>

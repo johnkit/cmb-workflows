@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# *****************************************
+# RUN THIS SCRIPT FROM ITS PARENT DIRECTORY
+
+
 # List of templates in subfolder
 declare -a names=( \
   "grid-2d" \
