@@ -18,15 +18,10 @@ import sys
 
 import smtk
 
-"""
 import internal
-from internal import writer
-reload(writer)  # for development
+reload(internal)  # for development
+from internal.writers import Writer2D
 
-# Predefined strings for "if_condition" arguments
-from internal.writer.writer import THERMAL_ANALYSIS, ONLY_THERMAL_ANALYSIS, FLOW_ANALYSIS, \
-  VISCOUS_FLOW, INVISCID_FLOW, FLUID_PHASE, MASS_LIMITER, BC_INFLOW, \
-  VOID_MATERIAL, ENCLOSURE_RADIATION, MOVING_RADIATION
 
 # ---------------------------------------------------------------------
 #
@@ -36,31 +31,14 @@ from internal.writer.writer import THERMAL_ANALYSIS, ONLY_THERMAL_ANALYSIS, FLOW
 # ---------------------------------------------------------------------
 
 # Please order the namelists alphabetically in this table
-card = writer.CardFormat
-"""
+#card = writer.CardFormat
+format_table = {}
+component_list = []
 
 # ---------------------------------------------------------------------
 def ExportCMB(spec):
   '''
   Entry function, called by CMB to write export file
   '''
-  logger = spec.getLogger()
-
-  # Get export attributes
-  export_spec_att = None
-  export_atts = spec.getExportAttributes()
-  if export_atts is not None:
-    att_list = export_atts.findAttributes('ExportSpec')
-    if att_list:
-      export_spec_att = att_list[0]
-
-  if export_spec_att is None:
-    msg = 'No ExportSpec instance -- cannot export'
-    print 'WARNING:', msg
-    logger.addError(msg)
-    return False
-
-  # Get output filename (path)
-
-  # Initialize writer object
-  return False
+  writer = Writer2D(spec)
+  return writer.write(component_list, format_table)
