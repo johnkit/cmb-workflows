@@ -24,21 +24,24 @@ class CardFormat:
 # ---------------------------------------------------------------------
   def __init__(self, keyword,
     att_type=None,
+    comment=None,
     item_path=None):
     '''Formatting object for output line
 
     Required argument:
     keyword: (string) text to write as the IBAMR keyword. If None,
-      no output will be written (can be used to set conditions)
+      no output will be written (can be used for comments & conditions)
 
     Optional arguments:
     att_type: (string) attribute type for this card's info.
       This is typically provided by the writer.
+    comment: (string) write comment line
     item_path: (string) smtk "path" to item where info can be found
     '''
     self.keyword = keyword
 
     self.att_type = att_type
+    self.comment = comment
     self.item_path = item_path
 
 # ---------------------------------------------------------------------
@@ -47,6 +50,13 @@ class CardFormat:
 
     Returns boolean indicating if line was written
     '''
+    # Check for comment line
+    if self.comment:
+      out.write('\n')
+      out.write('  // %s\n' % self.comment)
+      if not self.keyword:
+        return True
+
     # Get the item
     full_item_path = self.item_path
     if base_item_path is not None:
@@ -60,9 +70,9 @@ class CardFormat:
       return False
 
     if item.type() == smtk.attribute.Item.VOID:
-      self.__class__.write_value(
+      self.write_value(
         out, self.keyword, item.isEnabled(), as_boolean=True)
-      return self._finish_write()
+      return True
 
     if not item.isEnabled():
       return False
@@ -80,7 +90,7 @@ class CardFormat:
         value_list.append(concrete_item.value(i))
       string_list = [str(x) for x in value_list]
       string_value = ', '.join(string_list)
-      self.__class__.write_value(
+      self.write_value(
         out, self.keyword, string_value, quote_string=False)
       return
 

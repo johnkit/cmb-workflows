@@ -96,13 +96,39 @@ class Writer2D:
     '''
     '''
     print 'Writing component', component.name
+
+    # If namelist specifies attribute, process each one
+    if component.att_type is not None:
+      att_list = self.sim_atts.findAttributes(component.att_type)
+      #print 'att_type', component.att_type, 'att_list', att_list
+      att_list.sort(key=lambda att: att.name())
+      for att in att_list:
+        self.write_att_default(out, att, component, format_list)
+      return
+
+    # Otherwise write single component
+    else:
+      self.begin_component(out, component)
+      for card in format_list:
+        att_list = self.sim_atts.findAttributes(card.att_type)
+        for att in att_list:
+          card.write(out, att)
+      self.end_component(out)
+
+# ---------------------------------------------------------------------
+  def write_att_default(self, out, att, component, format_list):
+    '''Writes component for 1 attribute
+    '''
     self.begin_component(out, component)
 
     for card in format_list:
-      att_list = self.sim_atts.findAttributes(card.att_type)
-      for att in att_list:
+      #print 'card', card.keyword
+      if card.att_type is None:
         card.write(out, att)
-
+      else:
+        card_att_list = self.sim_atts.findAttributes(card.att_type)
+        for card_att in card_att_list:
+          card.write(self.out, card_att)
     self.end_component(out)
 
 # ---------------------------------------------------------------------

@@ -26,21 +26,26 @@ from internal.writers import CardFormat, OutputComponent, Writer2D
 # ---------------------------------------------------------------------
 #
 # Dictionary of formatters for output lines
-# Arguments are: (keyword, attribute type, item path, **kwargs)
+# Arguments are: (keyword, **kwargs)
+# See cardformat.py for full kwargs list
 #
 # ---------------------------------------------------------------------
 
-# Please order the namelists alphabetically in this table
+# Please order the components alphabetically in this table
 card = CardFormat
 format_table = {
   'Main': [
-    card('solver', att_type='solver', item_path='solver-type')
+    card('solver', att_type='solver', item_path='solver-type'),
+    card(None, comment='log file parameters'),
+    card('log_file_name', item_path='log/log-file'),
+    card('log_all_nodes', item_path='log/log-all-nodes')
   ]
 }
 
+# Order the components in the order to be written
 comp = OutputComponent
 component_list = [
-  comp('Main')
+  comp('Main', att_type='output')
 ]
 
 # ---------------------------------------------------------------------
