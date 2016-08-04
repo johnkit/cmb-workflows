@@ -15,6 +15,8 @@ print 'loading', os.path.basename(__file__)
 import sys
 import smtk
 
+from conditionset import ConditionSet
+
 # ---------------------------------------------------------------------
 class CardFormat:
   '''Formatter for each output line
@@ -25,7 +27,9 @@ class CardFormat:
   def __init__(self, keyword,
     att_type=None,
     comment=None,
-    item_path=None):
+    if_condition=None,
+    item_path=None,
+    set_condition=None):
     '''Formatting object for output line
 
     Required argument:
@@ -36,13 +40,27 @@ class CardFormat:
     att_type: (string) attribute type for this card's info.
       This is typically provided by the writer.
     comment: (string) write comment line
+    if_condition: (object) only write output if the condition is in the current
+      ConditionSet. The if_condition argument can be an iterable,
+      in which case, ALL elements must be in the class' ConditionSet.
     item_path: (string) smtk "path" to item where info can be found
+    set_condition: (object) add condition to ConditionSet.
+      Is NOT executed if the if_condition fails
     '''
     self.keyword = keyword
 
     self.att_type = att_type
     self.comment = comment
+    if isinstance(if_condition, set):
+      self.if_condition = if_condition
+    elif hasattr(if_condition, '__iter__'):
+      self.if_condition = set(if_condition)
+    elif if_condition is not None:
+      self.if_condition = set([if_condition])
+    else:
+      self.if_condition = None
     self.item_path = item_path
+    self.set_condition = set_condition
 
 # ---------------------------------------------------------------------
   def write(self, out, att, base_item_path=None):
@@ -50,12 +68,16 @@ class CardFormat:
 
     Returns boolean indicating if line was written
     '''
+    # Skip cards with conditions that don't match
+    if not ConditionSet.test_condition(self.if_condition):
+      return False
+
     # Check for comment line
     if self.comment:
       out.write('\n')
       out.write('  // %s\n' % self.comment)
       if not self.keyword:
-        return True
+        return self.finish_write()
 
     # Get the item
     full_item_path = self.item_path
@@ -72,12 +94,16 @@ class CardFormat:
     if item.type() == smtk.attribute.Item.VOID:
       self.write_value(
         out, self.keyword, item.isEnabled(), as_boolean=True)
-      return True
+      return self.finish_write()
 
     if not item.isEnabled():
       return False
 
     concrete_item = smtk.attribute.to_concrete(item)
+
+    # Skip non-value items
+    if not hasattr(concrete_item, 'isSet'):
+      return self.finish_write()
 
     # If value isn't set, skip
     if not concrete_item.isSet(0):
@@ -92,7 +118,7 @@ class CardFormat:
       string_value = ', '.join(string_list)
       self.write_value(
         out, self.keyword, string_value, quote_string=False)
-      return
+      return self.finish_write()
 
     # (else) Single value or expression
     keyword = self.keyword
@@ -112,6 +138,7 @@ class CardFormat:
         value = value.name()
 
     self.write_value(out, keyword, value)
+    return self.finish_write()
 
 # ---------------------------------------------------------------------
   def write_value(self, out, keyword, value, as_boolean=False, tab=25):
@@ -128,3 +155,13 @@ class CardFormat:
     #   value = '\"%s\"' % value
     line = text_formatter.format(keyword, value)
     out.write(line)
+
+# ---------------------------------------------------------------------
+  def finish_write(self):
+    '''Internal method for common code after value written. Returns True
+
+    Currently that is checking the set_condition
+    '''
+    if self.set_condition is not None:
+      ConditionSet.set_condition(self.set_condition)
+    return True

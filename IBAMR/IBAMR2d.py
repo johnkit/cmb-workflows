@@ -25,25 +25,45 @@ from internal.writers import CardFormat, OutputComponent, Writer2D
 
 # ---------------------------------------------------------------------
 #
-# Dictionary of formatters for output lines
-# Arguments are: (keyword, **kwargs)
+# Dictionary of formatters for individual output lines
+# CardFormat init arguments are: (keyword, **kwargs)
 # See cardformat.py for full kwargs list
 #
 # ---------------------------------------------------------------------
 
-# Please order the components alphabetically in this table
 card = CardFormat
+# Please order the components alphabetically in this table
 format_table = {
   'Main': [
     card('solver', att_type='solver', item_path='solver-type'),
     card(None, comment='log file parameters'),
     card('log_file_name', item_path='log/log-file'),
-    card('log_all_nodes', item_path='log/log-all-nodes')
+    card('log_all_nodes', item_path='log/log-all-nodes'),
+
+    card(None, item_path='visualization', set_condition='viz-output'),
+    card(None, comment='*TODO* visualization parameters', if_condition='viz-output'),
+    card('viz_dump_dirname',
+      item_path='visualization/directory', if_condition='viz-output'),
+
+    card(None, item_path='restart', set_condition='restart-output'),
+    card(None, comment='restart dump parameters', if_condition='restart-output'),
+    card('restart_dump_interval',
+      item_path='restart/interval', if_condition='restart-output'),
+    card('restart_dump_dirname',
+      item_path='restart/directory', if_condition='restart-output'),
   ]
 }
 
-# Order the components in the order to be written
+# ---------------------------------------------------------------------
+#
+# Ordered list of components to write
+# OutputComponent init arguments are: (name, **kwargs)
+# See outputcomponent.py for full kwargs list
+#
+# ---------------------------------------------------------------------
+
 comp = OutputComponent
+# Order the components in the order to be written
 component_list = [
   comp('Main', att_type='output')
 ]
