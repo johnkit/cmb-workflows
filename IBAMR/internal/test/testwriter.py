@@ -64,7 +64,7 @@ if __name__ == '__main__':
   if len(sys.argv) < 2:
     print
     print 'Standalone writer test'
-    print 'Usage: python testwriter.py input_crf_file'
+    print 'Usage: python testwriter.py input_crf_file  [output_file]'
     print
     sys.exit(-1)
 
@@ -92,9 +92,13 @@ if __name__ == '__main__':
       'ExportSpec', export_spec_defn)
 
   file_item = export_spec_att.findFile('OutputFile')
-  input_path = os.path.abspath(input_crf_file)
-  root,ext = os.path.splitext(input_path)
-  output_path = '%s.ibamr' % root
+  output_path = None
+  if len(sys.argv) > 2:
+    output_path = sys.argv[2]
+  else:
+    input_path = os.path.abspath(input_crf_file)
+    root,ext = os.path.splitext(input_path)
+    output_path = '%s.ibamr' % root
   file_item.setValue(0, output_path)
 
   # Initialize MockExportSpec and run export script

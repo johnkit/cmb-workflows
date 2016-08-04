@@ -20,7 +20,7 @@ import smtk
 
 import internal
 reload(internal)  # for development
-from internal.writers import Writer2D
+from internal.writers import CardFormat, OutputComponent, Writer2D
 
 
 # ---------------------------------------------------------------------
@@ -31,9 +31,17 @@ from internal.writers import Writer2D
 # ---------------------------------------------------------------------
 
 # Please order the namelists alphabetically in this table
-#card = writer.CardFormat
-format_table = {}
-component_list = []
+card = CardFormat
+format_table = {
+  'Main': [
+    card('solver', att_type='solver', item_path='solver-type')
+  ]
+}
+
+comp = OutputComponent
+component_list = [
+  comp('Main')
+]
 
 # ---------------------------------------------------------------------
 def ExportCMB(spec):

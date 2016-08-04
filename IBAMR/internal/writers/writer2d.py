@@ -80,13 +80,37 @@ class Writer2D:
               'not found'
           else:
             method = getattr(self, component.custom_method)
-            method(component, format_list)
+            method(out, component, format_list)
           continue
 
         # Else use the default component writer
         else:
-          self._write_component_default(component, format_list)
+          self.write_component_default(out, component, format_list)
 
       completed = True
       print 'Wrote output file %s' % output_filename
     return completed
+
+# ---------------------------------------------------------------------
+  def write_component_default(self, out, component, format_list):
+    '''
+    '''
+    print 'Writing component', component.name
+    self.begin_component(out, component)
+
+    for card in format_list:
+      att_list = self.sim_atts.findAttributes(card.att_type)
+      for att in att_list:
+        card.write(out, att)
+
+    self.end_component(out)
+
+# ---------------------------------------------------------------------
+  def begin_component(self, out, component):
+    out.write('\n')
+    out.write('%s {' % component.name)
+    out.write('\n')
+
+# ---------------------------------------------------------------------
+  def end_component(self, out):
+    out.write('}\n')
