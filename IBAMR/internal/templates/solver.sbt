@@ -45,6 +45,12 @@
             <Min Inclusive="true">1.0</Min>
           </RangeInfo>
         </Double>
+        <Double Name="dt" Label="Maximum Timestep Size">
+          <DefaultValue>0.000488</DefaultValue>
+          <RangeInfo>
+            <Min Inclusive="false">0.0</Min>
+          </RangeInfo>
+        </Double>
         <Int Name="num-cycles" Label="Number of Cycles (fixed-point iteration)">
           <DefaultValue>1</DefaultValue>
           <RangeInfo>

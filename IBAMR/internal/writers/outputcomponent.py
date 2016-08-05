@@ -22,7 +22,7 @@ class OutputComponent:
   '''
 
 # ---------------------------------------------------------------------
-  def __init__(self, name, att_type=None):
+  def __init__(self, name, att_type=None, tab=None):
     '''Information for output file component
 
     Required arguments:
@@ -30,8 +30,9 @@ class OutputComponent:
 
     Optional arguments:
     att_type: (string) type of attribute to use
-
+    tab: (int) tab width for first column (None == use default)
     '''
     self.att_type = att_type
-    self.custom_method = None
+    self.custom_method = None  # not used
     self.name = name
+    self.tab = tab

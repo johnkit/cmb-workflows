@@ -51,8 +51,26 @@ format_table = {
       item_path='restart/interval', if_condition='restart-output'),
     card('restart_dump_dirname',
       item_path='restart/directory', if_condition='restart-output'),
-  ]
+  ],
+  'IBHierarchyIntegrator': [
+    card('start_time', item_path='start-time'),
+    card('end_time', item_path='end-time'),
+    card('grow_dt', item_path='grow-dt'),
+    card('num_cycles', item_path='num-cycles'),
+    card('regrid_cfl_interval', item_path='regrid-cfl-interval'),
+    card('dt_max', item_path='dt'),
+    card('error_on_dt_change', item_path='error-on-dt-change'),
+    card('enable_logging', att_type='output', item_path='enable-logging'),
+  ],
+  'IBFEMethod':[
+    card('IB_delta_fcn', item_path='ib-delta-function'),
+    card('split_forces', item_path='split-forces'),
+    card('use_jump_conditions', item_path='use-jump-conditions'),
+    card('use_consistent_mass_matrix', item_path='use-consistent-mass-matrix'),
+    card('IB_point_density', item_path='ib-point-density'),
+  ],
 }
+    #card('', item_path='')
 
 # ---------------------------------------------------------------------
 #
@@ -65,7 +83,9 @@ format_table = {
 comp = OutputComponent
 # Order the components in the order to be written
 component_list = [
-  comp('Main', att_type='output')
+  comp('Main', att_type='output'),
+  comp('IBHierarchyIntegrator', att_type='solver'),
+  comp('IBFEMethod', att_type='solver', tab=26),
 ]
 
 # ---------------------------------------------------------------------

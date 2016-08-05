@@ -42,6 +42,10 @@ SMTK_AttributeSystem(Version="2")
           DefaultValue 2.0
           RangeInfo
             Min(Inclusive="true") 1.0
+        Double(Name="dt" Label="Maximum Timestep Size")
+          DefaultValue 0.000488
+          RangeInfo
+            Min(Inclusive="false") 0.0
         Int(Name="num-cycles" Label="Number of Cycles (fixed-point iteration)")
           DefaultValue 1
           RangeInfo

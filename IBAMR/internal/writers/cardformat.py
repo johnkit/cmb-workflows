@@ -17,6 +17,9 @@ import smtk
 
 from conditionset import ConditionSet
 
+# Default width of first column
+DefaultTab = 25
+
 # ---------------------------------------------------------------------
 class CardFormat:
   '''Formatter for each output line
@@ -63,7 +66,7 @@ class CardFormat:
     self.set_condition = set_condition
 
 # ---------------------------------------------------------------------
-  def write(self, out, att, base_item_path=None):
+  def write(self, out, att, base_item_path=None, tab=None):
     '''Writes line for input attribute
 
     Returns boolean indicating if line was written
@@ -93,7 +96,7 @@ class CardFormat:
 
     if item.type() == smtk.attribute.Item.VOID:
       self.write_value(
-        out, self.keyword, item.isEnabled(), as_boolean=True)
+        out, self.keyword, item.isEnabled(), as_boolean=True, tab=tab)
       return self.finish_write()
 
     if not item.isEnabled():
@@ -117,7 +120,7 @@ class CardFormat:
       string_list = [str(x) for x in value_list]
       string_value = ', '.join(string_list)
       self.write_value(
-        out, self.keyword, string_value, quote_string=False)
+        out, self.keyword, string_value, quote_string=False, tab=tab)
       return self.finish_write()
 
     # (else) Single value or expression
@@ -137,17 +140,19 @@ class CardFormat:
       if isinstance(value, smtk.AttributePtr):
         value = value.name()
 
-    self.write_value(out, keyword, value)
+    self.write_value(out, keyword, value, tab=tab)
     return self.finish_write()
 
 # ---------------------------------------------------------------------
-  def write_value(self, out, keyword, value, as_boolean=False, tab=25):
+  def write_value(self, out, keyword, value, as_boolean=False, tab=None):
     '''Writes value to output stream
 
     '''
-    # Use str.format() method to set first column width
+    if tab is None:
+      tab = DefaultTab
     if len(keyword) > tab:
       tab = len(keyword)
+    # Use str.format() method to set first column width
     text_formatter = '  {:<%s} = {:}\n' % tab
     if as_boolean:
       value = 'TRUE' if value else 'FALSE'
