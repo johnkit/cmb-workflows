@@ -14,6 +14,8 @@ print 'loading', os.path.basename(__file__)
 
 import smtk
 
+from cardformat import CardFormat
+
 # ---------------------------------------------------------------------
 class Writer2D:
   '''Top level writer class for IBAMR input files (2D)
@@ -73,37 +75,41 @@ class Writer2D:
         format_list = self.format_table.get(component.name)
 
         # Components can assign custom method
-        if component.custom_method is not None:
-          if not hasattr(self, component.custom_method):
+        if component.custom_component_method is not None:
+          if not hasattr(self, component.custom_component_method):
             print 'ERROR: For component', component.name, \
-              ', custom_method', component.custom_method, \
+              ', custom_method', component.custom_component_method, \
               'not found'
           else:
-            method = getattr(self, component.custom_method)
+            method = getattr(self, component.custom_component_method)
             method(out, component, format_list)
           continue
 
         # Else use the default component writer
         else:
-          self.write_component_default(out, component, format_list)
+          self.write_component(out, component, format_list)
 
       completed = True
       print 'Wrote output file %s' % output_filename
     return completed
 
 # ---------------------------------------------------------------------
-  def write_component_default(self, out, component, format_list):
+  def write_component(self, out, component, format_list):
     '''
     '''
     print 'Writing component', component.name
 
     # If namelist specifies attribute, process each one
-    if component.att_type is not None:
+    if component.att_name is not None:
+      att = self.sim_atts.findAttribute(component.att_name)
+      if att:
+        self.write_att(out, att, component, format_list)
+    elif component.att_type is not None:
       att_list = self.sim_atts.findAttributes(component.att_type)
       #print 'att_type', component.att_type, 'att_list', att_list
       att_list.sort(key=lambda att: att.name())
       for att in att_list:
-        self.write_att_default(out, att, component, format_list)
+        self.write_att(out, att, component, format_list)
       return
 
     # Otherwise write single component
@@ -116,7 +122,7 @@ class Writer2D:
       self.end_component(out)
 
 # ---------------------------------------------------------------------
-  def write_att_default(self, out, att, component, format_list):
+  def write_att(self, out, att, component, format_list):
     '''Writes component for 1 attribute
     '''
     tab = component.tab
@@ -130,6 +136,45 @@ class Writer2D:
         card_att_list = self.sim_atts.findAttributes(card.att_type)
         for card_att in card_att_list:
           card.write(self.out, card_att, tab=tab)
+    self.end_component(out)
+
+# ---------------------------------------------------------------------
+  def write_bc_coefs(self, out, component, format_list):
+    '''Custom method for writing velocity BC coefficients
+    '''
+    if not component.att_name:
+      print 'ERROR: Missing att_name for component', component.name
+      return
+
+    att = self.sim_atts.findAttribute(component.att_name)
+    if not att:
+      print 'ERROR: Missing attribute with name', component.att_name
+      return
+
+    # Check the enabled group item
+    enable_item = att.findGroup('enable')
+    if not enable_item.isEnabled():
+      return
+
+    print 'Writing component', component.name
+
+    # Initialize CardFormat for temp use
+    card = CardFormat('temp')
+    tab = component.tab
+
+    self.begin_component(out, component)
+    for item_name in ['a', 'b', 'g']:
+      item = enable_item.find(item_name)
+      coef_item = smtk.attribute.to_concrete(item)
+      if item_name != 'a':
+        out.write('\n')
+      coef_num = coef_item.numberOfValues()
+      for i in range(coef_num):
+        keyword = '%scoef_function_%d' % (item_name, i)
+        value = coef_item.value(i)
+        value_string = '\"%s\"' % value
+        card.write_value(out, keyword, value_string, tab=tab)
+
     self.end_component(out)
 
 # ---------------------------------------------------------------------

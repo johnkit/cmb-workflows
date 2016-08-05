@@ -4,7 +4,7 @@
   <Definitions>
     <AttDef Type="velocity" Label="Velocity Boundary Condition" BaseType="" Version="0">
       <ItemDefinitions>
-        <Group Name="Enable" Label="Enable" Optional="true" IsEnabledByDefault="false">
+        <Group Name="enable" Label="Enable" Optional="true" IsEnabledByDefault="false">
           <BriefDescription>a*u + b*du/dn = g</BriefDescription>
           <ItemDefinitions>
             <Double Name="a" Label="a Coefficients" NumberOfRequiredValues="4">

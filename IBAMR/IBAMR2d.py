@@ -83,6 +83,14 @@ format_table = {
 comp = OutputComponent
 # Order the components in the order to be written
 component_list = [
+  comp('VelocityBcCoefs_0',
+    att_name='velocity0', custom_component_method='write_bc_coefs', tab=16),
+  comp('VelocityBcCoefs_1',
+    att_name='velocity1', custom_component_method='write_bc_coefs', tab=16),
+  comp('VelocityBcCoefs_2',
+    att_name='velocity2', custom_component_method='write_bc_coefs', tab=16),
+  comp('VelocityBcCoefs_3',
+    att_name='velocity3', custom_component_method='write_bc_coefs', tab=16),
   comp('Main', att_type='output'),
   comp('IBHierarchyIntegrator', att_type='solver'),
   comp('IBFEMethod', att_type='solver', tab=26),

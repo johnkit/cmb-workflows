@@ -22,17 +22,25 @@ class OutputComponent:
   '''
 
 # ---------------------------------------------------------------------
-  def __init__(self, name, att_type=None, tab=None):
+  def __init__(self, name,
+    att_name = None,
+    att_type = None,
+    custom_component_method = None,
+    tab = None):
     '''Information for output file component
 
     Required arguments:
     name: (string) the string written to the IBAMR file
 
     Optional arguments:
+    att_name: (string) attribute name, typically for special cases
     att_type: (string) type of attribute to use
+    custom_component_method: (string) custom method to use
+      in the writer object
     tab: (int) tab width for first column (None == use default)
     '''
+    self.att_name = att_name
     self.att_type = att_type
-    self.custom_method = None  # not used
+    self.custom_component_method = custom_component_method
     self.name = name
     self.tab = tab
