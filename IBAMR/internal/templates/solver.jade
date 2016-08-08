@@ -7,83 +7,99 @@ SMTK_AttributeSystem(Version="2")
   Definitions
     AttDef(Type="solver" Label="Solver" BaseType="" Version="0")
       ItemDefinitions
-        String(Name="ib-delta-function" Label="IB Delta Function")
-          BriefDescription
-            | type of smoothed delta function to use for Lagrangian-Eulerian interaction
-          DiscreteInfo(DefaultIndex="1")
-            Value IB_3
-            Value IB_4
-            Value IB_6
-            Value PIECEWISE_LINEAR
-            Value PIECEWISE_CUBIC
-            Value BSPLINE_3
-            Value BSPLINE_4
-            Value BSPLINE_5
-            Value BSPLINE_6
-        Void(Name="split-forces" Label="Split Forces"
-          Optional="true" IsEnabledByDefault="false")
-        Void(Name="use-jump-conditions" Label="Use Jump Conditions"
-          Optional="true" IsEnabledByDefault="false")
-        Void(Name="use-consistent-mass-matrix" Label="Use Consistent Mass Matrix"
-          Optional="true" IsEnabledByDefault="true")
-        Double(Name="ib-point-density" Label="IB Point Density")
-          DefaultValue 3.0
-          RangeInfo
-            Minimum(Inclusive="false") 0.0
-        String(Name="solver-type" Label="Solver Type")
-          DiscreteInfo(DefaultIndex="1")
-            Value COLLOCATED
-            Value STAGGERED
-        Double(Name="start-time" Label="Start Time")
-          DefaultValue 0.0
-        Double(Name="end-time" Label="End Time")
-          DefaultValue 10.0
-        Double(Name="grow-dt" Label="Timestep Growth Factor")
-          DefaultValue 2.0
-          RangeInfo
-            Min(Inclusive="true") 1.0
-        Double(Name="dt" Label="Maximum Timestep Size")
-          DefaultValue 0.000488
-          RangeInfo
-            Min(Inclusive="false") 0.0
-        Int(Name="num-cycles" Label="Number of Cycles (fixed-point iteration)")
-          DefaultValue 1
-          RangeInfo
-            Min(Inclusive="true") 1
-        String(Name="convective-ts-type" Label="Convective Timestep Type")
-          DiscreteInfo(DefaultIndex="0")
-            Value ADAMS_BASHFORTH
-            Value FOWARD_EULER
-            Value MIDPOINT_RULE
-            Value TRAPEZOIDAL_RULE
-        String(Name="convective-op-type" Label="Convective Discretization Type")
-          DiscreteInfo(DefaultIndex="1")
-            Value CENTERED
-            Value PPM
-        String(Name="convective-form" Label="Convective Form")
-          DiscreteInfo(DefaultIndex="0")
-            Value ADVECTIVE
-            Value CONSERVATIVE
-            Value SKEW_SYMMETRIC
-        Void(Name="normalize-pressure" Label="Normalize Pressure"
-          Optional="true" IsEnabledByDefault="false")
-        Double(Name="cfl-max" Label="Maximum CFL Number")
-          BriefDescription recommended &lt;= 0.5
-          DefaultValue 0.25
-          RangeInfo
-            Minimum(Inclusive="false") 0.0
-        Void(Name="error-on-dt-change" Label="Error on DT Change"
-          Optional="true" IsEnabledByDefault="true")
-          BriefDescription Emit error message if the time step size changes
-        Void(Name="vorticity-tagging" Label="Vorticity Tagging"
-          Optional="true" IsEnabledByDefault="true")
-        Double(Name="regrid-cfl-interval" Label="Regrid CFL Interval")
-          DefaultValue 0.5
-          RangeInfo
-            Minimum(Inclusive="true") 0.0
-        String(Name="projection-method" Label="Projection Method")
-          DiscreteInfo(DefaultIndex="1")
-            Value PRESSURE_INCREMENT
-            Value PRESSURE_UPDATE
-        Void(Name="second-order-prssure-update" Label="Second Order Pressure Update"
-          Optional="true" IsEnabledByDefault="true")
+
+        Group(Name="time" Label="Time")
+          ItemDefinitions
+            Double(Name="start-time" Label="Start Time")
+              DefaultValue 0.0
+            Double(Name="end-time" Label="End Time")
+              DefaultValue 10.0
+            Double(Name="grow-dt" Label="Timestep Growth Factor")
+              DefaultValue 2.0
+              RangeInfo
+                Min(Inclusive="true") 1.0
+            Double(Name="dt-max" Label="Maximum Timestep Size")
+              DefaultValue 0.000488
+              RangeInfo
+                Min(Inclusive="false") 0.0
+            Void(Name="error-on-dt-change" Label="Error on DT Change"
+              Optional="true" IsEnabledByDefault="true")
+              BriefDescription Emit error message if the time step size changes
+
+        Group(Name="hierarchy-integrator" Label="IBHierarchyIntegrator")
+          ItemDefinitions
+            Int(Name="num-cycles" Label="Number of Cycles (fixed-point iteration)")
+              DefaultValue 1
+              RangeInfo
+                Min(Inclusive="true") 1
+            Double(Name="regrid-cfl-interval" Label="Regrid CFL Interval")
+              DefaultValue 0.5
+              RangeInfo
+                Minimum(Inclusive="true") 0.0
+
+        Group(Name="fe-method" Label="IBFEMethod")
+          ItemDefinitions
+            String(Name="ib-delta-function" Label="IB Delta Function")
+              BriefDescription
+                | type of smoothed delta function to use for Lagrangian-Eulerian interaction
+              DiscreteInfo(DefaultIndex="1")
+                Value IB_3
+                Value IB_4
+                Value IB_6
+                Value PIECEWISE_LINEAR
+                Value PIECEWISE_CUBIC
+                Value BSPLINE_3
+                Value BSPLINE_4
+                Value BSPLINE_5
+                Value BSPLINE_6
+            Void(Name="split-forces" Label="Split Forces"
+              Optional="true" IsEnabledByDefault="false")
+            Void(Name="use-jump-conditions" Label="Use Jump Conditions"
+              Optional="true" IsEnabledByDefault="false")
+            Void(Name="use-consistent-mass-matrix" Label="Use Consistent Mass Matrix"
+              Optional="true" IsEnabledByDefault="true")
+            Double(Name="ib-point-density" Label="IB Point Density")
+              DefaultValue 3.0
+              RangeInfo
+                Minimum(Inclusive="false") 0.0
+
+        Group(Name="solver" Label="Solver")
+          ItemDefinitions
+            String(Name="solver-type" Label="Solver Type")
+              ChildrenDefinitions
+                Void(Name="second-order-prssure-update" Label="Second Order Pressure Update"
+                  Optional="true" IsEnabledByDefault="true")
+              DiscreteInfo(DefaultIndex="1")
+                Structure
+                  Value COLLOCATED
+                  Items
+                    Item second-order-prssure-update
+                Value STAGGERED
+            String(Name="convective-ts-type" Label="Convective Timestep Type")
+              DiscreteInfo(DefaultIndex="0")
+                Value ADAMS_BASHFORTH
+                Value FOWARD_EULER
+                Value MIDPOINT_RULE
+                Value TRAPEZOIDAL_RULE
+            String(Name="convective-op-type" Label="Convective Discretization Type")
+              DiscreteInfo(DefaultIndex="1")
+                Value CENTERED
+                Value PPM
+            String(Name="convective-difference-form" Label="Convective Difference Form")
+              DiscreteInfo(DefaultIndex="0")
+                Value ADVECTIVE
+                Value CONSERVATIVE
+                Value SKEW_SYMMETRIC
+            Void(Name="normalize-pressure" Label="Normalize Pressure"
+              Optional="true" IsEnabledByDefault="false")
+            Double(Name="cfl-max" Label="Maximum CFL Number")
+              BriefDescription recommended &lt;= 0.5
+              DefaultValue 0.25
+              RangeInfo
+                Minimum(Inclusive="false") 0.0
+            Void(Name="vorticity-tagging" Label="Vorticity Tagging"
+              Optional="true" IsEnabledByDefault="true")
+            String(Name="projection-method" Label="Projection Method")
+              DiscreteInfo(DefaultIndex="1")
+                Value PRESSURE_INCREMENT
+                Value PRESSURE_UPDATE

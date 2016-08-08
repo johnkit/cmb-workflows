@@ -6,7 +6,7 @@ import os
 import sys
 import smtk
 
-input_file = 'IBAMR-2d.crf'
+input_file = 'IBAMR2d.crf'
 this_dir = os.path.dirname(os.path.abspath(__file__))
 input_path = os.path.join(
   this_dir, os.pardir, os.pardir, input_file)

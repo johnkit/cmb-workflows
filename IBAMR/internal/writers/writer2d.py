@@ -126,16 +126,17 @@ class Writer2D:
     '''Writes component for 1 attribute
     '''
     tab = component.tab
+    base_path = component.base_item_path
     self.begin_component(out, component)
 
     for card in format_list:
       #print 'card', card.keyword
       if card.att_type is None:
-        card.write(out, att, tab=tab)
+        card.write(out, att, base_item_path=base_path, tab=tab)
       else:
         card_att_list = self.sim_atts.findAttributes(card.att_type)
         for card_att in card_att_list:
-          card.write(self.out, card_att, tab=tab)
+          card.write(self.out, card_att, base_item_path=base_path, tab=tab)
     self.end_component(out)
 
 # ---------------------------------------------------------------------

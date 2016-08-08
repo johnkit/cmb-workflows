@@ -25,6 +25,7 @@ class OutputComponent:
   def __init__(self, name,
     att_name = None,
     att_type = None,
+    base_item_path = None,
     custom_component_method = None,
     tab = None):
     '''Information for output file component
@@ -37,10 +38,12 @@ class OutputComponent:
     att_type: (string) type of attribute to use
     custom_component_method: (string) custom method to use
       in the writer object
+    base_item_path: (string) common path to all card items
     tab: (int) tab width for first column (None == use default)
     '''
     self.att_name = att_name
     self.att_type = att_type
+    self.base_item_path = base_item_path
     self.custom_component_method = custom_component_method
     self.name = name
     self.tab = tab

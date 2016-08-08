@@ -13,8 +13,9 @@
 Root writer script for IBAMR workflows
 """
 import os
-print 'loading', os.path.basename(__file__)
 import sys
+sys.dont_write_bytecode = True
+print 'loading', os.path.basename(__file__)
 
 import smtk
 
@@ -35,7 +36,7 @@ card = CardFormat
 # Please order the components alphabetically in this table
 format_table = {
   'Main': [
-    card('solver', att_type='solver', item_path='solver-type'),
+    card('solver', att_type='solver', item_path='solver/solver-type'),
     card(None, comment='log file parameters'),
     card('log_file_name', item_path='log/log-file'),
     card('log_all_nodes', item_path='log/log-all-nodes'),
@@ -53,13 +54,13 @@ format_table = {
       item_path='restart/directory', if_condition='restart-output'),
   ],
   'IBHierarchyIntegrator': [
-    card('start_time', item_path='start-time'),
-    card('end_time', item_path='end-time'),
-    card('grow_dt', item_path='grow-dt'),
-    card('num_cycles', item_path='num-cycles'),
-    card('regrid_cfl_interval', item_path='regrid-cfl-interval'),
-    card('dt_max', item_path='dt'),
-    card('error_on_dt_change', item_path='error-on-dt-change'),
+    card('start_time', item_path='time/start-time'),
+    card('end_time', item_path='time/end-time'),
+    card('grow_dt', item_path='time/grow-dt'),
+    card('num_cycles', item_path='hierarchy-integrator/num-cycles'),
+    card('regrid_cfl_interval', item_path='hierarchy-integrator/regrid-cfl-interval'),
+    card('dt_max', item_path='time/dt-max'),
+    card('error_on_dt_change', item_path='time/error-on-dt-change'),
     card('enable_logging', att_type='output', item_path='enable-logging'),
   ],
   'IBFEMethod':[
@@ -93,7 +94,7 @@ component_list = [
     att_name='velocity3', custom_component_method='write_bc_coefs', tab=16),
   comp('Main', att_type='output'),
   comp('IBHierarchyIntegrator', att_type='solver'),
-  comp('IBFEMethod', att_type='solver', tab=26),
+  comp('IBFEMethod', att_type='solver', base_item_path='fe-method', tab=26),
 ]
 
 # ---------------------------------------------------------------------

@@ -112,6 +112,16 @@
         </AttDef>
         <AttDef Type="output" Label="Output" BaseType="" Version="0" Unique="true">
           <ItemDefinitions>
+            <Void Name="enable-logging" Label="Enable Logging" Version="0" Optional="true" IsEnabledByDefault="true" />
+            <Group Name="output-fields" Label="Output Fields" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Void Name="velocity" Label="Velocity" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Void Name="pressure" Label="Pressure" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Void Name="body-force" Label="Body Force" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Void Name="vorticity" Label="Vorticity (omega)" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Void Name="divergence" Label="Divergence of Velocity" Version="0" Optional="true" IsEnabledByDefault="true" />
+              </ItemDefinitions>
+            </Group>
             <Group Name="log" Label="Log Output" Version="0" NumberOfRequiredGroups="1">
               <ItemDefinitions>
                 <File Name="log-file" Label="Log File" Version="0" NumberOfRequiredValues="1">
@@ -120,7 +130,7 @@
                 <Void Name="log-all-nodes" Label="Log All Nodes" Version="0" Optional="true" IsEnabledByDefault="false" />
               </ItemDefinitions>
             </Group>
-            <Group Name="visualization" Label="Visualization Output" Version="0" Optional="true" IsEnabledByDefault="true" NumberOfRequiredGroups="1">
+            <Group Name="visualization" Label="Visualization Output" Version="0" NumberOfRequiredGroups="1">
               <ItemDefinitions>
                 <Group Name="visit" Label="VisIt" Version="0" Optional="true" IsEnabledByDefault="true" NumberOfRequiredGroups="1">
                   <ItemDefinitions>
@@ -130,7 +140,10 @@
                   </ItemDefinitions>
                 </Group>
                 <Void Name="exodus" Label="ExodusII" Version="0" Optional="true" IsEnabledByDefault="true" />
-                <Void Name="silo" Label="Silo" Version="0" />
+                <Void Name="silo" Label="Silo" Version="0" Optional="true" IsEnabledByDefault="false" />
+                <Int Name="interval" Label="Output Interval" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>250</DefaultValue>
+                </Int>
                 <Directory Name="directory" Label="Directory" Version="0" NumberOfRequiredValues="1">
                   <:anonymous />
                 </Directory>
@@ -177,95 +190,124 @@
         </AttDef>
         <AttDef Type="solver" Label="Solver" BaseType="" Version="0" Unique="true">
           <ItemDefinitions>
-            <String Name="ib-delta-function" Label="IB Delta Function" Version="0" NumberOfRequiredValues="1">
-              <BriefDescription>type of smoothed delta function to use for Lagrangian-Eulerian interaction</BriefDescription>
-              <DiscreteInfo DefaultIndex="1">
-                <Value Enum="IB_3">IB_3</Value>
-                <Value Enum="IB_4">IB_4</Value>
-                <Value Enum="IB_6">IB_6</Value>
-                <Value Enum="PIECEWISE_LINEAR">PIECEWISE_LINEAR</Value>
-                <Value Enum="PIECEWISE_CUBIC">PIECEWISE_CUBIC</Value>
-                <Value Enum="BSPLINE_3">BSPLINE_3</Value>
-                <Value Enum="BSPLINE_4">BSPLINE_4</Value>
-                <Value Enum="BSPLINE_5">BSPLINE_5</Value>
-                <Value Enum="BSPLINE_6">BSPLINE_6</Value>
-              </DiscreteInfo>
-            </String>
-            <Void Name="split-forces" Label="Split Forces" Version="0" Optional="true" IsEnabledByDefault="false" />
-            <Void Name="use-jump-conditions" Label="Use Jump Conditions" Version="0" Optional="true" IsEnabledByDefault="false" />
-            <Void Name="use-consistent-mass-matrix" Label="Use Consistent Mass Matrix" Version="0" Optional="true" IsEnabledByDefault="true" />
-            <Double Name="ib-point-density" Label="IB Point Density" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>3</DefaultValue>
-            </Double>
-            <String Name="solver-type" Label="Solver Type" Version="0" NumberOfRequiredValues="1">
-              <DiscreteInfo DefaultIndex="1">
-                <Value Enum="COLLOCATED">COLLOCATED</Value>
-                <Value Enum="STAGGERED">STAGGERED</Value>
-              </DiscreteInfo>
-            </String>
-            <Double Name="start-time" Label="Start Time" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>0</DefaultValue>
-            </Double>
-            <Double Name="end-time" Label="End Time" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>10</DefaultValue>
-            </Double>
-            <Double Name="grow-dt" Label="Timestep Growth Factor" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>2</DefaultValue>
-              <RangeInfo>
-                <Min Inclusive="true">1</Min>
-              </RangeInfo>
-            </Double>
-            <Int Name="num-cycles" Label="Number of Cycles (fixed-point iteration)" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>1</DefaultValue>
-              <RangeInfo>
-                <Min Inclusive="true">1</Min>
-              </RangeInfo>
-            </Int>
-            <String Name="convective-ts-type" Label="Convective Timestep Type" Version="0" NumberOfRequiredValues="1">
-              <DiscreteInfo DefaultIndex="0">
-                <Value Enum="ADAMS_BASHFORTH">ADAMS_BASHFORTH</Value>
-                <Value Enum="FOWARD_EULER">FOWARD_EULER</Value>
-                <Value Enum="MIDPOINT_RULE">MIDPOINT_RULE</Value>
-                <Value Enum="TRAPEZOIDAL_RULE">TRAPEZOIDAL_RULE</Value>
-              </DiscreteInfo>
-            </String>
-            <String Name="convective-op-type" Label="Convective Discretization Type" Version="0" NumberOfRequiredValues="1">
-              <DiscreteInfo DefaultIndex="1">
-                <Value Enum="CENTERED">CENTERED</Value>
-                <Value Enum="PPM">PPM</Value>
-              </DiscreteInfo>
-            </String>
-            <String Name="convective-form" Label="Convective Form" Version="0" NumberOfRequiredValues="1">
-              <DiscreteInfo DefaultIndex="0">
-                <Value Enum="ADVECTIVE">ADVECTIVE</Value>
-                <Value Enum="CONSERVATIVE">CONSERVATIVE</Value>
-                <Value Enum="SKEW_SYMMETRIC">SKEW_SYMMETRIC</Value>
-              </DiscreteInfo>
-            </String>
-            <Void Name="normalize-pressure" Label="Normalize Pressure" Version="0" Optional="true" IsEnabledByDefault="false" />
-            <Double Name="cfl-max" Label="Maximum CFL Number" Version="0" NumberOfRequiredValues="1">
-              <BriefDescription>recommended &lt;= 0.5</BriefDescription>
-              <DefaultValue>0.25</DefaultValue>
-            </Double>
-            <Void Name="error-on-dt-change" Label="Error on DT Change" Version="0" Optional="true" IsEnabledByDefault="true">
-              <BriefDescription>Emit error message if the time step size changes</BriefDescription>
-            </Void>
-            <Void Name="vorticity-tagging" Label="Vorticity Tagging" Version="0" Optional="true" IsEnabledByDefault="true" />
-            <Double Name="regrid-cfl-interval" Label="Regrid CFL Interval" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>0.5</DefaultValue>
-            </Double>
-            <String Name="projection-method" Label="Projection Method" Version="0" NumberOfRequiredValues="1">
-              <DiscreteInfo DefaultIndex="1">
-                <Value Enum="PRESSURE_INCREMENT">PRESSURE_INCREMENT</Value>
-                <Value Enum="PRESSURE_UPDATE">PRESSURE_UPDATE</Value>
-              </DiscreteInfo>
-            </String>
-            <Void Name="second-order-prssure-update" Label="Second Order Pressure Update" Version="0" Optional="true" IsEnabledByDefault="true" />
+            <Group Name="time" Label="Time" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Double Name="start-time" Label="Start Time" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>0</DefaultValue>
+                </Double>
+                <Double Name="end-time" Label="End Time" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>10</DefaultValue>
+                </Double>
+                <Double Name="grow-dt" Label="Timestep Growth Factor" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>2</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
+                </Double>
+                <Double Name="dt-max" Label="Maximum Timestep Size" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>0.00048799999999999999</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="false">0</Min>
+                  </RangeInfo>
+                </Double>
+                <Void Name="error-on-dt-change" Label="Error on DT Change" Version="0" Optional="true" IsEnabledByDefault="true">
+                  <BriefDescription>Emit error message if the time step size changes</BriefDescription>
+                </Void>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="hierarchy-integrator" Label="IBHierarchyIntegrator" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Int Name="num-cycles" Label="Number of Cycles (fixed-point iteration)" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>1</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
+                </Int>
+                <Double Name="regrid-cfl-interval" Label="Regrid CFL Interval" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>0.5</DefaultValue>
+                </Double>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="fe-method" Label="IBFEMethod" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <String Name="ib-delta-function" Label="IB Delta Function" Version="0" NumberOfRequiredValues="1">
+                  <BriefDescription>type of smoothed delta function to use for Lagrangian-Eulerian interaction</BriefDescription>
+                  <DiscreteInfo DefaultIndex="1">
+                    <Value Enum="IB_3">IB_3</Value>
+                    <Value Enum="IB_4">IB_4</Value>
+                    <Value Enum="IB_6">IB_6</Value>
+                    <Value Enum="PIECEWISE_LINEAR">PIECEWISE_LINEAR</Value>
+                    <Value Enum="PIECEWISE_CUBIC">PIECEWISE_CUBIC</Value>
+                    <Value Enum="BSPLINE_3">BSPLINE_3</Value>
+                    <Value Enum="BSPLINE_4">BSPLINE_4</Value>
+                    <Value Enum="BSPLINE_5">BSPLINE_5</Value>
+                    <Value Enum="BSPLINE_6">BSPLINE_6</Value>
+                  </DiscreteInfo>
+                </String>
+                <Void Name="split-forces" Label="Split Forces" Version="0" Optional="true" IsEnabledByDefault="false" />
+                <Void Name="use-jump-conditions" Label="Use Jump Conditions" Version="0" Optional="true" IsEnabledByDefault="false" />
+                <Void Name="use-consistent-mass-matrix" Label="Use Consistent Mass Matrix" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Double Name="ib-point-density" Label="IB Point Density" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>3</DefaultValue>
+                </Double>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="solver" Label="Solver" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <String Name="solver-type" Label="Solver Type" Version="0" NumberOfRequiredValues="1">
+                  <ChildrenDefinitions>
+                    <Void Name="second-order-prssure-update" Label="Second Order Pressure Update" Version="0" Optional="true" IsEnabledByDefault="true" />
+                  </ChildrenDefinitions>
+                  <DiscreteInfo DefaultIndex="1">
+                    <Structure>
+                      <Value Enum="COLLOCATED">COLLOCATED</Value>
+                      <Items>
+                        <Item>second-order-prssure-update</Item>
+                      </Items>
+                    </Structure>
+                    <Value Enum="STAGGERED">STAGGERED</Value>
+                  </DiscreteInfo>
+                </String>
+                <String Name="convective-ts-type" Label="Convective Timestep Type" Version="0" NumberOfRequiredValues="1">
+                  <DiscreteInfo DefaultIndex="0">
+                    <Value Enum="ADAMS_BASHFORTH">ADAMS_BASHFORTH</Value>
+                    <Value Enum="FOWARD_EULER">FOWARD_EULER</Value>
+                    <Value Enum="MIDPOINT_RULE">MIDPOINT_RULE</Value>
+                    <Value Enum="TRAPEZOIDAL_RULE">TRAPEZOIDAL_RULE</Value>
+                  </DiscreteInfo>
+                </String>
+                <String Name="convective-op-type" Label="Convective Discretization Type" Version="0" NumberOfRequiredValues="1">
+                  <DiscreteInfo DefaultIndex="1">
+                    <Value Enum="CENTERED">CENTERED</Value>
+                    <Value Enum="PPM">PPM</Value>
+                  </DiscreteInfo>
+                </String>
+                <String Name="convective-difference-form" Label="Convective Difference Form" Version="0" NumberOfRequiredValues="1">
+                  <DiscreteInfo DefaultIndex="0">
+                    <Value Enum="ADVECTIVE">ADVECTIVE</Value>
+                    <Value Enum="CONSERVATIVE">CONSERVATIVE</Value>
+                    <Value Enum="SKEW_SYMMETRIC">SKEW_SYMMETRIC</Value>
+                  </DiscreteInfo>
+                </String>
+                <Void Name="normalize-pressure" Label="Normalize Pressure" Version="0" Optional="true" IsEnabledByDefault="false" />
+                <Double Name="cfl-max" Label="Maximum CFL Number" Version="0" NumberOfRequiredValues="1">
+                  <BriefDescription>recommended &lt;= 0.5</BriefDescription>
+                  <DefaultValue>0.25</DefaultValue>
+                </Double>
+                <Void Name="vorticity-tagging" Label="Vorticity Tagging" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <String Name="projection-method" Label="Projection Method" Version="0" NumberOfRequiredValues="1">
+                  <DiscreteInfo DefaultIndex="1">
+                    <Value Enum="PRESSURE_INCREMENT">PRESSURE_INCREMENT</Value>
+                    <Value Enum="PRESSURE_UPDATE">PRESSURE_UPDATE</Value>
+                  </DiscreteInfo>
+                </String>
+              </ItemDefinitions>
+            </Group>
           </ItemDefinitions>
         </AttDef>
         <AttDef Type="velocity" Label="Velocity Boundary Condition" BaseType="" Version="0" Unique="true">
           <ItemDefinitions>
-            <Group Name="Enable" Label="Enable" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredGroups="1">
+            <Group Name="enable" Label="Enable" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredGroups="1">
               <BriefDescription>a*u + b*du/dn = g</BriefDescription>
               <ItemDefinitions>
                 <Double Name="a" Label="a Coefficients" Version="0" NumberOfRequiredValues="4">
@@ -284,7 +326,7 @@
       </Definitions>
       <!--**********  Attribute Instances ***********-->
       <Attributes>
-        <Att Name="Geometry" Type="geometry" ID="adc44297-6c9f-48c3-af0a-47a8606ee88c">
+        <Att Name="Geometry" Type="geometry" ID="3d1492fe-fadb-44a2-aef3-197311100d1d">
           <Items>
             <Double Name="origin">
               <Values>
@@ -300,7 +342,7 @@
             </Double>
           </Items>
         </Att>
-        <Att Name="Grid" Type="grid" ID="ecd87702-6aec-43b2-9852-676f467c0583">
+        <Att Name="Grid" Type="grid" ID="a6cd0d27-a00e-4ac9-bdc3-fd36d71277fd">
           <Items>
             <Int Name="base-grid-size">
               <Values>
@@ -339,18 +381,27 @@
             <Double Name="combine-efficiency">0.84999999999999998</Double>
           </Items>
         </Att>
-        <Att Name="output" Type="output" ID="9001d0c4-7cfd-4e1d-ab66-7b458bbbb7e3">
+        <Att Name="output" Type="output" ID="896dddb3-c0dd-443e-8de9-46e3537563b9">
           <Items>
+            <Void Name="enable-logging" Enabled="true" />
+            <Group Name="output-fields">
+              <Void Name="velocity" Enabled="true" />
+              <Void Name="pressure" Enabled="true" />
+              <Void Name="body-force" Enabled="true" />
+              <Void Name="vorticity" Enabled="true" />
+              <Void Name="divergence" Enabled="true" />
+            </Group>
             <Group Name="log">
               <File Name="log-file">"IB2d.log"</File>
               <Void Name="log-all-nodes" Enabled="false" />
             </Group>
-            <Group Name="visualization" Enabled="true">
+            <Group Name="visualization">
               <Group Name="visit" Enabled="true">
                 <Int Name="number-procs-per-file">1</Int>
               </Group>
               <Void Name="exodus" Enabled="true" />
-              <Void Name="silo" />
+              <Void Name="silo" Enabled="false" />
+              <Int Name="interval">250</Int>
               <Directory Name="directory">"viz_IB2d"</Directory>
             </Group>
             <Group Name="restart" Enabled="false">
@@ -366,39 +417,50 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="parameters" Type="parameters" ID="d0bde64c-d481-4fc1-bbe9-09a4a00c6aba">
+        <Att Name="parameters" Type="parameters" ID="1aa4c975-d1c2-4340-bc87-081dda09e262">
           <Items>
             <Double Name="viscosity">0.01</Double>
             <Double Name="density">1</Double>
           </Items>
         </Att>
-        <Att Name="solver" Type="solver" ID="ac3328d8-be47-4e81-bc5e-83954331cb1a">
+        <Att Name="solver" Type="solver" ID="730d0840-768e-4e5a-9b50-a244688c2f6f">
           <Items>
-            <String Name="ib-delta-function" Discrete="true">1</String>
-            <Void Name="split-forces" Enabled="false" />
-            <Void Name="use-jump-conditions" Enabled="false" />
-            <Void Name="use-consistent-mass-matrix" Enabled="true" />
-            <Double Name="ib-point-density">3</Double>
-            <String Name="solver-type" Discrete="true">1</String>
-            <Double Name="start-time">0</Double>
-            <Double Name="end-time">10</Double>
-            <Double Name="grow-dt">2</Double>
-            <Int Name="num-cycles">1</Int>
-            <String Name="convective-ts-type" Discrete="true">0</String>
-            <String Name="convective-op-type" Discrete="true">1</String>
-            <String Name="convective-form" Discrete="true">0</String>
-            <Void Name="normalize-pressure" Enabled="false" />
-            <Double Name="cfl-max">0.25</Double>
-            <Void Name="error-on-dt-change" Enabled="true" />
-            <Void Name="vorticity-tagging" Enabled="true" />
-            <Double Name="regrid-cfl-interval">0.5</Double>
-            <String Name="projection-method" Discrete="true">1</String>
-            <Void Name="second-order-prssure-update" Enabled="true" />
+            <Group Name="time">
+              <Double Name="start-time">0</Double>
+              <Double Name="end-time">10</Double>
+              <Double Name="grow-dt">2</Double>
+              <Double Name="dt-max">0.00048799999999999999</Double>
+              <Void Name="error-on-dt-change" Enabled="true" />
+            </Group>
+            <Group Name="hierarchy-integrator">
+              <Int Name="num-cycles">1</Int>
+              <Double Name="regrid-cfl-interval">0.5</Double>
+            </Group>
+            <Group Name="fe-method">
+              <String Name="ib-delta-function" Discrete="true">1</String>
+              <Void Name="split-forces" Enabled="false" />
+              <Void Name="use-jump-conditions" Enabled="false" />
+              <Void Name="use-consistent-mass-matrix" Enabled="true" />
+              <Double Name="ib-point-density">3</Double>
+            </Group>
+            <Group Name="solver">
+              <String Name="solver-type" Discrete="true">
+                <ChildrenItems>
+                  <Void Name="second-order-prssure-update" Enabled="true" />
+                </ChildrenItems>1</String>
+              <String Name="convective-ts-type" Discrete="true">0</String>
+              <String Name="convective-op-type" Discrete="true">1</String>
+              <String Name="convective-difference-form" Discrete="true">0</String>
+              <Void Name="normalize-pressure" Enabled="false" />
+              <Double Name="cfl-max">0.25</Double>
+              <Void Name="vorticity-tagging" Enabled="true" />
+              <String Name="projection-method" Discrete="true">1</String>
+            </Group>
           </Items>
         </Att>
-        <Att Name="velocity0" Type="velocity" ID="9b15d497-9560-4e16-82c3-6489b89c8231">
+        <Att Name="velocity0" Type="velocity" ID="1447a1e1-7616-4a56-9f83-9918573e75af">
           <Items>
-            <Group Name="Enable" Enabled="true">
+            <Group Name="enable" Enabled="false">
               <Double Name="a">
                 <Values>
                   <Val Ith="0">1</Val>
@@ -426,9 +488,9 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity1" Type="velocity" ID="57054ff8-931d-4490-a4d6-8428d553e0a7">
+        <Att Name="velocity1" Type="velocity" ID="4f29882f-3654-48af-93fc-024220c2819a">
           <Items>
-            <Group Name="Enable" Enabled="true">
+            <Group Name="enable" Enabled="false">
               <Double Name="a">
                 <Values>
                   <Val Ith="0">1</Val>
@@ -456,9 +518,9 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity2" Type="velocity" ID="17f2222e-ad94-442c-838b-32bc1717cf20">
+        <Att Name="velocity2" Type="velocity" ID="9cf94a1a-06db-41b9-8e85-82da4ae9721b">
           <Items>
-            <Group Name="Enable" Enabled="false">
+            <Group Name="enable" Enabled="false">
               <Double Name="a">
                 <Values>
                   <Val Ith="0">1</Val>
@@ -486,9 +548,9 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity3" Type="velocity" ID="9871cea4-8f83-4453-a96a-1ff8972ac775">
+        <Att Name="velocity3" Type="velocity" ID="d73f4864-ecdf-4c57-8ceb-c4c3da0df32c">
           <Items>
-            <Group Name="Enable" Enabled="false">
+            <Group Name="enable" Enabled="false">
               <Double Name="a">
                 <Values>
                   <Val Ith="0">1</Val>
