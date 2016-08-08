@@ -72,7 +72,7 @@ class Writer2D:
       self.out = out
 
       for component in self.component_sequence:
-        format_list = self.format_table.get(component.name)
+        format_list = self.format_table.get(component.format_list_name)
 
         # Components can assign custom method
         if component.custom_component_method is not None:

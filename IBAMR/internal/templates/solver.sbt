@@ -102,7 +102,7 @@
                 <Value>PPM</Value>
               </DiscreteInfo>
             </String>
-            <String Name="convective-difference-form" Label="Convective Difference Form">
+            <String Name="convective-diff-form" Label="Convective Difference Form">
               <DiscreteInfo DefaultIndex="0">
                 <Value>ADVECTIVE</Value>
                 <Value>CONSERVATIVE</Value>

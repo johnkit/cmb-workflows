@@ -70,6 +70,27 @@ format_table = {
     card('use_consistent_mass_matrix', item_path='use-consistent-mass-matrix'),
     card('IB_point_density', item_path='ib-point-density'),
   ],
+  # Common cards used by collocated and staggered solvers:
+  'solver': [
+    card('mu', att_type='parameters', item_path='viscosity'),
+    card('rho', att_type='parameters', item_path='density'),
+    card('start_time', item_path='time/start-time'),
+    card('end_time', item_path='time/end-time'),
+    card('grow_dt', item_path='time/grow-dt'),
+    card('convective_time_stepping_type', item_path='solver/convective-ts-type'),
+    card('convective_op_type', item_path='solver/convective-op-type'),
+    card('convective_difference_form', item_path='solver/convective-diff-form'),
+    card('normalize_pressure', item_path='solver/normalize-pressure'),
+    card('cfl', item_path='solver/cfl-max'),
+    card('dt_max', item_path='time/dt-max'),
+    # TODO vorticity tagging
+    card('output_U', att_type='output', item_path='output-fields/velocity'),
+    card('output_P', att_type='output', item_path='output-fields/pressure'),
+    card('output_F', att_type='output', item_path='output-fields/body-force'),
+    card('output_Omega', att_type='output', item_path='output-fields/vorticity'),
+    card('output_Div_U', att_type='output', item_path='output-fields/divergence'),
+    card('enable_logging', att_type='output', item_path='enable-logging'),
+  ],
 }
     #card('', item_path='')
 
@@ -95,6 +116,10 @@ component_list = [
   comp('Main', att_type='output'),
   comp('IBHierarchyIntegrator', att_type='solver'),
   comp('IBFEMethod', att_type='solver', base_item_path='fe-method', tab=26),
+  comp('INSCollocatedHierarchyIntegrator',
+    format_list_name='solver', att_type='solver', tab=29),
+  comp('INSStaggeredHierarchyIntegrator',
+    format_list_name='solver', att_type='solver', tab=29),
 ]
 
 # ---------------------------------------------------------------------
