@@ -83,7 +83,10 @@ format_table = {
     card('normalize_pressure', item_path='solver/normalize-pressure'),
     card('cfl', item_path='solver/cfl-max'),
     card('dt_max', item_path='time/dt-max'),
-    # TODO vorticity tagging
+    card('using_vorticity_tagging', item_path='solver/vorticity-tagging'),
+    card('vorticity_rel_threshold',
+      item_path='solver/vorticity-tagging/vorticity-rel-thresh'),
+    card('tag_buffer', item_path='solver/vorticity-tagging/tag-buffer'),
     card('output_U', att_type='output', item_path='output-fields/velocity'),
     card('output_P', att_type='output', item_path='output-fields/pressure'),
     card('output_F', att_type='output', item_path='output-fields/body-force'),

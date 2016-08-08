@@ -256,13 +256,20 @@
               <ItemDefinitions>
                 <String Name="solver-type" Label="Solver Type" Version="0" NumberOfRequiredValues="1">
                   <ChildrenDefinitions>
-                    <Void Name="second-order-prssure-update" Label="Second Order Pressure Update" Version="0" Optional="true" IsEnabledByDefault="true" />
+                    <String Name="projection-method" Label="Projection Method" Version="0" NumberOfRequiredValues="1">
+                      <DiscreteInfo DefaultIndex="1">
+                        <Value Enum="PRESSURE_INCREMENT">PRESSURE_INCREMENT</Value>
+                        <Value Enum="PRESSURE_UPDATE">PRESSURE_UPDATE</Value>
+                      </DiscreteInfo>
+                    </String>
+                    <Void Name="second-order-pressure-update" Label="Second Order Pressure Update" Version="0" Optional="true" IsEnabledByDefault="true" />
                   </ChildrenDefinitions>
                   <DiscreteInfo DefaultIndex="1">
                     <Structure>
                       <Value Enum="COLLOCATED">COLLOCATED</Value>
                       <Items>
-                        <Item>second-order-prssure-update</Item>
+                        <Item>projection-method</Item>
+                        <Item>second-order-pressure-update</Item>
                       </Items>
                     </Structure>
                     <Value Enum="STAGGERED">STAGGERED</Value>
@@ -294,13 +301,16 @@
                   <BriefDescription>recommended &lt;= 0.5</BriefDescription>
                   <DefaultValue>0.25</DefaultValue>
                 </Double>
-                <Void Name="vorticity-tagging" Label="Vorticity Tagging" Version="0" Optional="true" IsEnabledByDefault="true" />
-                <String Name="projection-method" Label="Projection Method" Version="0" NumberOfRequiredValues="1">
-                  <DiscreteInfo DefaultIndex="1">
-                    <Value Enum="PRESSURE_INCREMENT">PRESSURE_INCREMENT</Value>
-                    <Value Enum="PRESSURE_UPDATE">PRESSURE_UPDATE</Value>
-                  </DiscreteInfo>
-                </String>
+                <Group Name="vorticity-tagging" Label="Vorticity Tagging" Version="0" Optional="true" IsEnabledByDefault="true" NumberOfRequiredGroups="1">
+                  <ItemDefinitions>
+                    <Double Name="vorticity-rel-thresh" Label="Vorticity Relative Threshold(s)" Version="0" NumberOfRequiredValues="1" Extensible="true">
+                      <DefaultValue>0.01</DefaultValue>
+                    </Double>
+                    <Int Name="tag-buffer" Label="Tag Buffer(s)" Version="0" NumberOfRequiredValues="1" Extensible="true">
+                      <DefaultValue>1</DefaultValue>
+                    </Int>
+                  </ItemDefinitions>
+                </Group>
               </ItemDefinitions>
             </Group>
           </ItemDefinitions>
@@ -326,7 +336,7 @@
       </Definitions>
       <!--**********  Attribute Instances ***********-->
       <Attributes>
-        <Att Name="Geometry" Type="geometry" ID="653eb7dd-4cd8-408e-95f1-2da761895d9b">
+        <Att Name="Geometry" Type="geometry" ID="59d24a87-ccfe-40d8-b499-8e981901e7fd">
           <Items>
             <Double Name="origin">
               <Values>
@@ -342,7 +352,7 @@
             </Double>
           </Items>
         </Att>
-        <Att Name="Grid" Type="grid" ID="d9311ec5-cef1-4aa7-bd17-f572693b4ed8">
+        <Att Name="Grid" Type="grid" ID="c0ad100f-ed55-488b-9881-20584ce8157d">
           <Items>
             <Int Name="base-grid-size">
               <Values>
@@ -381,7 +391,7 @@
             <Double Name="combine-efficiency">0.84999999999999998</Double>
           </Items>
         </Att>
-        <Att Name="output" Type="output" ID="9bad7864-79ba-44a1-a3ea-d8768d7b77ee">
+        <Att Name="output" Type="output" ID="5bbf0d19-941e-4a80-a115-102cfbd47c8a">
           <Items>
             <Void Name="enable-logging" Enabled="true" />
             <Group Name="output-fields">
@@ -417,13 +427,13 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="parameters" Type="parameters" ID="20a04cef-f7a0-4233-9162-6073336c4cf7">
+        <Att Name="parameters" Type="parameters" ID="17cb71d8-88f1-40ae-bd22-801173fe1edf">
           <Items>
             <Double Name="viscosity">0.01</Double>
             <Double Name="density">1</Double>
           </Items>
         </Att>
-        <Att Name="solver" Type="solver" ID="d0cf08e2-6dc4-41ea-8e54-49ff80a4be2b">
+        <Att Name="solver" Type="solver" ID="a07480ee-67a9-4b78-ad00-6242e448a0be">
           <Items>
             <Group Name="time">
               <Double Name="start-time">0</Double>
@@ -446,19 +456,32 @@
             <Group Name="solver">
               <String Name="solver-type" Discrete="true">
                 <ChildrenItems>
-                  <Void Name="second-order-prssure-update" Enabled="true" />
+                  <String Name="projection-method" Discrete="true">1</String>
+                  <Void Name="second-order-pressure-update" Enabled="true" />
                 </ChildrenItems>1</String>
               <String Name="convective-ts-type" Discrete="true">0</String>
               <String Name="convective-op-type" Discrete="true">1</String>
               <String Name="convective-diff-form" Discrete="true">0</String>
               <Void Name="normalize-pressure" Enabled="false" />
               <Double Name="cfl-max">0.25</Double>
-              <Void Name="vorticity-tagging" Enabled="true" />
-              <String Name="projection-method" Discrete="true">1</String>
+              <Group Name="vorticity-tagging" Enabled="true">
+                <Double Name="vorticity-rel-thresh" NumberOfValues="2">
+                  <Values>
+                    <Val Ith="0">0.01</Val>
+                    <Val Ith="1">0.02</Val>
+                  </Values>
+                </Double>
+                <Int Name="tag-buffer" NumberOfValues="2">
+                  <Values>
+                    <Val Ith="0">1</Val>
+                    <Val Ith="1">42</Val>
+                  </Values>
+                </Int>
+              </Group>
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity1" Type="velocity" ID="9d2e6f7b-ed02-4e0d-af63-84ed63701400">
+        <Att Name="velocity0" Type="velocity" ID="5a93a20a-339f-445a-95f7-4401d3aa32ed">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -488,7 +511,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity0" Type="velocity" ID="46790019-15b5-4fd8-8ede-97741d2c0778">
+        <Att Name="velocity3" Type="velocity" ID="1710622a-51b4-479c-a643-faf2ec0fe589">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -518,7 +541,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity2" Type="velocity" ID="b303be34-437d-4904-b454-c9b6f7d2cee6">
+        <Att Name="velocity1" Type="velocity" ID="8cf7f4b0-a707-48ec-b3b8-31096e70c4f5">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -548,7 +571,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity3" Type="velocity" ID="04298c68-78b6-498f-859c-6ad25286e357">
+        <Att Name="velocity2" Type="velocity" ID="7d99457d-e010-48c9-b289-f7d85b2655ee">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">

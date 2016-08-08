@@ -67,13 +67,18 @@ SMTK_AttributeSystem(Version="2")
           ItemDefinitions
             String(Name="solver-type" Label="Solver Type")
               ChildrenDefinitions
-                Void(Name="second-order-prssure-update" Label="Second Order Pressure Update"
+                Void(Name="second-order-pressure-update" Label="Second Order Pressure Update"
                   Optional="true" IsEnabledByDefault="true")
+                String(Name="projection-method" Label="Projection Method")
+                  DiscreteInfo(DefaultIndex="1")
+                    Value PRESSURE_INCREMENT
+                    Value PRESSURE_UPDATE
               DiscreteInfo(DefaultIndex="1")
                 Structure
                   Value COLLOCATED
                   Items
-                    Item second-order-prssure-update
+                    Item projection-method
+                    Item second-order-pressure-update
                 Value STAGGERED
             String(Name="convective-ts-type" Label="Convective Timestep Type")
               DiscreteInfo(DefaultIndex="0")
@@ -97,9 +102,12 @@ SMTK_AttributeSystem(Version="2")
               DefaultValue 0.25
               RangeInfo
                 Minimum(Inclusive="false") 0.0
-            Void(Name="vorticity-tagging" Label="Vorticity Tagging"
+            Group(Name="vorticity-tagging" Label="Vorticity Tagging"
               Optional="true" IsEnabledByDefault="true")
-            String(Name="projection-method" Label="Projection Method")
-              DiscreteInfo(DefaultIndex="1")
-                Value PRESSURE_INCREMENT
-                Value PRESSURE_UPDATE
+              ItemDefinitions
+                Double(Name="vorticity-rel-thresh" Label="Vorticity Relative Threshold(s)"
+                  Extensible="true" NumberOfRequiredValues="1")
+                  DefaultValue 0.01
+                Int(Name="tag-buffer" Label="Tag Buffer(s)"
+                  Extensible="true" NumberOfRequiredValues="1")
+                  DefaultValue 1

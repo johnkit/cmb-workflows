@@ -76,13 +76,20 @@
           <ItemDefinitions>
             <String Name="solver-type" Label="Solver Type">
               <ChildrenDefinitions>
-                <Void Name="second-order-prssure-update" Label="Second Order Pressure Update" Optional="true" IsEnabledByDefault="true"></Void>
+                <Void Name="second-order-pressure-update" Label="Second Order Pressure Update" Optional="true" IsEnabledByDefault="true"></Void>
+                <String Name="projection-method" Label="Projection Method">
+                  <DiscreteInfo DefaultIndex="1">
+                    <Value>PRESSURE_INCREMENT</Value>
+                    <Value>PRESSURE_UPDATE</Value>
+                  </DiscreteInfo>
+                </String>
               </ChildrenDefinitions>
               <DiscreteInfo DefaultIndex="1">
                 <Structure>
                   <Value>COLLOCATED</Value>
                   <Items>
-                    <Item>second-order-prssure-update</Item>
+                    <Item>projection-method</Item>
+                    <Item>second-order-pressure-update</Item>
                   </Items>
                 </Structure>
                 <Value>STAGGERED</Value>
@@ -117,13 +124,16 @@
                 <Minimum Inclusive="false">0.0</Minimum>
               </RangeInfo>
             </Double>
-            <Void Name="vorticity-tagging" Label="Vorticity Tagging" Optional="true" IsEnabledByDefault="true"></Void>
-            <String Name="projection-method" Label="Projection Method">
-              <DiscreteInfo DefaultIndex="1">
-                <Value>PRESSURE_INCREMENT</Value>
-                <Value>PRESSURE_UPDATE</Value>
-              </DiscreteInfo>
-            </String>
+            <Group Name="vorticity-tagging" Label="Vorticity Tagging" Optional="true" IsEnabledByDefault="true">
+              <ItemDefinitions>
+                <Double Name="vorticity-rel-thresh" Label="Vorticity Relative Threshold(s)" Extensible="true" NumberOfRequiredValues="1">
+                  <DefaultValue>0.01</DefaultValue>
+                </Double>
+                <Int Name="tag-buffer" Label="Tag Buffer(s)" Extensible="true" NumberOfRequiredValues="1">
+                  <DefaultValue>1</DefaultValue>
+                </Int>
+              </ItemDefinitions>
+            </Group>
           </ItemDefinitions>
         </Group>
       </ItemDefinitions>

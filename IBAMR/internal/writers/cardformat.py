@@ -120,7 +120,7 @@ class CardFormat:
       string_list = [str(x) for x in value_list]
       string_value = ', '.join(string_list)
       self.write_value(
-        out, self.keyword, string_value, quote_string=False, tab=tab)
+        out, self.keyword, string_value, tab=tab)
       return self.finish_write()
 
     # (else) Single value or expression
