@@ -93,6 +93,12 @@ format_table = {
     card('output_Omega', att_type='output', item_path='output-fields/vorticity'),
     card('output_Div_U', att_type='output', item_path='output-fields/divergence'),
     card('enable_logging', att_type='output', item_path='enable-logging'),
+    card('projection_method_type',
+      if_condition='collated-integrator',
+      item_path='solver/solver-type/projection-method'),
+    card('use_2nd_order_pressure_update',
+      if_condition='collated-integrator',
+      item_path='solver/solver-type/second-order-pressure-update'),
   ],
 }
     #card('', item_path='')
@@ -120,7 +126,10 @@ component_list = [
   comp('IBHierarchyIntegrator', att_type='solver'),
   comp('IBFEMethod', att_type='solver', base_item_path='fe-method', tab=26),
   comp('INSCollocatedHierarchyIntegrator',
-    format_list_name='solver', att_type='solver', tab=29),
+    format_list_name='solver',
+    att_type='solver',
+    set_condition='collated-integrator',
+    tab=29),
   comp('INSStaggeredHierarchyIntegrator',
     format_list_name='solver', att_type='solver', tab=29),
 ]

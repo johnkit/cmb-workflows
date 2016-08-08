@@ -21,12 +21,18 @@ class ConditionSet:
 
   # ---------------------------------------------------------------------
   @classmethod
-  def set_condition(klaas, condition):
-    klaas.Conditions.add(condition)
+  def clear(klass):
+    klass.Conditions.clear()
 
   # ---------------------------------------------------------------------
-  def unset_condition(klaas, condition):
-    klaas.Conditions.discard(condition)  # (no check)
+  @classmethod
+  def set_condition(klass, condition):
+    klass.Conditions.add(condition)
+
+  # ---------------------------------------------------------------------
+  @classmethod
+  def unset_condition(klass, condition):
+    klass.Conditions.discard(condition)  # (no check)
 
   # ---------------------------------------------------------------------
   @classmethod

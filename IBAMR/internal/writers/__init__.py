@@ -1,14 +1,16 @@
-import cardformat
+
+# Only import condition set once, since it is
+# used as a singleton
 import conditionset
+
+import cardformat
 import outputcomponent
 import writer2d
 
 reload(cardformat)
-reload(conditionset)
 reload(outputcomponent)
 reload(writer2d)  # for development
 
 from cardformat import CardFormat
-from conditionset import ConditionSet
 from outputcomponent import OutputComponent
 from writer2d import Writer2D

@@ -28,6 +28,7 @@ class OutputComponent:
     base_item_path = None,
     custom_component_method = None,
     format_list_name = None,
+    set_condition = None,
     tab = None):
     '''Information for output file component
 
@@ -40,7 +41,8 @@ class OutputComponent:
     base_item_path: (string) common path to all card items
     custom_component_method: (string) custom method to use
       in the writer object
-    format_list_name: (string) alternaite format list to use (default == name)
+    format_list_name: (string) alternate format list to use (default == name)
+    set_condition: (object) set condition when writing this component
     tab: (int) tab width for first column (None == use default)
     '''
     self.att_name = att_name
@@ -52,4 +54,5 @@ class OutputComponent:
     else:
       self.format_list_name = name  # default
     self.name = name
+    self.set_condition = set_condition
     self.tab = tab

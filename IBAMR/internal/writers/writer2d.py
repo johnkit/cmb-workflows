@@ -15,6 +15,7 @@ print 'loading', os.path.basename(__file__)
 import smtk
 
 from cardformat import CardFormat
+from conditionset import ConditionSet
 
 # ---------------------------------------------------------------------
 class Writer2D:
@@ -50,6 +51,7 @@ class Writer2D:
   def write(self, component_sequence, format_table):
     '''
     '''
+    ConditionSet.clear()
     self.component_sequence = component_sequence
     self.format_table = format_table
 
@@ -72,7 +74,12 @@ class Writer2D:
       self.out = out
 
       for component in self.component_sequence:
+        # Get format list
         format_list = self.format_table.get(component.format_list_name)
+
+        # Set component condition (if any)
+        if component.set_condition:
+          ConditionSet.set_condition(component.set_condition)
 
         # Components can assign custom method
         if component.custom_component_method is not None:
@@ -88,6 +95,10 @@ class Writer2D:
         # Else use the default component writer
         else:
           self.write_component(out, component, format_list)
+
+        # Unset any component condition
+        if component.set_condition:
+          ConditionSet.unset_condition(component.set_condition)
 
       completed = True
       print 'Wrote output file %s' % output_filename
