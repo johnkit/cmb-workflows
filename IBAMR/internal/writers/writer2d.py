@@ -193,8 +193,7 @@ class Writer2D:
         upper_y = grid_size_item.value(1) - 1
         value = '[ (0,0), (%d,%d) ]' % (upper_x, upper_y)
 
-        card.write_value(
-          out, card.keyword, value, quote_string=False, tab=tab)
+        card.write_value(out, value, quote_string=False, tab=tab)
       elif card.is_custom:
         print 'TODO', card.keyword
       else:
@@ -237,7 +236,7 @@ class Writer2D:
         keyword = '%scoef_function_%d' % (item_name, i)
         value = coef_item.value(i)
         value_string = '\"%s\"' % value
-        card.write_value(out, keyword, value_string, tab=tab)
+        card.write_value(out, value_string, keyword=keyword, tab=tab)
 
     self.end_component(out)
 

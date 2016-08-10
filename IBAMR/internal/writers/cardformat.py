@@ -103,7 +103,7 @@ class CardFormat:
 
     if item.type() == smtk.attribute.Item.VOID:
       self.write_value(
-        out, self.keyword, item.isEnabled(), as_boolean=True, tab=tab)
+        out, item.isEnabled(), as_boolean=True, tab=tab)
       return self.finish_write()
 
     if not item.isEnabled():
@@ -130,7 +130,7 @@ class CardFormat:
         string_list = [str(x) for x in value_list]
       string_value = ', '.join(string_list)
       self.write_value(
-        out, self.keyword, string_value, quote_string=False, tab=tab)
+        out, string_value, quote_string=False, tab=tab)
       return self.finish_write()
 
     # (else) Single value or expression
@@ -150,15 +150,17 @@ class CardFormat:
       if isinstance(value, smtk.AttributePtr):
         value = value.name()
 
-    self.write_value(out, keyword, value, tab=tab)
+    self.write_value(out, value, keyword=keyword, tab=tab)
     return self.finish_write()
 
 # ---------------------------------------------------------------------
   def write_value(self,
-    out, keyword, value, quote_string=True, as_boolean=False, tab=None):
+    out, value, keyword=None, quote_string=True, as_boolean=False, tab=None):
     '''Writes value to output stream
 
     '''
+    if keyword is None:
+      keyword = self.keyword
     if tab is None:
       tab = DefaultTab
     if len(keyword) > tab:
