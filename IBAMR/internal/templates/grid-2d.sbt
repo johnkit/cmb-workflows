@@ -54,17 +54,19 @@
             <Min Inclusive="true">1</Min>
           </Range>
         </Int>
-        <Int Name="refinement-ratio" Label="Refinement Ratio">
+        <!-- Define refinement ratio as string, to indicate whether itis specified as a single value ("fixed") or table of values
+        -->
+        <String Name="refinement-ratio" Label="Refinement Ratio">
           <ChildrenDefinitions>
-            <Int Name="fixed-refinement" Label="Fixed Refinement Ratio">
+            <Int Name="fixed" Label="Fixed Refinement Ratio">
               <DefaultValue>2</DefaultValue>
               <Range>
                 <Min Inclusive="true">1</Min>
               </Range>
             </Int>
-            <Group Name="general-refinement" Label="General Refinement Ratio" Extensible="true" NumberOfRequiredGroups="1">
+            <Group Name="table" Label="General Refinement Ratio" Extensible="true" NumberOfRequiredGroups="1">
               <ItemDefinitions>
-                <Int Name="refinement-ratio" Label="Refinement Ratio" NumberOfRequiredValues="2">
+                <Int Name="row" Label="Refinement Ratio" NumberOfRequiredValues="2">
                   <ComponentLabels>
                     <Label>x:</Label>
                     <Label>y:</Label>
@@ -81,17 +83,96 @@
             <Structure>
               <Value Enum="Fixed Value">fixed</Value>
               <Items>
-                <Item>fixed-refinement</Item>
+                <Item>fixed</Item>
               </Items>
             </Structure>
             <Structure>
-              <Value Enum="General">general</Value>
+              <Value Enum="General">table</Value>
               <Items>
-                <Item>general-refinement</Item>
+                <Item>table</Item>
               </Items>
             </Structure>
           </DiscreteInfo>
-        </Int>
+        </String>
+        <!-- largest-patch-size follows *exact* same patten as refinement ratio-->
+        <String Name="largest-patch-size" Label="Largest Patch Size">
+          <ChildrenDefinitions>
+            <Int Name="fixed" Label="Fixed Value">
+              <DefaultValue>2</DefaultValue>
+              <Range>
+                <Min Inclusive="true">1</Min>
+              </Range>
+            </Int>
+            <Group Name="table" Label="Table" Extensible="true" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Int Name="row" Label="Largest Patch Size" NumberOfRequiredValues="2">
+                  <ComponentLabels>
+                    <Label>x:</Label>
+                    <Label>y:</Label>
+                  </ComponentLabels>
+                  <DefaultValue>2</DefaultValue>
+                  <Range>
+                    <Min Inclusive="true">1</Min>
+                  </Range>
+                </Int>
+              </ItemDefinitions>
+            </Group>
+          </ChildrenDefinitions>
+          <DiscreteInfo DefaultIndex="0">
+            <Structure>
+              <Value Enum="Fixed Value">fixed</Value>
+              <Items>
+                <Item>fixed</Item>
+              </Items>
+            </Structure>
+            <Structure>
+              <Value Enum="General">table</Value>
+              <Items>
+                <Item>table</Item>
+              </Items>
+            </Structure>
+          </DiscreteInfo>
+        </String>
+        <!-- smallest-patch-size follows *exact* same patten as refinement ratio-->
+        <String Name="smallest-patch-size" Label="Smallest Patch Size">
+          <ChildrenDefinitions>
+            <Int Name="fixed" Label="Fixed Value">
+              <DefaultValue>2</DefaultValue>
+              <Range>
+                <Min Inclusive="true">1</Min>
+              </Range>
+            </Int>
+            <Group Name="table" Label="Table" Extensible="true" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Int Name="row" Label="Smallest Patch Size" NumberOfRequiredValues="2">
+                  <ComponentLabels>
+                    <Label>x:</Label>
+                    <Label>y:</Label>
+                  </ComponentLabels>
+                  <DefaultValue>2</DefaultValue>
+                  <Range>
+                    <Min Inclusive="true">1</Min>
+                  </Range>
+                </Int>
+              </ItemDefinitions>
+            </Group>
+          </ChildrenDefinitions>
+          <DiscreteInfo DefaultIndex="0">
+            <Structure>
+              <Value Enum="Fixed Value">fixed</Value>
+              <Items>
+                <Item>fixed</Item>
+              </Items>
+            </Structure>
+            <Structure>
+              <Value Enum="General">table</Value>
+              <Items>
+                <Item>table</Item>
+              </Items>
+            </Structure>
+          </DiscreteInfo>
+        </String>
+        <!-- Next 4 values not currently used-->
         <Double Name="mfac" Label="MFAC" Optional="true" IsEnabledByDefault="false">
           <BriefDescription>ratio of structural mesh width to Cartesian mesh width</BriefDescription>
           <DefaultValue>2.0</DefaultValue>

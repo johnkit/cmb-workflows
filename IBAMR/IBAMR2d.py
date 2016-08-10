@@ -61,6 +61,14 @@ format_table = {
     card('x_up', item_path='length'),
     card('periodic_dimension', item_path='periodic'),
   ],
+  'GriddingAlgorithm': [
+    card('max_levels', item_path='max-levels'),
+    card('ratio_to_coarser', is_custom=True, item_path='refinement-ratio'),
+    card('largest_patch_size', is_custom=True, item_path='largest-patch-size'),
+    card('smallest_patch_size', is_custom=True, item_path='smallest-patch-size'),
+    card('efficiency_tolerance', item_path='efficiency-tolerance'),
+    card('combine_efficiency', item_path='combine-efficiency'),
+  ],
   'IBHierarchyIntegrator': [
     card('start_time', item_path='time/start-time'),
     card('end_time', item_path='time/end-time'),
@@ -158,6 +166,8 @@ component_list = [
   comp('Main', att_type='output'),
   comp('CartesianGeometry',
     att_type='geometry', custom_component_method='write_geometry'),
+  comp('GriddingAlgorithm',
+    custom_component_method='write_grid', att_type='grid'),
   comp('IBHierarchyIntegrator', att_type='solver'),
   comp('IBFEMethod', att_type='solver', base_item_path='fe-method', tab=26),
   comp('INSCollocatedHierarchyIntegrator',

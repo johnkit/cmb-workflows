@@ -157,6 +157,45 @@ class Writer2D:
     self.end_component(out)
 
 # ---------------------------------------------------------------------
+  def write_bc_coefs(self, out, component, format_list):
+    '''Custom method for writing velocity BC coefficients
+    '''
+    if not component.att_name:
+      print 'ERROR: Missing att_name for component', component.name
+      return
+
+    att = self.sim_atts.findAttribute(component.att_name)
+    if not att:
+      print 'ERROR: Missing attribute with name', component.att_name
+      return
+
+    # Check the enabled group item
+    enable_item = att.findGroup('enable')
+    if not enable_item.isEnabled():
+      return
+
+    print 'Writing component', component.name
+
+    # Initialize CardFormat for temp use
+    card = CardFormat('temp')
+    tab = component.tab
+
+    self.begin_component(out, component)
+    for item_name in ['a', 'b', 'g']:
+      item = enable_item.find(item_name)
+      coef_item = smtk.attribute.to_concrete(item)
+      if item_name != 'a':
+        out.write('\n')
+      coef_num = coef_item.numberOfValues()
+      for i in range(coef_num):
+        keyword = '%scoef_function_%d' % (item_name, i)
+        value = coef_item.value(i)
+        value_string = '\"%s\"' % value
+        card.write_value(out, value_string, keyword=keyword, tab=tab)
+
+    self.end_component(out)
+
+# ---------------------------------------------------------------------
   def write_geometry(self, out, component, format_list):
     '''Custom method for writing CartesianGeometry
     '''
@@ -202,43 +241,71 @@ class Writer2D:
     self.end_component(out)
 
 # ---------------------------------------------------------------------
-  def write_bc_coefs(self, out, component, format_list):
-    '''Custom method for writing velocity BC coefficients
+  def write_grid(self, out, component, format_list):
+    '''Custom writer for GriddingAlgorithm component
     '''
-    if not component.att_name:
-      print 'ERROR: Missing att_name for component', component.name
-      return
-
-    att = self.sim_atts.findAttribute(component.att_name)
-    if not att:
-      print 'ERROR: Missing attribute with name', component.att_name
-      return
-
-    # Check the enabled group item
-    enable_item = att.findGroup('enable')
-    if not enable_item.isEnabled():
-      return
-
     print 'Writing component', component.name
+    att_list = self.sim_atts.findAttributes(component.att_type)
+    if not att_list:
+      print 'ERROR: Missing', component.att_type, 'attribute'
+      return
 
-    # Initialize CardFormat for temp use
-    card = CardFormat('temp')
+    att = att_list[0]
     tab = component.tab
-
     self.begin_component(out, component)
-    for item_name in ['a', 'b', 'g']:
-      item = enable_item.find(item_name)
-      coef_item = smtk.attribute.to_concrete(item)
-      if item_name != 'a':
-        out.write('\n')
-      coef_num = coef_item.numberOfValues()
-      for i in range(coef_num):
-        keyword = '%scoef_function_%d' % (item_name, i)
-        value = coef_item.value(i)
-        value_string = '\"%s\"' % value
-        card.write_value(out, value_string, keyword=keyword, tab=tab)
+
+    for card in format_list:
+      if card.is_custom:
+        # All custom grids cards are for "table" subcomponents
+        self.write_table(out, card, att)
+      else:
+        card.write(out, att, tab=tab)
 
     self.end_component(out)
+
+# ---------------------------------------------------------------------
+  def write_table(self, out, card, att):
+    '''Writes subcomponent with table of value pairs by level
+
+    This presumes a specific attribute format, used by several items:
+    refinement-ratio, largest-patch-size, smallest-patch-size
+    '''
+
+    # Begin subcomponent
+    indent = '  '
+    out.write('%s%s {\n' % (indent, card.keyword))
+
+    level = 1 if card.keyword == 'ratio_to_coarser' else 0
+    type_item = att.findString(card.item_path)
+    if not type_item:
+      print 'ERROR: Missing string item of type', card.item_path
+      return
+    data_type = type_item.value(0)
+    # Next line fails to_concrete() call for unknown reason
+    #item = type_item.findChild(data_type, smtk.attribute.ACTIVE_CHILDREN)
+    # So instead construct itemAtPath
+    item_path = '%s/%s' % (type_item.name(), data_type)
+    item = att.itemAtPath(item_path, '/')
+    data_item = smtk.attribute.to_concrete(item)
+    if 'fixed' == data_type:
+      # data_item is single double value
+      fixed_val = data_item.value(0)
+      prefix = '%s%slevel_%d =' % (indent, indent, level)
+      out.write('%s %s,%s\n' % (prefix, fixed_val, fixed_val))
+    elif 'table' == data_type:
+      # data_item is Group with rows of double[2] items
+      num_rows = data_item.numberOfGroups()
+      for i in range(num_rows):
+        item = data_item.find(i, 'row')
+        row_item = smtk.attribute.to_concrete(item)
+        val0 = row_item.value(0)
+        val1 = row_item.value(1)
+        prefix = '%s%slevel_%d =' % (indent, indent, level)
+        out.write('%s %s,%s\n' % (prefix, val0, val1))
+        level += 1
+
+    # End subcomponent
+    out.write('%s}\n' % indent)
 
 # ---------------------------------------------------------------------
   def begin_component(self, out, component):
@@ -247,5 +314,5 @@ class Writer2D:
     out.write('\n')
 
 # ---------------------------------------------------------------------
-  def end_component(self, out):
-    out.write('}\n')
+  def end_component(self, out, indent=''):
+    out.write('%s}\n' % indent)

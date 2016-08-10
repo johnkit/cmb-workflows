@@ -85,15 +85,15 @@
             <Int Name="max-levels" Label="Maximum Levels" Version="0" NumberOfRequiredValues="1">
               <DefaultValue>1</DefaultValue>
             </Int>
-            <Int Name="refinement-ratio" Label="Refinement Ratio" Version="0" NumberOfRequiredValues="1">
+            <String Name="refinement-ratio" Label="Refinement Ratio" Version="0" NumberOfRequiredValues="1">
               <ChildrenDefinitions>
-                <Int Name="fixed-refinement" Label="Fixed Refinement Ratio" Version="0" NumberOfRequiredValues="1">
+                <Int Name="fixed" Label="Fixed Refinement Ratio" Version="0" NumberOfRequiredValues="1">
                   <DefaultValue>2</DefaultValue>
                 </Int>
-                <Group Name="general-refinement" Label="General Refinement Ratio" Version="0" NumberOfRequiredGroups="1" Extensible="true">
+                <Group Name="table" Label="General Refinement Ratio" Version="0" NumberOfRequiredGroups="1" Extensible="true">
                   <ComponentLabels CommonLabel="" />
                   <ItemDefinitions>
-                    <Int Name="refinement-ratio" Label="Refinement Ratio" Version="0" NumberOfRequiredValues="2">
+                    <Int Name="row" Label="Refinement Ratio" Version="0" NumberOfRequiredValues="2">
                       <ComponentLabels>
                         <Label>x:</Label>
                         <Label>y:</Label>
@@ -105,19 +105,85 @@
               </ChildrenDefinitions>
               <DiscreteInfo DefaultIndex="0">
                 <Structure>
-                  <Value Enum="Fixed Value">0</Value>
+                  <Value Enum="Fixed Value">fixed</Value>
                   <Items>
-                    <Item>fixed-refinement</Item>
+                    <Item>fixed</Item>
                   </Items>
                 </Structure>
                 <Structure>
-                  <Value Enum="General">0</Value>
+                  <Value Enum="General">table</Value>
                   <Items>
-                    <Item>general-refinement</Item>
+                    <Item>table</Item>
                   </Items>
                 </Structure>
               </DiscreteInfo>
-            </Int>
+            </String>
+            <String Name="largest-patch-size" Label="Largest Patch Size" Version="0" NumberOfRequiredValues="1">
+              <ChildrenDefinitions>
+                <Int Name="fixed" Label="Fixed Value" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>2</DefaultValue>
+                </Int>
+                <Group Name="table" Label="Table" Version="0" NumberOfRequiredGroups="1" Extensible="true">
+                  <ComponentLabels CommonLabel="" />
+                  <ItemDefinitions>
+                    <Int Name="row" Label="Largest Patch Size" Version="0" NumberOfRequiredValues="2">
+                      <ComponentLabels>
+                        <Label>x:</Label>
+                        <Label>y:</Label>
+                      </ComponentLabels>
+                      <DefaultValue>2</DefaultValue>
+                    </Int>
+                  </ItemDefinitions>
+                </Group>
+              </ChildrenDefinitions>
+              <DiscreteInfo DefaultIndex="0">
+                <Structure>
+                  <Value Enum="Fixed Value">fixed</Value>
+                  <Items>
+                    <Item>fixed</Item>
+                  </Items>
+                </Structure>
+                <Structure>
+                  <Value Enum="General">table</Value>
+                  <Items>
+                    <Item>table</Item>
+                  </Items>
+                </Structure>
+              </DiscreteInfo>
+            </String>
+            <String Name="smallest-patch-size" Label="Smallest Patch Size" Version="0" NumberOfRequiredValues="1">
+              <ChildrenDefinitions>
+                <Int Name="fixed" Label="Fixed Value" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>2</DefaultValue>
+                </Int>
+                <Group Name="table" Label="Table" Version="0" NumberOfRequiredGroups="1" Extensible="true">
+                  <ComponentLabels CommonLabel="" />
+                  <ItemDefinitions>
+                    <Int Name="row" Label="Smallest Patch Size" Version="0" NumberOfRequiredValues="2">
+                      <ComponentLabels>
+                        <Label>x:</Label>
+                        <Label>y:</Label>
+                      </ComponentLabels>
+                      <DefaultValue>2</DefaultValue>
+                    </Int>
+                  </ItemDefinitions>
+                </Group>
+              </ChildrenDefinitions>
+              <DiscreteInfo DefaultIndex="0">
+                <Structure>
+                  <Value Enum="Fixed Value">fixed</Value>
+                  <Items>
+                    <Item>fixed</Item>
+                  </Items>
+                </Structure>
+                <Structure>
+                  <Value Enum="General">table</Value>
+                  <Items>
+                    <Item>table</Item>
+                  </Items>
+                </Structure>
+              </DiscreteInfo>
+            </String>
             <Double Name="mfac" Label="MFAC" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1">
               <BriefDescription>ratio of structural mesh width to Cartesian mesh width</BriefDescription>
               <DefaultValue>2</DefaultValue>
@@ -373,7 +439,7 @@
       </Definitions>
       <!--**********  Attribute Instances ***********-->
       <Attributes>
-        <Att Name="controls" Type="controls" ID="88a89617-4fb7-4f75-a97c-a07e2ba45ddb">
+        <Att Name="controls" Type="controls" ID="972c514f-fcbe-47f7-a01f-f3562388cf65">
           <Items>
             <String Name="tagging-method" Discrete="true">0</String>
             <Group Name="load-balancer">
@@ -392,7 +458,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="Geometry" Type="geometry" ID="06004ab9-a465-4043-9452-9823114dc149">
+        <Att Name="Geometry" Type="geometry" ID="8d69e7c7-0b17-424f-8ff5-b50d0c28f043">
           <Items>
             <Double Name="origin">
               <Values>
@@ -414,7 +480,7 @@
             </Int>
           </Items>
         </Att>
-        <Att Name="Grid" Type="grid" ID="a86fd75d-2a95-456f-adc5-75b85303e341">
+        <Att Name="Grid" Type="grid" ID="41c9b633-8fbb-4989-b661-d76dcac6aaba">
           <Items>
             <Int Name="base-grid-size">
               <Values>
@@ -423,13 +489,13 @@
               </Values>
             </Int>
             <Int Name="max-levels">1</Int>
-            <Int Name="refinement-ratio" Discrete="true">
+            <String Name="refinement-ratio" Discrete="true">
               <ChildrenItems>
-                <Int Name="fixed-refinement">2</Int>
-                <Group Name="general-refinement" NumberOfGroups="1">
+                <Int Name="fixed">2</Int>
+                <Group Name="table" NumberOfGroups="1">
                   <GroupClusters>
                     <Cluster Ith="0">
-                      <Int Name="refinement-ratio">
+                      <Int Name="row">
                         <Values>
                           <Val Ith="0">2</Val>
                           <Val Ith="1">2</Val>
@@ -438,7 +504,39 @@
                     </Cluster>
                   </GroupClusters>
                 </Group>
-              </ChildrenItems>0</Int>
+              </ChildrenItems>0</String>
+            <String Name="largest-patch-size" Discrete="true">
+              <ChildrenItems>
+                <Int Name="fixed">2</Int>
+                <Group Name="table" NumberOfGroups="1">
+                  <GroupClusters>
+                    <Cluster Ith="0">
+                      <Int Name="row">
+                        <Values>
+                          <Val Ith="0">2</Val>
+                          <Val Ith="1">2</Val>
+                        </Values>
+                      </Int>
+                    </Cluster>
+                  </GroupClusters>
+                </Group>
+              </ChildrenItems>0</String>
+            <String Name="smallest-patch-size" Discrete="true">
+              <ChildrenItems>
+                <Int Name="fixed">2</Int>
+                <Group Name="table" NumberOfGroups="1">
+                  <GroupClusters>
+                    <Cluster Ith="0">
+                      <Int Name="row">
+                        <Values>
+                          <Val Ith="0">2</Val>
+                          <Val Ith="1">2</Val>
+                        </Values>
+                      </Int>
+                    </Cluster>
+                  </GroupClusters>
+                </Group>
+              </ChildrenItems>0</String>
             <Double Name="mfac" Enabled="false">2</Double>
             <String Name="element-type" Discrete="true">1</String>
             <Int Name="pk1-dev-quad-order">5</Int>
@@ -447,7 +545,7 @@
             <Double Name="combine-efficiency">0.84999999999999998</Double>
           </Items>
         </Att>
-        <Att Name="output" Type="output" ID="23a58606-b0b8-4cf8-8dc2-13adf27fcfd9">
+        <Att Name="output" Type="output" ID="03faa5f3-3e86-42ab-8c69-c4b19fe5e54e">
           <Items>
             <Void Name="enable-logging" Enabled="true" />
             <Group Name="output-fields">
@@ -483,13 +581,13 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="parameters" Type="parameters" ID="30304a8f-5b57-4a04-9d2c-60aec10e6dd7">
+        <Att Name="parameters" Type="parameters" ID="8469b75c-52a9-4414-804a-e9c07847b45d">
           <Items>
             <Double Name="viscosity">0.01</Double>
             <Double Name="density">1</Double>
           </Items>
         </Att>
-        <Att Name="solver" Type="solver" ID="4e76ded1-aa14-4e97-a82c-931262e8bc7c">
+        <Att Name="solver" Type="solver" ID="bd0c4ade-dd4e-4128-a0d0-085dc9d9d5c1">
           <Items>
             <Group Name="time">
               <Double Name="start-time">0</Double>
@@ -535,7 +633,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity0" Type="velocity" ID="094d1f40-eb4a-4b22-ba0c-178de5e08f95">
+        <Att Name="velocity0" Type="velocity" ID="bf0a9ed3-7e72-4ffd-a522-3be881482fdd">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -565,7 +663,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity3" Type="velocity" ID="75500e92-a184-48b7-9d09-b029e3e6c9ec">
+        <Att Name="velocity1" Type="velocity" ID="5a6486ea-e7b6-4585-a2cd-c0f9b22f8ba6">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -595,7 +693,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity2" Type="velocity" ID="7423644a-4f7f-403d-ba44-916db4fa6992">
+        <Att Name="velocity3" Type="velocity" ID="df74982a-be7c-44d3-8e37-f98ace5d36dd">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -625,7 +723,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity1" Type="velocity" ID="cfc39db7-0dc1-405f-abf6-d790061a81e0">
+        <Att Name="velocity2" Type="velocity" ID="6d4afea3-6400-4e12-bbf1-5dfa0332cb5c">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">

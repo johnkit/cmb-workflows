@@ -46,16 +46,19 @@ SMTK_AttributeSystem(Version="2")
           DefaultValue 1
           Range
             Min(Inclusive="true") 1
-        Int(Name="refinement-ratio" Label="Refinement Ratio")
+        // Define refinement ratio as string, to indicate whether it
+           is specified as a single value ("fixed") or table of values
+        String(Name="refinement-ratio" Label="Refinement Ratio")
+          //- Standard format for fixed/table options
           ChildrenDefinitions
-            Int(Name="fixed-refinement" Label="Fixed Refinement Ratio")
+            Int(Name="fixed" Label="Fixed Refinement Ratio")
               DefaultValue 2
               Range
                 Min(Inclusive="true") 1
-            Group(Name="general-refinement" Label="General Refinement Ratio"
+            Group(Name="table" Label="General Refinement Ratio"
               Extensible="true" NumberOfRequiredGroups="1")
               ItemDefinitions
-                Int(Name="refinement-ratio" Label="Refinement Ratio"
+                Int(Name="row" Label="Refinement Ratio"
                   NumberOfRequiredValues="2")
                   ComponentLabels
                     Label x:
@@ -67,12 +70,71 @@ SMTK_AttributeSystem(Version="2")
             Structure
               Value(Enum="Fixed Value") fixed
               Items
-                Item fixed-refinement
+                Item fixed
             Structure
-              Value(Enum="General") general
+              Value(Enum="General") table
               Items
-                Item general-refinement
-                
+                Item table
+
+        // largest-patch-size follows *exact* same patten as refinement ratio
+        String(Name="largest-patch-size" Label="Largest Patch Size")
+          //- Standard format for fixed/table options
+          ChildrenDefinitions
+            Int(Name="fixed" Label="Fixed Value")
+              DefaultValue 2
+              Range
+                Min(Inclusive="true") 1
+            Group(Name="table" Label="Table"
+              Extensible="true" NumberOfRequiredGroups="1")
+              ItemDefinitions
+                Int(Name="row" Label="Largest Patch Size"
+                  NumberOfRequiredValues="2")
+                  ComponentLabels
+                    Label x:
+                    Label y:
+                  DefaultValue 2
+                  Range
+                    Min(Inclusive="true") 1
+          DiscreteInfo(DefaultIndex="0")
+            Structure
+              Value(Enum="Fixed Value") fixed
+              Items
+                Item fixed
+            Structure
+              Value(Enum="General") table
+              Items
+                Item table
+
+        // smallest-patch-size follows *exact* same patten as refinement ratio
+        String(Name="smallest-patch-size" Label="Smallest Patch Size")
+          //- Standard format for fixed/table options
+          ChildrenDefinitions
+            Int(Name="fixed" Label="Fixed Value")
+              DefaultValue 2
+              Range
+                Min(Inclusive="true") 1
+            Group(Name="table" Label="Table"
+              Extensible="true" NumberOfRequiredGroups="1")
+              ItemDefinitions
+                Int(Name="row" Label="Smallest Patch Size"
+                  NumberOfRequiredValues="2")
+                  ComponentLabels
+                    Label x:
+                    Label y:
+                  DefaultValue 2
+                  Range
+                    Min(Inclusive="true") 1
+          DiscreteInfo(DefaultIndex="0")
+            Structure
+              Value(Enum="Fixed Value") fixed
+              Items
+                Item fixed
+            Structure
+              Value(Enum="General") table
+              Items
+                Item table
+
+        // Next 4 values not currently used
         Double(Name="mfac" Label="MFAC"
           Optional="true" IsEnabledByDefault="false")
           BriefDescription
@@ -97,6 +159,7 @@ SMTK_AttributeSystem(Version="2")
           RangeInfo
             Minimum(Inclusive="true") 0
             Maximum(Inclusive="true") 43
+
         Double(Name="efficiency-tolerance" Label="Efficiency Tolerance")
           BriefDescription
             | min % of tag cells in new patch level
