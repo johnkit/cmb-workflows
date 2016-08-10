@@ -31,6 +31,7 @@ class CardFormat:
     att_type=None,
     comment=None,
     if_condition=None,
+    is_custom = False,
     item_path=None,
     set_condition=None):
     '''Formatting object for output line
@@ -46,6 +47,7 @@ class CardFormat:
     if_condition: (object) only write output if the condition is in the current
       ConditionSet. The if_condition argument can be an iterable,
       in which case, ALL elements must be in the class' ConditionSet.
+    is_custom: (boolean) indicates card is written by custom code
     item_path: (string) smtk "path" to item where info can be found
     set_condition: (object) add condition to ConditionSet.
       Is NOT executed if the if_condition fails
@@ -62,6 +64,7 @@ class CardFormat:
       self.if_condition = set([if_condition])
     else:
       self.if_condition = None
+    self.is_custom = is_custom
     self.item_path = item_path
     self.set_condition = set_condition
 
@@ -71,6 +74,10 @@ class CardFormat:
 
     Returns boolean indicating if line was written
     '''
+    if self.is_custom:
+      print 'WARNING: Ignoring custom card for keyword', self.keyword
+      return False
+
     # Skip cards with conditions that don't match
     if not ConditionSet.test_condition(self.if_condition):
       return False

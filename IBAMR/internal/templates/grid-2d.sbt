@@ -23,6 +23,16 @@
             <Min Inclusive="false">0.0</Min>
           </Range>
         </Double>
+        <Int Name="periodic" Label="Periodic?" NumberOfRequiredValues="2">
+          <ComponentLabels>
+            <Label>x:</Label>
+            <Label>y:</Label>
+          </ComponentLabels>
+          <DiscreteInfo DefaultIndex="0">
+            <Value Enum="No">0</Value>
+            <Value Enum="Yes">1</Value>
+          </DiscreteInfo>
+        </Int>
       </ItemDefinitions>
     </AttDef>
     <AttDef Type="grid" Label="Grid" BaseType="" Version="0">
@@ -37,16 +47,6 @@
           <Range>
             <Min Inclusive="true">1</Min>
           </Range>
-        </Int>
-        <Int Name="periodic" Label="Periodic?" NumberOfRequiredValues="2">
-          <ComponentLabels>
-            <Label>x:</Label>
-            <Label>y:</Label>
-          </ComponentLabels>
-          <DiscreteInfo DefaultIndex="0">
-            <Value Enum="No">0</Value>
-            <Value Enum="Yes">1</Value>
-          </DiscreteInfo>
         </Int>
         <Int Name="max-levels" Label="Maximum Levels" Version="0">
           <DefaultValue>1</DefaultValue>

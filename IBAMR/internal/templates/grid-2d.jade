@@ -23,6 +23,13 @@ SMTK_AttributeSystem(Version="2")
           DefaultValue 1.0
           Range
             Min(Inclusive="false") 0.0
+        Int(Name="periodic" Label="Periodic?" NumberOfRequiredValues="2")
+          ComponentLabels
+            Label x:
+            Label y:
+          DiscreteInfo(DefaultIndex="0")
+            Value(Enum="No") 0
+            Value(Enum="Yes") 1
 
     AttDef(Type="grid" Label="Grid" BaseType="" Version="0")
       ItemDefinitions
@@ -35,13 +42,6 @@ SMTK_AttributeSystem(Version="2")
           DefaultValue 64
           Range
             Min(Inclusive="true") 1
-        Int(Name="periodic" Label="Periodic?" NumberOfRequiredValues="2")
-          ComponentLabels
-            Label x:
-            Label y:
-          DiscreteInfo(DefaultIndex="0")
-            Value(Enum="No") 0
-            Value(Enum="Yes") 1
         Int(Name="max-levels" Label="Maximum Levels" Version="0")
           DefaultValue 1
           Range

@@ -153,7 +153,53 @@ class Writer2D:
       else:
         card_att_list = self.sim_atts.findAttributes(card.att_type)
         for card_att in card_att_list:
-          card.write(self.out, card_att, base_item_path=base_path, tab=tab)
+          card.write(out, card_att, base_item_path=base_path, tab=tab)
+    self.end_component(out)
+
+# ---------------------------------------------------------------------
+  def write_geometry(self, out, component, format_list):
+    '''Custom method for writing CartesianGeometry
+    '''
+    print 'Writing component', component.name
+    att_list = self.sim_atts.findAttributes(component.att_type)
+    if not att_list:
+      print 'ERROR: Missing', component.att_type, 'attribute'
+      return
+
+    att = att_list[0]
+    tab = component.tab
+    self.begin_component(out, component)
+
+    for card in format_list:
+      if 'domain_boxes' == card.keyword:
+        # Get the grid attribute & base-grid-size item
+        att_list = self.sim_atts.findAttributes(card.att_type)
+        if not att_list:
+          print 'ERROR: Missing attribute type', card.att_type
+          continue
+
+        grid_att = att_list[0]
+        grid_size_item = grid_att.findInt(card.item_path)
+        if not grid_size_item:
+          print 'ERROR: Missing item', card.item_path
+          continue
+
+        if grid_size_item.numberOfValues() != 2:
+          print 'ERROR: Wrong number of values (should be 2) for item', \
+            card.item_path
+          continue
+
+        upper_x = grid_size_item.value(0) - 1
+        upper_y = grid_size_item.value(1) - 1
+        value = '[ (0,0), (%d,%d) ]' % (upper_x, upper_y)
+
+        card.write_value(
+          out, card.keyword, value, quote_string=False, tab=tab)
+      elif card.is_custom:
+        print 'TODO', card.keyword
+      else:
+        card.write(out, att, tab=tab)
+
     self.end_component(out)
 
 # ---------------------------------------------------------------------

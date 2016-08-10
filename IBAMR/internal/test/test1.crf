@@ -60,6 +60,16 @@
               </ComponentLabels>
               <DefaultValue>1</DefaultValue>
             </Double>
+            <Int Name="periodic" Label="Periodic?" Version="0" NumberOfRequiredValues="2">
+              <ComponentLabels>
+                <Label>x:</Label>
+                <Label>y:</Label>
+              </ComponentLabels>
+              <DiscreteInfo DefaultIndex="0">
+                <Value Enum="No">0</Value>
+                <Value Enum="Yes">1</Value>
+              </DiscreteInfo>
+            </Int>
           </ItemDefinitions>
         </AttDef>
         <AttDef Type="grid" Label="Grid" BaseType="" Version="0" Unique="true">
@@ -71,16 +81,6 @@
                 <Label>y:</Label>
               </ComponentLabels>
               <DefaultValue>64</DefaultValue>
-            </Int>
-            <Int Name="periodic" Label="Periodic?" Version="0" NumberOfRequiredValues="2">
-              <ComponentLabels>
-                <Label>x:</Label>
-                <Label>y:</Label>
-              </ComponentLabels>
-              <DiscreteInfo DefaultIndex="0">
-                <Value Enum="No">0</Value>
-                <Value Enum="Yes">1</Value>
-              </DiscreteInfo>
             </Int>
             <Int Name="max-levels" Label="Maximum Levels" Version="0" NumberOfRequiredValues="1">
               <DefaultValue>1</DefaultValue>
@@ -373,7 +373,7 @@
       </Definitions>
       <!--**********  Attribute Instances ***********-->
       <Attributes>
-        <Att Name="controls" Type="controls" ID="dcf74529-f33b-4f99-8442-0f2f1da336ad">
+        <Att Name="controls" Type="controls" ID="88a89617-4fb7-4f75-a97c-a07e2ba45ddb">
           <Items>
             <String Name="tagging-method" Discrete="true">0</String>
             <Group Name="load-balancer">
@@ -392,7 +392,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="Geometry" Type="geometry" ID="4601342b-c86a-45c7-90e5-6bd6499ca2d5">
+        <Att Name="Geometry" Type="geometry" ID="06004ab9-a465-4043-9452-9823114dc149">
           <Items>
             <Double Name="origin">
               <Values>
@@ -406,21 +406,21 @@
                 <Val Ith="1">1</Val>
               </Values>
             </Double>
+            <Int Name="periodic">
+              <DiscreteValues>
+                <Index Ith="0">0</Index>
+                <Index Ith="1">0</Index>
+              </DiscreteValues>
+            </Int>
           </Items>
         </Att>
-        <Att Name="Grid" Type="grid" ID="2f014fc7-4b46-4045-b1e2-14affb2e37e8">
+        <Att Name="Grid" Type="grid" ID="a86fd75d-2a95-456f-adc5-75b85303e341">
           <Items>
             <Int Name="base-grid-size">
               <Values>
                 <Val Ith="0">64</Val>
                 <Val Ith="1">64</Val>
               </Values>
-            </Int>
-            <Int Name="periodic">
-              <DiscreteValues>
-                <Index Ith="0">0</Index>
-                <Index Ith="1">0</Index>
-              </DiscreteValues>
             </Int>
             <Int Name="max-levels">1</Int>
             <Int Name="refinement-ratio" Discrete="true">
@@ -447,7 +447,7 @@
             <Double Name="combine-efficiency">0.84999999999999998</Double>
           </Items>
         </Att>
-        <Att Name="output" Type="output" ID="1acc585b-55f1-486c-804e-24f3f9ad33e0">
+        <Att Name="output" Type="output" ID="23a58606-b0b8-4cf8-8dc2-13adf27fcfd9">
           <Items>
             <Void Name="enable-logging" Enabled="true" />
             <Group Name="output-fields">
@@ -483,13 +483,13 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="parameters" Type="parameters" ID="b202507f-e326-49fe-a1bc-6b5faa5206fc">
+        <Att Name="parameters" Type="parameters" ID="30304a8f-5b57-4a04-9d2c-60aec10e6dd7">
           <Items>
             <Double Name="viscosity">0.01</Double>
             <Double Name="density">1</Double>
           </Items>
         </Att>
-        <Att Name="solver" Type="solver" ID="f3df87e7-1557-42e1-905c-f47882305bd2">
+        <Att Name="solver" Type="solver" ID="4e76ded1-aa14-4e97-a82c-931262e8bc7c">
           <Items>
             <Group Name="time">
               <Double Name="start-time">0</Double>
@@ -535,7 +535,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity2" Type="velocity" ID="2144b13a-3a58-49e0-90c0-f99395944acb">
+        <Att Name="velocity0" Type="velocity" ID="094d1f40-eb4a-4b22-ba0c-178de5e08f95">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -565,7 +565,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity1" Type="velocity" ID="f972f972-bddc-4e14-a480-f40a3609d632">
+        <Att Name="velocity3" Type="velocity" ID="75500e92-a184-48b7-9d09-b029e3e6c9ec">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -595,7 +595,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity0" Type="velocity" ID="aedf3e1e-d1b9-4a8b-9dc6-a3cc3a90298e">
+        <Att Name="velocity2" Type="velocity" ID="7423644a-4f7f-403d-ba44-916db4fa6992">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -625,7 +625,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity3" Type="velocity" ID="d92bfaa4-c490-40a5-ac6a-9f60c2e79c53">
+        <Att Name="velocity1" Type="velocity" ID="cfc39db7-0dc1-405f-abf6-d790061a81e0">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">

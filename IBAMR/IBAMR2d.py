@@ -54,6 +54,13 @@ format_table = {
       item_path='restart/directory', if_condition='restart-output'),
   ],
   'bc': [],  # empty list for velocity BCs (all custom code)
+  'CartesianGeometry': [
+    card('domain_boxes',
+      is_custom=True, att_type='grid', item_path='base-grid-size'),
+    card('x_lo', item_path='origin'),
+    card('x_up', item_path='length'),
+    card('periodic_dimension', item_path='periodic'),
+  ],
   'IBHierarchyIntegrator': [
     card('start_time', item_path='time/start-time'),
     card('end_time', item_path='time/end-time'),
@@ -149,6 +156,8 @@ component_list = [
     format_list_name='bc',
     tab=16),
   comp('Main', att_type='output'),
+  comp('CartesianGeometry',
+    att_type='geometry', custom_component_method='write_geometry'),
   comp('IBHierarchyIntegrator', att_type='solver'),
   comp('IBFEMethod', att_type='solver', base_item_path='fe-method', tab=26),
   comp('INSCollocatedHierarchyIntegrator',
