@@ -53,6 +53,7 @@ format_table = {
     card('restart_dump_dirname',
       item_path='restart/directory', if_condition='restart-output'),
   ],
+  'bc': [],  # empty list for velocity BCs (all custom code)
   'IBHierarchyIntegrator': [
     card('start_time', item_path='time/start-time'),
     card('end_time', item_path='time/end-time'),
@@ -69,6 +70,10 @@ format_table = {
     card('use_jump_conditions', item_path='use-jump-conditions'),
     card('use_consistent_mass_matrix', item_path='use-consistent-mass-matrix'),
     card('IB_point_density', item_path='ib-point-density'),
+  ],
+  'LoadBalancer': [
+    card('bin_pack_method', item_path='load-balancer/bin-pack-method'),
+    card('max_workload_factor', item_path='load-balancer/max-workload-factor'),
   ],
   # Common cards used by collocated and staggered solvers:
   'solver': [
@@ -100,6 +105,15 @@ format_table = {
       if_condition='collated-integrator',
       item_path='solver/solver-type/second-order-pressure-update'),
   ],
+  'StandardTagAndInitialize': [
+    card('tagging_method', item_path='tagging-method')
+  ],
+  'TimerManager': [
+    card('print_exclusive', item_path='timer-manager/print-exclusive'),
+    card('print_total', item_path='timer-manager/print-total'),
+    card('print_threshold', item_path='timer-manager/print-threshold'),
+    card('timer_list', item_path='timer-manager/timer-list'),
+  ],
 }
     #card('', item_path='')
 
@@ -115,13 +129,25 @@ comp = OutputComponent
 # Order the components in the order to be written
 component_list = [
   comp('VelocityBcCoefs_0',
-    att_name='velocity0', custom_component_method='write_bc_coefs', tab=16),
+    att_name='velocity0',
+    custom_component_method='write_bc_coefs',
+    format_list_name='bc',
+    tab=16),
   comp('VelocityBcCoefs_1',
-    att_name='velocity1', custom_component_method='write_bc_coefs', tab=16),
+    att_name='velocity1',
+    custom_component_method='write_bc_coefs',
+    format_list_name='bc',
+    tab=16),
   comp('VelocityBcCoefs_2',
-    att_name='velocity2', custom_component_method='write_bc_coefs', tab=16),
+    att_name='velocity2',
+    custom_component_method='write_bc_coefs',
+    format_list_name='bc',
+    tab=16),
   comp('VelocityBcCoefs_3',
-    att_name='velocity3', custom_component_method='write_bc_coefs', tab=16),
+    att_name='velocity3',
+    custom_component_method='write_bc_coefs',
+    format_list_name='bc',
+    tab=16),
   comp('Main', att_type='output'),
   comp('IBHierarchyIntegrator', att_type='solver'),
   comp('IBFEMethod', att_type='solver', base_item_path='fe-method', tab=26),
@@ -132,6 +158,9 @@ component_list = [
     tab=29),
   comp('INSStaggeredHierarchyIntegrator',
     format_list_name='solver', att_type='solver', tab=29),
+  comp('StandardTagAndInitialize', att_type='controls'),
+  comp('LoadBalancer', att_type='controls'),
+  comp('TimerManager', att_type='controls'),
 ]
 
 # ---------------------------------------------------------------------

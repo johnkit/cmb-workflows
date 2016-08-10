@@ -10,6 +10,7 @@
     <File>templates/solver.sbt</File>
     <File>templates/parameters.sbt</File>
     <File>templates/output.sbt</File>
+    <File>templates/controls.sbt</File>
   </Includes>
 
   <!-- View specifications -->
@@ -22,6 +23,7 @@
         <View Title="Solver" />
         <View Title="Parameters" />
         <View Title="Output" />
+        <View Title="Controls" />
       </Views>
     </View>
 
@@ -76,6 +78,12 @@
     <View Type="Instanced" Title="Output">
       <InstancedAttributes>
         <Att Name="output" Type="output" />
+      </InstancedAttributes>
+    </View>
+
+    <View Type="Instanced" Title="Controls">
+      <InstancedAttributes>
+        <Att Name="controls" Type="controls" />
       </InstancedAttributes>
     </View>
 

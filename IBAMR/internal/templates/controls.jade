@@ -1,0 +1,35 @@
+//- Definitions for processing controls
+
+doctype xml
+SMTK_AttributeSystem(Version="2")
+
+  // Attribute Definitions
+  Definitions
+    AttDef(Type="controls" Label="Controls" BaseType="" Version="0")
+      ItemDefinitions
+        String(Name="tagging-method" Label="Tagging Method")
+          DiscreteInfo(DefaultIndex="0")
+            Value GRADIENT_DETECTOR
+            Value REFINE_BOXES
+        Group(Name="load-balancer" Label="Load Balancer")
+          ItemDefinitions
+            String(Name="bin-pack-method" Label="Bin Pack Method")
+              DiscreteInfo(DefaultIndex="0")
+                Value SPATIAL
+            Int(Name="max-workload-factor" Label="Max Workload Factor")
+              DefaultValue 1
+              RangeInfo
+                Min(Inclusive="true") 1
+                Max(Inclusive="true") 1
+        Group(Name="timer-manager" Label="Timer Manager")
+          ItemDefinitions
+            Void(Name="print-exclusive" Label="Print Exclusive"
+              Optional="true" IsEnabledByDefault="false")
+            Void(Name="print-total" Label="Print Total"
+              Optional="true" IsEnabledByDefault="true")
+            Double(Name="print-threshold" Label="Print Threshold")
+              DefaultValue 0.1
+            String(Name="timer-list", Label="Timer List"
+              Extensible="true" NumberOfRequiredValues="1")
+              DefaultValue *::*::*
+= "\n"

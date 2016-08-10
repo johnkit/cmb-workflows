@@ -5,6 +5,43 @@
       <!--**********  Category and Analysis Information ***********-->
       <!--**********  Attribute Definitions ***********-->
       <Definitions>
+        <AttDef Type="controls" Label="Controls" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <String Name="tagging-method" Label="Tagging Method" Version="0" NumberOfRequiredValues="1">
+              <DiscreteInfo DefaultIndex="0">
+                <Value Enum="GRADIENT_DETECTOR">GRADIENT_DETECTOR</Value>
+                <Value Enum="REFINE_BOXES">REFINE_BOXES</Value>
+              </DiscreteInfo>
+            </String>
+            <Group Name="load-balancer" Label="Load Balancer" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <String Name="bin-pack-method" Label="Bin Pack Method" Version="0" NumberOfRequiredValues="1">
+                  <DiscreteInfo DefaultIndex="0">
+                    <Value Enum="SPATIAL">SPATIAL</Value>
+                  </DiscreteInfo>
+                </String>
+                <Int Name="max-workload-factor" Label="Max Workload Factor" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>1</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
+                </Int>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="timer-manager" Label="Timer Manager" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Void Name="print-exclusive" Label="Print Exclusive" Version="0" Optional="true" IsEnabledByDefault="false" />
+                <Void Name="print-total" Label="Print Total" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Double Name="print-threshold" Label="Print Threshold" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>0.10000000000000001</DefaultValue>
+                </Double>
+                <String Name="timer-list" Label="Timer List" Version="0" NumberOfRequiredValues="1" Extensible="true">
+                  <DefaultValue>*::*::*</DefaultValue>
+                </String>
+              </ItemDefinitions>
+            </Group>
+          </ItemDefinitions>
+        </AttDef>
         <AttDef Type="geometry" Label="Geometry" BaseType="" Version="0" Unique="true">
           <ItemDefinitions>
             <Double Name="origin" Label="Lower Left Corner" Version="0" NumberOfRequiredValues="2">
@@ -336,7 +373,26 @@
       </Definitions>
       <!--**********  Attribute Instances ***********-->
       <Attributes>
-        <Att Name="Geometry" Type="geometry" ID="59d24a87-ccfe-40d8-b499-8e981901e7fd">
+        <Att Name="controls" Type="controls" ID="dcf74529-f33b-4f99-8442-0f2f1da336ad">
+          <Items>
+            <String Name="tagging-method" Discrete="true">0</String>
+            <Group Name="load-balancer">
+              <String Name="bin-pack-method" Discrete="true">0</String>
+              <Int Name="max-workload-factor">1</Int>
+            </Group>
+            <Group Name="timer-manager">
+              <Void Name="print-exclusive" Enabled="false" />
+              <Void Name="print-total" Enabled="true" />
+              <Double Name="print-threshold">0.10000000000000001</Double>
+              <String Name="timer-list" NumberOfValues="1">
+                <Values>
+                  <Val Ith="0">*::*::*</Val>
+                </Values>
+              </String>
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="Geometry" Type="geometry" ID="4601342b-c86a-45c7-90e5-6bd6499ca2d5">
           <Items>
             <Double Name="origin">
               <Values>
@@ -352,7 +408,7 @@
             </Double>
           </Items>
         </Att>
-        <Att Name="Grid" Type="grid" ID="c0ad100f-ed55-488b-9881-20584ce8157d">
+        <Att Name="Grid" Type="grid" ID="2f014fc7-4b46-4045-b1e2-14affb2e37e8">
           <Items>
             <Int Name="base-grid-size">
               <Values>
@@ -391,7 +447,7 @@
             <Double Name="combine-efficiency">0.84999999999999998</Double>
           </Items>
         </Att>
-        <Att Name="output" Type="output" ID="5bbf0d19-941e-4a80-a115-102cfbd47c8a">
+        <Att Name="output" Type="output" ID="1acc585b-55f1-486c-804e-24f3f9ad33e0">
           <Items>
             <Void Name="enable-logging" Enabled="true" />
             <Group Name="output-fields">
@@ -402,7 +458,7 @@
               <Void Name="divergence" Enabled="true" />
             </Group>
             <Group Name="log">
-              <File Name="log-file">"IB2d.log"</File>
+              <File Name="log-file">IB2d.log</File>
               <Void Name="log-all-nodes" Enabled="false" />
             </Group>
             <Group Name="visualization">
@@ -412,28 +468,28 @@
               <Void Name="exodus" Enabled="true" />
               <Void Name="silo" Enabled="false" />
               <Int Name="interval">250</Int>
-              <Directory Name="directory">"viz_IB2d"</Directory>
+              <Directory Name="directory">viz_IB2d</Directory>
             </Group>
             <Group Name="restart" Enabled="false">
               <Int Name="interval">10</Int>
-              <Directory Name="directory">"restart_IB2d"</Directory>
+              <Directory Name="directory">restart_IB2d</Directory>
             </Group>
             <Group Name="hierarchy" Enabled="false">
               <Int Name="interval">10</Int>
-              <Directory Name="directory">"hier_data_IB2d"</Directory>
+              <Directory Name="directory">hier_data_IB2d</Directory>
             </Group>
             <Group Name="timer" Enabled="false">
               <Int Name="interval">10</Int>
             </Group>
           </Items>
         </Att>
-        <Att Name="parameters" Type="parameters" ID="17cb71d8-88f1-40ae-bd22-801173fe1edf">
+        <Att Name="parameters" Type="parameters" ID="b202507f-e326-49fe-a1bc-6b5faa5206fc">
           <Items>
             <Double Name="viscosity">0.01</Double>
             <Double Name="density">1</Double>
           </Items>
         </Att>
-        <Att Name="solver" Type="solver" ID="a07480ee-67a9-4b78-ad00-6242e448a0be">
+        <Att Name="solver" Type="solver" ID="f3df87e7-1557-42e1-905c-f47882305bd2">
           <Items>
             <Group Name="time">
               <Double Name="start-time">0</Double>
@@ -465,23 +521,21 @@
               <Void Name="normalize-pressure" Enabled="false" />
               <Double Name="cfl-max">0.25</Double>
               <Group Name="vorticity-tagging" Enabled="true">
-                <Double Name="vorticity-rel-thresh" NumberOfValues="2">
+                <Double Name="vorticity-rel-thresh" NumberOfValues="1">
                   <Values>
                     <Val Ith="0">0.01</Val>
-                    <Val Ith="1">0.02</Val>
                   </Values>
                 </Double>
-                <Int Name="tag-buffer" NumberOfValues="2">
+                <Int Name="tag-buffer" NumberOfValues="1">
                   <Values>
                     <Val Ith="0">1</Val>
-                    <Val Ith="1">42</Val>
                   </Values>
                 </Int>
               </Group>
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity0" Type="velocity" ID="5a93a20a-339f-445a-95f7-4401d3aa32ed">
+        <Att Name="velocity2" Type="velocity" ID="2144b13a-3a58-49e0-90c0-f99395944acb">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -511,7 +565,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity3" Type="velocity" ID="1710622a-51b4-479c-a643-faf2ec0fe589">
+        <Att Name="velocity1" Type="velocity" ID="f972f972-bddc-4e14-a480-f40a3609d632">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -541,7 +595,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity1" Type="velocity" ID="8cf7f4b0-a707-48ec-b3b8-31096e70c4f5">
+        <Att Name="velocity0" Type="velocity" ID="aedf3e1e-d1b9-4a8b-9dc6-a3cc3a90298e">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -571,7 +625,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity2" Type="velocity" ID="7d99457d-e010-48c9-b289-f7d85b2655ee">
+        <Att Name="velocity3" Type="velocity" ID="d92bfaa4-c490-40a5-ac6a-9f60c2e79c53">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -611,6 +665,7 @@
             <View Title="Solver" />
             <View Title="Parameters" />
             <View Title="Output" />
+            <View Title="Controls" />
           </Views>
         </View>
         <View Type="Group" Title="BC" Style="tiled">
@@ -620,6 +675,11 @@
             <View Title="Lower Y" />
             <View Title="Upper Y" />
           </Views>
+        </View>
+        <View Type="Instanced" Title="Controls">
+          <InstancedAttributes>
+            <Att Name="controls" Type="controls" />
+          </InstancedAttributes>
         </View>
         <View Type="Instanced" Title="Grid">
           <InstancedAttributes>

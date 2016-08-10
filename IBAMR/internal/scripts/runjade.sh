@@ -11,6 +11,7 @@ declare -a names=( \
   "solver" \
   "parameters" \
   "output" \
+  "controls" \
   )
 subfolder="templates"
 

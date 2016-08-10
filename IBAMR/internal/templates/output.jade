@@ -24,7 +24,7 @@ SMTK_AttributeSystem(Version="2")
         Group(Name="log" Label="Log Output")
           ItemDefinitions
             File(Name="log-file" Label="Log File" NumberOfRequiredValues="1")
-              DefaultValue "IB2d.log"
+              DefaultValue IB2d.log
             Void(Name="log-all-nodes" Label="Log All Nodes"
               Optional="true" IsEnabledByDefault="false")
 
@@ -43,7 +43,7 @@ SMTK_AttributeSystem(Version="2")
               RangeInfo
                 Minimum(Inclusive="true") 1
             Directory(Name="directory" Label="Directory" NumberOfRequiredValues="1")
-              DefaultValue "viz_IB2d"
+              DefaultValue viz_IB2d
 
         Group(Name="restart" Label="Restart Output"
           Optional="true" IsEnabledByDefault="false")
@@ -53,7 +53,7 @@ SMTK_AttributeSystem(Version="2")
               RangeInfo
                 Minimum(Inclusive="true") 1
             Directory(Name="directory" Label="Directory" NumberOfRequiredValues="1")
-              DefaultValue "restart_IB2d"
+              DefaultValue restart_IB2d
 
         Group(Name="hierarchy" Label="Hierarchy Data Output"
           Optional="true" IsEnabledByDefault="false")
@@ -63,7 +63,7 @@ SMTK_AttributeSystem(Version="2")
               RangeInfo
                 Minimum(Inclusive="true") 1
             Directory(Name="directory" Label="Directory" NumberOfRequiredValues="1")
-              DefaultValue "hier_data_IB2d"
+              DefaultValue hier_data_IB2d
 
         Group(Name="timer" Label="Timer Output"
           Optional="true" IsEnabledByDefault="false")
@@ -72,3 +72,4 @@ SMTK_AttributeSystem(Version="2")
               DefaultValue 10
               RangeInfo
                 Minimum(Inclusive="true") 1
+= "\n"

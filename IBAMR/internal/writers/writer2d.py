@@ -76,6 +76,12 @@ class Writer2D:
       for component in self.component_sequence:
         # Get format list
         format_list = self.format_table.get(component.format_list_name)
+        if format_list is None:
+          print 'WARNING: Missing format list for component', component.name,
+          if component.format_list_name != component.name:
+            print ' (format list name:', component.format_list_name, ')',
+          print
+          continue
 
         # Set component condition (if any)
         if component.set_condition:

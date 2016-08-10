@@ -17,7 +17,7 @@
         <Group Name="log" Label="Log Output">
           <ItemDefinitions>
             <File Name="log-file" Label="Log File" NumberOfRequiredValues="1">
-              <DefaultValue>"IB2d.log"</DefaultValue>
+              <DefaultValue>IB2d.log</DefaultValue>
             </File>
             <Void Name="log-all-nodes" Label="Log All Nodes" Optional="true" IsEnabledByDefault="false"></Void>
           </ItemDefinitions>
@@ -43,7 +43,7 @@
               </RangeInfo>
             </Int>
             <Directory Name="directory" Label="Directory" NumberOfRequiredValues="1">
-              <DefaultValue>"viz_IB2d"</DefaultValue>
+              <DefaultValue>viz_IB2d</DefaultValue>
             </Directory>
           </ItemDefinitions>
         </Group>
@@ -56,7 +56,7 @@
               </RangeInfo>
             </Int>
             <Directory Name="directory" Label="Directory" NumberOfRequiredValues="1">
-              <DefaultValue>"restart_IB2d"</DefaultValue>
+              <DefaultValue>restart_IB2d</DefaultValue>
             </Directory>
           </ItemDefinitions>
         </Group>
@@ -69,7 +69,7 @@
               </RangeInfo>
             </Int>
             <Directory Name="directory" Label="Directory" NumberOfRequiredValues="1">
-              <DefaultValue>"hier_data_IB2d"</DefaultValue>
+              <DefaultValue>hier_data_IB2d</DefaultValue>
             </Directory>
           </ItemDefinitions>
         </Group>

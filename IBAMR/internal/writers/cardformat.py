@@ -117,10 +117,13 @@ class CardFormat:
       value_list = list()
       for i in range(concrete_item.numberOfValues()):
         value_list.append(concrete_item.value(i))
-      string_list = [str(x) for x in value_list]
+      if item.type() == smtk.attribute.Item.STRING:
+        string_list = ['\"%s\"' % x for x in value_list]
+      else:
+        string_list = [str(x) for x in value_list]
       string_value = ', '.join(string_list)
       self.write_value(
-        out, self.keyword, string_value, tab=tab)
+        out, self.keyword, string_value, quote_string=False, tab=tab)
       return self.finish_write()
 
     # (else) Single value or expression
@@ -144,7 +147,8 @@ class CardFormat:
     return self.finish_write()
 
 # ---------------------------------------------------------------------
-  def write_value(self, out, keyword, value, as_boolean=False, tab=None):
+  def write_value(self,
+    out, keyword, value, quote_string=True, as_boolean=False, tab=None):
     '''Writes value to output stream
 
     '''
@@ -156,8 +160,8 @@ class CardFormat:
     text_formatter = '  {:<%s} = {:}\n' % tab
     if as_boolean:
       value = 'TRUE' if value else 'FALSE'
-    # elif quote_string and isinstance(value, str):
-    #   value = '\"%s\"' % value
+    elif quote_string and isinstance(value, str):
+      value = '\"%s\"' % value
     line = text_formatter.format(keyword, value)
     out.write(line)
 
