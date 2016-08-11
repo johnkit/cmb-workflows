@@ -142,18 +142,65 @@ class Writer2D:
   def write_att(self, out, att, component, format_list):
     '''Writes component for 1 attribute
     '''
+    self.begin_component(out, component)
+    for card in format_list:
+      self.write_card(out, att, component, card)
+    self.end_component(out)
+
+# ---------------------------------------------------------------------
+  def write_card(self, out, att, component, card):
+    '''
+    '''
     tab = component.tab
     base_path = component.base_item_path
+    if card.att_type is None:
+      card.write(out, att, base_item_path=base_path, tab=tab)
+    else:
+      card_att_list = self.sim_atts.findAttributes(card.att_type)
+      for card_att in card_att_list:
+        card.write(out, card_att, base_item_path=base_path, tab=tab)
+
+# ---------------------------------------------------------------------
+  def write_main(self, out, component, format_list):
+    '''Custom method for writing Main component
+    '''
+    print 'Writing component', component.name
+    att_list = self.sim_atts.findAttributes(component.att_type)
+    if not att_list:
+      print 'ERROR: Missing', component.att_type, 'attribute'
+      return
+
+    att = att_list[0]
+    tab = component.tab
     self.begin_component(out, component)
 
     for card in format_list:
-      #print 'card', card.keyword
-      if card.att_type is None:
-        card.write(out, att, base_item_path=base_path, tab=tab)
+      if 'viz_writer' == card.keyword:
+        # See which, if any, writers are enabled
+        enabled_list = list()
+        item = att.itemAtPath(card.item_path, '/')
+        viz_item = smtk.attribute.to_concrete(item)
+        apps = {'visit': 'VisIt', 'exodus': 'ExodusII', 'silo': 'Silo'}
+        for name,label in apps.items():
+          item = viz_item.find(name)
+          #print 'item', name, item.isEnabled()
+          if item.isEnabled():
+            enabled_list.append(label)
+        #print 'enabled_list:', enabled_list
+        if not enabled_list:
+          enabled_list.append('')  # so that there is *something*
+
+        # (else)
+        if card.comment:
+          card.write_comment(out, card.comment)
+        if card.set_condition:
+          ConditionSet.set_condition(card.set_condition)
+        string_list = ['\"%s\"'%x for x in enabled_list]
+        string_value = ','.join(string_list)
+        card.write_value(out, string_value, quote_string=False)
       else:
-        card_att_list = self.sim_atts.findAttributes(card.att_type)
-        for card_att in card_att_list:
-          card.write(out, card_att, base_item_path=base_path, tab=tab)
+        self.write_card(out, att, component, card)
+
     self.end_component(out)
 
 # ---------------------------------------------------------------------

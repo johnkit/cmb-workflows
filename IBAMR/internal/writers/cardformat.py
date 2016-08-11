@@ -28,12 +28,13 @@ class CardFormat:
 
 # ---------------------------------------------------------------------
   def __init__(self, keyword,
-    att_type=None,
-    comment=None,
-    if_condition=None,
+    att_type = None,
+    comment = None,
+    if_condition = None,
     is_custom = False,
-    item_path=None,
-    set_condition=None):
+    item_path = None,
+    set_condition = None,
+    zero_condition = None):
     '''Formatting object for output line
 
     Required argument:
@@ -51,6 +52,9 @@ class CardFormat:
     item_path: (string) smtk "path" to item where info can be found
     set_condition: (object) add condition to ConditionSet.
       Is NOT executed if the if_condition fails
+    zero_condition: (object), if the specified condition is not set,
+      then write a value of zero for this card. This is intended
+      for output "interval" settings, which are disabled by setting to 0.
     '''
     self.keyword = keyword
 
@@ -67,6 +71,7 @@ class CardFormat:
     self.is_custom = is_custom
     self.item_path = item_path
     self.set_condition = set_condition
+    self.zero_condition = zero_condition
 
 # ---------------------------------------------------------------------
   def write(self, out, att, base_item_path=None, tab=None):
@@ -101,19 +106,26 @@ class CardFormat:
         (att.name(), full_item_path)
       return False
 
+    if self.zero_condition:
+      state = ConditionSet.test_condition(self.zero_condition)
+      if state == False:
+        value = 0
+        self.write_value(out, value, tab=tab)
+        return self.finish_write(item)
+
     if item.type() == smtk.attribute.Item.VOID:
       self.write_value(
         out, item.isEnabled(), as_boolean=True, tab=tab)
-      return self.finish_write()
+      return self.finish_write(item)
 
-    if not item.isEnabled():
-      return False
+    #if not item.isEnabled():
+    #  return False
 
     concrete_item = smtk.attribute.to_concrete(item)
 
     # Skip non-value items
-    if not hasattr(concrete_item, 'isSet'):
-      return self.finish_write()
+    if not hasattr(concrete_item, 'value'):
+      return self.finish_write(item)
 
     # If value isn't set, skip
     if not concrete_item.isSet(0):
@@ -131,7 +143,7 @@ class CardFormat:
       string_value = ', '.join(string_list)
       self.write_value(
         out, string_value, quote_string=False, tab=tab)
-      return self.finish_write()
+      return self.finish_write(item)
 
     # (else) Single value or expression
     keyword = self.keyword
@@ -151,7 +163,7 @@ class CardFormat:
         value = value.name()
 
     self.write_value(out, value, keyword=keyword, tab=tab)
-    return self.finish_write()
+    return self.finish_write(item)
 
 # ---------------------------------------------------------------------
   def write_value(self,
@@ -175,11 +187,14 @@ class CardFormat:
     out.write(line)
 
 # ---------------------------------------------------------------------
-  def finish_write(self):
+  def finish_write(self, item=None):
     '''Internal method for common code after value written. Returns True
 
     Currently that is checking the set_condition
     '''
+    if item and not item.isEnabled():
+      return True
+
     if self.set_condition is not None:
       ConditionSet.set_condition(self.set_condition)
     return True
