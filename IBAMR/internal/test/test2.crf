@@ -1,0 +1,868 @@
+<?xml version="1.0"?>
+<cmb-resources>
+  <attribute id="simbuilder" role="instance">
+    <SMTK_AttributeSystem Version="2">
+      <!--**********  Category and Analysis Information ***********-->
+      <!--**********  Attribute Definitions ***********-->
+      <Definitions>
+        <AttDef Type="controls" Label="Controls" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <String Name="tagging-method" Label="Tagging Method" Version="0" NumberOfRequiredValues="1">
+              <DiscreteInfo DefaultIndex="0">
+                <Value Enum="GRADIENT_DETECTOR">GRADIENT_DETECTOR</Value>
+                <Value Enum="REFINE_BOXES">REFINE_BOXES</Value>
+              </DiscreteInfo>
+            </String>
+            <Group Name="load-balancer" Label="Load Balancer" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <String Name="bin-pack-method" Label="Bin Pack Method" Version="0" NumberOfRequiredValues="1">
+                  <DiscreteInfo DefaultIndex="0">
+                    <Value Enum="SPATIAL">SPATIAL</Value>
+                  </DiscreteInfo>
+                </String>
+                <Int Name="max-workload-factor" Label="Max Workload Factor" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>1</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
+                </Int>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="timer-manager" Label="Timer Manager" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Void Name="print-exclusive" Label="Print Exclusive" Version="0" Optional="true" IsEnabledByDefault="false" />
+                <Void Name="print-total" Label="Print Total" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Double Name="print-threshold" Label="Print Threshold" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>0.10000000000000001</DefaultValue>
+                </Double>
+                <String Name="timer-list" Label="Timer List" Version="0" NumberOfRequiredValues="1" Extensible="true">
+                  <DefaultValue>*::*::*</DefaultValue>
+                </String>
+              </ItemDefinitions>
+            </Group>
+          </ItemDefinitions>
+        </AttDef>
+        <AttDef Type="geometry" Label="Geometry" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Double Name="origin" Label="Lower Left Corner" Version="0" NumberOfRequiredValues="2">
+              <BriefDescription>physical location of the lower left corner</BriefDescription>
+              <ComponentLabels>
+                <Label>x:</Label>
+                <Label>y:</Label>
+              </ComponentLabels>
+              <DefaultValue>0</DefaultValue>
+            </Double>
+            <Double Name="length" Label="Physical Length" Version="0" NumberOfRequiredValues="2">
+              <BriefDescription>physical size of the geometry domain</BriefDescription>
+              <ComponentLabels>
+                <Label>x:</Label>
+                <Label>y:</Label>
+              </ComponentLabels>
+              <DefaultValue>1</DefaultValue>
+            </Double>
+            <Int Name="periodic" Label="Periodic?" Version="0" NumberOfRequiredValues="2">
+              <ComponentLabels>
+                <Label>x:</Label>
+                <Label>y:</Label>
+              </ComponentLabels>
+              <DiscreteInfo DefaultIndex="0">
+                <Value Enum="No">0</Value>
+                <Value Enum="Yes">1</Value>
+              </DiscreteInfo>
+            </Int>
+          </ItemDefinitions>
+        </AttDef>
+        <AttDef Type="grid" Label="Grid" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Int Name="base-grid-size" Label="Base Grid Size" Version="0" NumberOfRequiredValues="2">
+              <BriefDescription>number of grid cells at the base/coarsest refinement level</BriefDescription>
+              <ComponentLabels>
+                <Label>x:</Label>
+                <Label>y:</Label>
+              </ComponentLabels>
+              <DefaultValue>64</DefaultValue>
+            </Int>
+            <Int Name="max-levels" Label="Maximum Levels" Version="0" NumberOfRequiredValues="1">
+              <DefaultValue>1</DefaultValue>
+            </Int>
+            <String Name="refinement-ratio" Label="Refinement Ratio" Version="0" NumberOfRequiredValues="1">
+              <ChildrenDefinitions>
+                <Int Name="fixed" Label="Fixed Refinement Ratio" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>2</DefaultValue>
+                </Int>
+                <Group Name="table" Label="General Refinement Ratio" Version="0" NumberOfRequiredGroups="1" Extensible="true">
+                  <ComponentLabels CommonLabel="" />
+                  <ItemDefinitions>
+                    <Int Name="row" Label="Refinement Ratio" Version="0" NumberOfRequiredValues="2">
+                      <ComponentLabels>
+                        <Label>x:</Label>
+                        <Label>y:</Label>
+                      </ComponentLabels>
+                      <DefaultValue>2</DefaultValue>
+                    </Int>
+                  </ItemDefinitions>
+                </Group>
+              </ChildrenDefinitions>
+              <DiscreteInfo DefaultIndex="0">
+                <Structure>
+                  <Value Enum="Fixed Value">fixed</Value>
+                  <Items>
+                    <Item>fixed</Item>
+                  </Items>
+                </Structure>
+                <Structure>
+                  <Value Enum="General">table</Value>
+                  <Items>
+                    <Item>table</Item>
+                  </Items>
+                </Structure>
+              </DiscreteInfo>
+            </String>
+            <String Name="largest-patch-size" Label="Largest Patch Size" Version="0" NumberOfRequiredValues="1">
+              <ChildrenDefinitions>
+                <Int Name="fixed" Label="Fixed Value" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>2</DefaultValue>
+                </Int>
+                <Group Name="table" Label="Table" Version="0" NumberOfRequiredGroups="1" Extensible="true">
+                  <ComponentLabels CommonLabel="" />
+                  <ItemDefinitions>
+                    <Int Name="row" Label="Largest Patch Size" Version="0" NumberOfRequiredValues="2">
+                      <ComponentLabels>
+                        <Label>x:</Label>
+                        <Label>y:</Label>
+                      </ComponentLabels>
+                      <DefaultValue>2</DefaultValue>
+                    </Int>
+                  </ItemDefinitions>
+                </Group>
+              </ChildrenDefinitions>
+              <DiscreteInfo DefaultIndex="0">
+                <Structure>
+                  <Value Enum="Fixed Value">fixed</Value>
+                  <Items>
+                    <Item>fixed</Item>
+                  </Items>
+                </Structure>
+                <Structure>
+                  <Value Enum="General">table</Value>
+                  <Items>
+                    <Item>table</Item>
+                  </Items>
+                </Structure>
+              </DiscreteInfo>
+            </String>
+            <String Name="smallest-patch-size" Label="Smallest Patch Size" Version="0" NumberOfRequiredValues="1">
+              <ChildrenDefinitions>
+                <Int Name="fixed" Label="Fixed Value" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>2</DefaultValue>
+                </Int>
+                <Group Name="table" Label="Table" Version="0" NumberOfRequiredGroups="1" Extensible="true">
+                  <ComponentLabels CommonLabel="" />
+                  <ItemDefinitions>
+                    <Int Name="row" Label="Smallest Patch Size" Version="0" NumberOfRequiredValues="2">
+                      <ComponentLabels>
+                        <Label>x:</Label>
+                        <Label>y:</Label>
+                      </ComponentLabels>
+                      <DefaultValue>2</DefaultValue>
+                    </Int>
+                  </ItemDefinitions>
+                </Group>
+              </ChildrenDefinitions>
+              <DiscreteInfo DefaultIndex="0">
+                <Structure>
+                  <Value Enum="Fixed Value">fixed</Value>
+                  <Items>
+                    <Item>fixed</Item>
+                  </Items>
+                </Structure>
+                <Structure>
+                  <Value Enum="General">table</Value>
+                  <Items>
+                    <Item>table</Item>
+                  </Items>
+                </Structure>
+              </DiscreteInfo>
+            </String>
+            <Double Name="mfac" Label="MFAC" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1">
+              <BriefDescription>ratio of structural mesh width to Cartesian mesh width</BriefDescription>
+              <DefaultValue>2</DefaultValue>
+            </Double>
+            <String Name="element-type" Label="Element Type" Version="0" NumberOfRequiredValues="1">
+              <DiscreteInfo DefaultIndex="1">
+                <Value Enum="TRI3">TRI3</Value>
+                <Value Enum="TRI6">TRI6</Value>
+                <Value Enum="QUAD4">QUAD4</Value>
+                <Value Enum="QUAD8">QUAD8</Value>
+                <Value Enum="QUAD9">QUAD9</Value>
+              </DiscreteInfo>
+            </String>
+            <Int Name="pk1-dev-quad-order" Label="Quadrature Rule Order for Deviatoric Stress" Version="0" NumberOfRequiredValues="1">
+              <DefaultValue>5</DefaultValue>
+            </Int>
+            <Int Name="pk1-dil-quad-order" Label="Quadrature Rule Order for Dilational Stress" Version="0" NumberOfRequiredValues="1">
+              <DefaultValue>3</DefaultValue>
+            </Int>
+            <Double Name="efficiency-tolerance" Label="Efficiency Tolerance" Version="0" NumberOfRequiredValues="1">
+              <BriefDescription>min % of tag cells in new patch level</BriefDescription>
+              <DefaultValue>0.84999999999999998</DefaultValue>
+            </Double>
+            <Double Name="combine-efficiency" Label="Combine Efficiency" Version="0" NumberOfRequiredValues="1">
+              <BriefDescription>chop box is sum of volumes of smaller boxes &lt; efficiency * vol of large box</BriefDescription>
+              <DefaultValue>0.84999999999999998</DefaultValue>
+            </Double>
+          </ItemDefinitions>
+        </AttDef>
+        <AttDef Type="output" Label="Output" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Void Name="enable-logging" Label="Enable Logging" Version="0" Optional="true" IsEnabledByDefault="true" />
+            <Group Name="output-fields" Label="Output Fields" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Void Name="velocity" Label="Velocity" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Void Name="pressure" Label="Pressure" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Void Name="body-force" Label="Body Force" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Void Name="vorticity" Label="Vorticity (omega)" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Void Name="divergence" Label="Divergence of Velocity" Version="0" Optional="true" IsEnabledByDefault="true" />
+              </ItemDefinitions>
+            </Group>
+            <Group Name="log" Label="Log Output" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <File Name="log-file" Label="Log File" Version="0" NumberOfRequiredValues="1">
+                  <:anonymous />
+                </File>
+                <Void Name="log-all-nodes" Label="Log All Nodes" Version="0" Optional="true" IsEnabledByDefault="false" />
+              </ItemDefinitions>
+            </Group>
+            <Group Name="visualization" Label="Visualization Output" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Group Name="visit" Label="VisIt" Version="0" Optional="true" IsEnabledByDefault="true" NumberOfRequiredGroups="1">
+                  <ItemDefinitions>
+                    <Int Name="number-procs-per-file" Label="Number of Process per File" Version="0" NumberOfRequiredValues="1">
+                      <DefaultValue>1</DefaultValue>
+                    </Int>
+                  </ItemDefinitions>
+                </Group>
+                <Void Name="exodus" Label="ExodusII" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Void Name="silo" Label="Silo" Version="0" Optional="true" IsEnabledByDefault="false" />
+                <Int Name="interval" Label="Output Interval" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>250</DefaultValue>
+                </Int>
+                <Directory Name="directory" Label="Directory" Version="0" NumberOfRequiredValues="1">
+                  <:anonymous />
+                </Directory>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="restart" Label="Restart Output" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Int Name="interval" Label="Restart Dump Interval" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>10</DefaultValue>
+                </Int>
+                <Directory Name="directory" Label="Directory" Version="0" NumberOfRequiredValues="1">
+                  <:anonymous />
+                </Directory>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="hierarchy" Label="Hierarchy Data Output" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Int Name="interval" Label="Hierarchy Data Dump Interval" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>10</DefaultValue>
+                </Int>
+                <Directory Name="directory" Label="Directory" Version="0" NumberOfRequiredValues="1">
+                  <:anonymous />
+                </Directory>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="timer" Label="Timer Output" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Int Name="interval" Label="Timer Parameters Dump Interval" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>10</DefaultValue>
+                </Int>
+              </ItemDefinitions>
+            </Group>
+          </ItemDefinitions>
+        </AttDef>
+        <AttDef Type="parameters" Label="Physical Parameters" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Double Name="viscosity" Label="Viscosity (mu)" Version="0" NumberOfRequiredValues="1">
+              <DefaultValue>0.01</DefaultValue>
+            </Double>
+            <Double Name="density" Label="Density (rho)" Version="0" NumberOfRequiredValues="1">
+              <DefaultValue>1</DefaultValue>
+            </Double>
+          </ItemDefinitions>
+        </AttDef>
+        <AttDef Type="solver" Label="Solver" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Group Name="time" Label="Time" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Double Name="start-time" Label="Start Time" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>0</DefaultValue>
+                </Double>
+                <Double Name="end-time" Label="End Time" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>10</DefaultValue>
+                </Double>
+                <Double Name="grow-dt" Label="Timestep Growth Factor" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>2</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
+                </Double>
+                <Double Name="dt-max" Label="Maximum Timestep Size" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>0.00048799999999999999</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="false">0</Min>
+                  </RangeInfo>
+                </Double>
+                <Void Name="error-on-dt-change" Label="Error on DT Change" Version="0" Optional="true" IsEnabledByDefault="true">
+                  <BriefDescription>Emit error message if the time step size changes</BriefDescription>
+                </Void>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="hierarchy-integrator" Label="IBHierarchyIntegrator" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <Int Name="num-cycles" Label="Number of Cycles (fixed-point iteration)" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>1</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
+                </Int>
+                <Double Name="regrid-cfl-interval" Label="Regrid CFL Interval" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>0.5</DefaultValue>
+                </Double>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="fe-method" Label="IBFEMethod" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <String Name="ib-delta-function" Label="IB Delta Function" Version="0" NumberOfRequiredValues="1">
+                  <BriefDescription>type of smoothed delta function to use for Lagrangian-Eulerian interaction</BriefDescription>
+                  <DiscreteInfo DefaultIndex="1">
+                    <Value Enum="IB_3">IB_3</Value>
+                    <Value Enum="IB_4">IB_4</Value>
+                    <Value Enum="IB_6">IB_6</Value>
+                    <Value Enum="PIECEWISE_LINEAR">PIECEWISE_LINEAR</Value>
+                    <Value Enum="PIECEWISE_CUBIC">PIECEWISE_CUBIC</Value>
+                    <Value Enum="BSPLINE_3">BSPLINE_3</Value>
+                    <Value Enum="BSPLINE_4">BSPLINE_4</Value>
+                    <Value Enum="BSPLINE_5">BSPLINE_5</Value>
+                    <Value Enum="BSPLINE_6">BSPLINE_6</Value>
+                  </DiscreteInfo>
+                </String>
+                <Void Name="split-forces" Label="Split Forces" Version="0" Optional="true" IsEnabledByDefault="false" />
+                <Void Name="use-jump-conditions" Label="Use Jump Conditions" Version="0" Optional="true" IsEnabledByDefault="false" />
+                <Void Name="use-consistent-mass-matrix" Label="Use Consistent Mass Matrix" Version="0" Optional="true" IsEnabledByDefault="true" />
+                <Double Name="ib-point-density" Label="IB Point Density" Version="0" NumberOfRequiredValues="1">
+                  <DefaultValue>3</DefaultValue>
+                </Double>
+              </ItemDefinitions>
+            </Group>
+            <Group Name="solver" Label="Solver" Version="0" NumberOfRequiredGroups="1">
+              <ItemDefinitions>
+                <String Name="solver-type" Label="Solver Type" Version="0" NumberOfRequiredValues="1">
+                  <ChildrenDefinitions>
+                    <String Name="projection-method" Label="Projection Method" Version="0" NumberOfRequiredValues="1">
+                      <DiscreteInfo DefaultIndex="1">
+                        <Value Enum="PRESSURE_INCREMENT">PRESSURE_INCREMENT</Value>
+                        <Value Enum="PRESSURE_UPDATE">PRESSURE_UPDATE</Value>
+                      </DiscreteInfo>
+                    </String>
+                    <Void Name="second-order-pressure-update" Label="Second Order Pressure Update" Version="0" Optional="true" IsEnabledByDefault="true" />
+                  </ChildrenDefinitions>
+                  <DiscreteInfo DefaultIndex="1">
+                    <Structure>
+                      <Value Enum="COLLOCATED">COLLOCATED</Value>
+                      <Items>
+                        <Item>projection-method</Item>
+                        <Item>second-order-pressure-update</Item>
+                      </Items>
+                    </Structure>
+                    <Value Enum="STAGGERED">STAGGERED</Value>
+                  </DiscreteInfo>
+                </String>
+                <String Name="convective-ts-type" Label="Convective Timestep Type" Version="0" NumberOfRequiredValues="1">
+                  <DiscreteInfo DefaultIndex="0">
+                    <Value Enum="ADAMS_BASHFORTH">ADAMS_BASHFORTH</Value>
+                    <Value Enum="FOWARD_EULER">FOWARD_EULER</Value>
+                    <Value Enum="MIDPOINT_RULE">MIDPOINT_RULE</Value>
+                    <Value Enum="TRAPEZOIDAL_RULE">TRAPEZOIDAL_RULE</Value>
+                  </DiscreteInfo>
+                </String>
+                <String Name="convective-op-type" Label="Convective Discretization Type" Version="0" NumberOfRequiredValues="1">
+                  <DiscreteInfo DefaultIndex="1">
+                    <Value Enum="CENTERED">CENTERED</Value>
+                    <Value Enum="PPM">PPM</Value>
+                  </DiscreteInfo>
+                </String>
+                <String Name="convective-diff-form" Label="Convective Difference Form" Version="0" NumberOfRequiredValues="1">
+                  <DiscreteInfo DefaultIndex="0">
+                    <Value Enum="ADVECTIVE">ADVECTIVE</Value>
+                    <Value Enum="CONSERVATIVE">CONSERVATIVE</Value>
+                    <Value Enum="SKEW_SYMMETRIC">SKEW_SYMMETRIC</Value>
+                  </DiscreteInfo>
+                </String>
+                <Void Name="normalize-pressure" Label="Normalize Pressure" Version="0" Optional="true" IsEnabledByDefault="false" />
+                <Double Name="cfl-max" Label="Maximum CFL Number" Version="0" NumberOfRequiredValues="1">
+                  <BriefDescription>recommended &lt;= 0.5</BriefDescription>
+                  <DefaultValue>0.25</DefaultValue>
+                </Double>
+                <Group Name="vorticity-tagging" Label="Vorticity Tagging" Version="0" Optional="true" IsEnabledByDefault="true" NumberOfRequiredGroups="1">
+                  <ItemDefinitions>
+                    <Double Name="vorticity-rel-thresh" Label="Vorticity Relative Threshold(s)" Version="0" NumberOfRequiredValues="1" Extensible="true">
+                      <DefaultValue>0.01</DefaultValue>
+                    </Double>
+                    <Int Name="tag-buffer" Label="Tag Buffer(s)" Version="0" NumberOfRequiredValues="1" Extensible="true">
+                      <DefaultValue>1</DefaultValue>
+                    </Int>
+                  </ItemDefinitions>
+                </Group>
+              </ItemDefinitions>
+            </Group>
+          </ItemDefinitions>
+        </AttDef>
+        <AttDef Type="velocity" Label="Velocity Boundary Condition" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Group Name="enable" Label="Enable" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredGroups="1">
+              <BriefDescription>a*u + b*du/dn = g</BriefDescription>
+              <ItemDefinitions>
+                <Double Name="a" Label="a Coefficients" Version="0" NumberOfRequiredValues="4">
+                  <DefaultValue>1</DefaultValue>
+                </Double>
+                <Double Name="b" Label="b Coefficients" Version="0" NumberOfRequiredValues="4">
+                  <DefaultValue>0</DefaultValue>
+                </Double>
+                <Double Name="g" Label="g Coefficients" Version="0" NumberOfRequiredValues="4">
+                  <DefaultValue>0</DefaultValue>
+                </Double>
+              </ItemDefinitions>
+            </Group>
+          </ItemDefinitions>
+        </AttDef>
+      </Definitions>
+      <!--**********  Attribute Instances ***********-->
+      <Attributes>
+        <Att Name="controls" Type="controls" ID="4b222806-55fe-408e-8686-be8b33692695">
+          <Items>
+            <String Name="tagging-method" Discrete="true">0</String>
+            <Group Name="load-balancer">
+              <String Name="bin-pack-method" Discrete="true">0</String>
+              <Int Name="max-workload-factor">1</Int>
+            </Group>
+            <Group Name="timer-manager">
+              <Void Name="print-exclusive" Enabled="false" />
+              <Void Name="print-total" Enabled="true" />
+              <Double Name="print-threshold">0.10000000000000001</Double>
+              <String Name="timer-list" NumberOfValues="1">
+                <Values>
+                  <Val Ith="0">*::*::*</Val>
+                </Values>
+              </String>
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="Geometry" Type="geometry" ID="98c0fef1-bc7c-43ac-baeb-8a0995b6241d">
+          <Items>
+            <Double Name="origin">
+              <Values>
+                <Val Ith="0">-3.1400000000000001</Val>
+                <Val Ith="1">-2.7799999999999998</Val>
+              </Values>
+            </Double>
+            <Double Name="length">
+              <Values>
+                <Val Ith="0">42.240000000000002</Val>
+                <Val Ith="1">73.370000000000005</Val>
+              </Values>
+            </Double>
+            <Int Name="periodic">
+              <DiscreteValues>
+                <Index Ith="0">0</Index>
+                <Index Ith="1">1</Index>
+              </DiscreteValues>
+            </Int>
+          </Items>
+        </Att>
+        <Att Name="Grid" Type="grid" ID="883d2b99-359f-4b83-b298-fc238dba93d0">
+          <Items>
+            <Int Name="base-grid-size">
+              <Values>
+                <Val Ith="0">64</Val>
+                <Val Ith="1">64</Val>
+              </Values>
+            </Int>
+            <Int Name="max-levels">6</Int>
+            <String Name="refinement-ratio" Discrete="true">
+              <ChildrenItems>
+                <Int Name="fixed">2</Int>
+                <Group Name="table" NumberOfGroups="3">
+                  <GroupClusters>
+                    <Cluster Ith="0">
+                      <Int Name="row">
+                        <Values>
+                          <Val Ith="0">2</Val>
+                          <Val Ith="1">2</Val>
+                        </Values>
+                      </Int>
+                    </Cluster>
+                    <Cluster Ith="1">
+                      <Int Name="row">
+                        <Values>
+                          <Val Ith="0">1</Val>
+                          <Val Ith="1">4</Val>
+                        </Values>
+                      </Int>
+                    </Cluster>
+                    <Cluster Ith="2">
+                      <Int Name="row">
+                        <Values>
+                          <Val Ith="0">2</Val>
+                          <Val Ith="1">2</Val>
+                        </Values>
+                      </Int>
+                    </Cluster>
+                  </GroupClusters>
+                </Group>
+              </ChildrenItems>1</String>
+            <String Name="largest-patch-size" Discrete="true">
+              <ChildrenItems>
+                <Int Name="fixed">2</Int>
+                <Group Name="table" NumberOfGroups="1">
+                  <GroupClusters>
+                    <Cluster Ith="0">
+                      <Int Name="row">
+                        <Values>
+                          <Val Ith="0">2</Val>
+                          <Val Ith="1">2</Val>
+                        </Values>
+                      </Int>
+                    </Cluster>
+                  </GroupClusters>
+                </Group>
+              </ChildrenItems>0</String>
+            <String Name="smallest-patch-size" Discrete="true">
+              <ChildrenItems>
+                <Int Name="fixed">2</Int>
+                <Group Name="table" NumberOfGroups="1">
+                  <GroupClusters>
+                    <Cluster Ith="0">
+                      <Int Name="row">
+                        <Values>
+                          <Val Ith="0">2</Val>
+                          <Val Ith="1">2</Val>
+                        </Values>
+                      </Int>
+                    </Cluster>
+                  </GroupClusters>
+                </Group>
+              </ChildrenItems>0</String>
+            <Double Name="mfac" Enabled="true">3.2999999999999998</Double>
+            <String Name="element-type" Discrete="true">1</String>
+            <Int Name="pk1-dev-quad-order">5</Int>
+            <Int Name="pk1-dil-quad-order">3</Int>
+            <Double Name="efficiency-tolerance">0.84999999999999998</Double>
+            <Double Name="combine-efficiency">0.84999999999999998</Double>
+          </Items>
+        </Att>
+        <Att Name="output" Type="output" ID="d82a21f3-b438-4116-bdf2-0411caf044f8">
+          <Items>
+            <Void Name="enable-logging" Enabled="true" />
+            <Group Name="output-fields">
+              <Void Name="velocity" Enabled="true" />
+              <Void Name="pressure" Enabled="true" />
+              <Void Name="body-force" Enabled="true" />
+              <Void Name="vorticity" Enabled="false" />
+              <Void Name="divergence" Enabled="true" />
+            </Group>
+            <Group Name="log">
+              <File Name="log-file">IB2d.log</File>
+              <Void Name="log-all-nodes" Enabled="false" />
+            </Group>
+            <Group Name="visualization">
+              <Group Name="visit" Enabled="true">
+                <Int Name="number-procs-per-file">1</Int>
+              </Group>
+              <Void Name="exodus" Enabled="true" />
+              <Void Name="silo" Enabled="false" />
+              <Int Name="interval">250</Int>
+              <Directory Name="directory">viz_IB2d</Directory>
+            </Group>
+            <Group Name="restart" Enabled="true">
+              <Int Name="interval">150</Int>
+              <Directory Name="directory">restart_IB2d</Directory>
+            </Group>
+            <Group Name="hierarchy" Enabled="false">
+              <Int Name="interval">10</Int>
+              <Directory Name="directory">hier_data_IB2d</Directory>
+            </Group>
+            <Group Name="timer" Enabled="false">
+              <Int Name="interval">10</Int>
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="parameters" Type="parameters" ID="21eb005e-026e-46bd-aaa6-34953e9de514">
+          <Items>
+            <Double Name="viscosity">0.01</Double>
+            <Double Name="density">1</Double>
+          </Items>
+        </Att>
+        <Att Name="solver" Type="solver" ID="3c38544d-15bb-433a-b0a7-d12a267f7ee8">
+          <Items>
+            <Group Name="time">
+              <Double Name="start-time">0</Double>
+              <Double Name="end-time">999.89999999999998</Double>
+              <Double Name="grow-dt">2</Double>
+              <Double Name="dt-max">0.00069999999999999999</Double>
+              <Void Name="error-on-dt-change" Enabled="true" />
+            </Group>
+            <Group Name="hierarchy-integrator">
+              <Int Name="num-cycles">1</Int>
+              <Double Name="regrid-cfl-interval">0.5</Double>
+            </Group>
+            <Group Name="fe-method">
+              <String Name="ib-delta-function" Discrete="true">1</String>
+              <Void Name="split-forces" Enabled="false" />
+              <Void Name="use-jump-conditions" Enabled="false" />
+              <Void Name="use-consistent-mass-matrix" Enabled="true" />
+              <Double Name="ib-point-density">3</Double>
+            </Group>
+            <Group Name="solver">
+              <String Name="solver-type" Discrete="true">
+                <ChildrenItems>
+                  <String Name="projection-method" Discrete="true">1</String>
+                  <Void Name="second-order-pressure-update" Enabled="true" />
+                </ChildrenItems>1</String>
+              <String Name="convective-ts-type" Discrete="true">0</String>
+              <String Name="convective-op-type" Discrete="true">1</String>
+              <String Name="convective-diff-form" Discrete="true">0</String>
+              <Void Name="normalize-pressure" Enabled="false" />
+              <Double Name="cfl-max">0.25</Double>
+              <Group Name="vorticity-tagging" Enabled="true">
+                <Double Name="vorticity-rel-thresh" NumberOfValues="3">
+                  <Values>
+                    <Val Ith="0">0.01</Val>
+                    <Val Ith="1">0.029999999999999999</Val>
+                    <Val Ith="2">0.02</Val>
+                  </Values>
+                </Double>
+                <Int Name="tag-buffer" NumberOfValues="1">
+                  <Values>
+                    <Val Ith="0">1</Val>
+                  </Values>
+                </Int>
+              </Group>
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="velocity2" Type="velocity" ID="d4e6738b-a7f9-44ed-acfc-f68759b05b27">
+          <Items>
+            <Group Name="enable" Enabled="false">
+              <Double Name="a">
+                <Values>
+                  <Val Ith="0">1</Val>
+                  <Val Ith="1">1</Val>
+                  <Val Ith="2">1</Val>
+                  <Val Ith="3">1</Val>
+                </Values>
+              </Double>
+              <Double Name="b">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">0</Val>
+                </Values>
+              </Double>
+              <Double Name="g">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">0</Val>
+                </Values>
+              </Double>
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="velocity0" Type="velocity" ID="837348c2-b45c-43d5-a9ae-eeb47b1ddabf">
+          <Items>
+            <Group Name="enable" Enabled="false">
+              <Double Name="a">
+                <Values>
+                  <Val Ith="0">1</Val>
+                  <Val Ith="1">1</Val>
+                  <Val Ith="2">1</Val>
+                  <Val Ith="3">1</Val>
+                </Values>
+              </Double>
+              <Double Name="b">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">0</Val>
+                </Values>
+              </Double>
+              <Double Name="g">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">0</Val>
+                </Values>
+              </Double>
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="velocity3" Type="velocity" ID="7ecc2d0f-4d27-4420-8798-7dff361f6746">
+          <Items>
+            <Group Name="enable" Enabled="false">
+              <Double Name="a">
+                <Values>
+                  <Val Ith="0">1</Val>
+                  <Val Ith="1">1</Val>
+                  <Val Ith="2">1</Val>
+                  <Val Ith="3">1</Val>
+                </Values>
+              </Double>
+              <Double Name="b">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">0</Val>
+                </Values>
+              </Double>
+              <Double Name="g">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">0</Val>
+                </Values>
+              </Double>
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="velocity1" Type="velocity" ID="0bc81ca9-f212-49b1-89c6-deecb272fef2">
+          <Items>
+            <Group Name="enable" Enabled="true">
+              <Double Name="a">
+                <Values>
+                  <Val Ith="0">1</Val>
+                  <Val Ith="1">2</Val>
+                  <Val Ith="2">3</Val>
+                  <Val Ith="3">4</Val>
+                </Values>
+              </Double>
+              <Double Name="b">
+                <Values>
+                  <Val Ith="0">0.10000000000000001</Val>
+                  <Val Ith="1">0.20000000000000001</Val>
+                  <Val Ith="2">0.29999999999999999</Val>
+                  <Val Ith="3">0.40000000000000002</Val>
+                </Values>
+              </Double>
+              <Double Name="g">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">1</Val>
+                </Values>
+              </Double>
+            </Group>
+          </Items>
+        </Att>
+      </Attributes>
+      <!--********** Workflow Views ***********-->
+      <Views>
+        <View Type="Group" Title="SimBuilder" FilterByAdvanceLevel="false" FilterByCategory="false" TopLevel="true">
+          <Views>
+            <View Title="Grid" />
+            <View Title="BC" />
+            <View Title="Solver" />
+            <View Title="Parameters" />
+            <View Title="Output" />
+            <View Title="Controls" />
+          </Views>
+        </View>
+        <View Type="Group" Title="BC" Style="tiled">
+          <Views>
+            <View Title="Lower X" />
+            <View Title="Upper X" />
+            <View Title="Lower Y" />
+            <View Title="Upper Y" />
+          </Views>
+        </View>
+        <View Type="Instanced" Title="Controls">
+          <InstancedAttributes>
+            <Att Name="controls" Type="controls" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Grid">
+          <InstancedAttributes>
+            <Att Name="Geometry" Type="geometry" />
+            <Att Name="Grid" Type="grid" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Lower X">
+          <InstancedAttributes>
+            <Att Name="velocity0" Type="velocity" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Lower Y">
+          <InstancedAttributes>
+            <Att Name="velocity2" Type="velocity" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Output">
+          <InstancedAttributes>
+            <Att Name="output" Type="output" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Parameters">
+          <InstancedAttributes>
+            <Att Name="parameters" Type="parameters" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Solver">
+          <InstancedAttributes>
+            <Att Name="solver" Type="solver" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Upper X">
+          <InstancedAttributes>
+            <Att Name="velocity1" Type="velocity" />
+          </InstancedAttributes>
+        </View>
+        <View Type="Instanced" Title="Upper Y">
+          <InstancedAttributes>
+            <Att Name="velocity3" Type="velocity" />
+          </InstancedAttributes>
+        </View>
+      </Views>
+    </SMTK_AttributeSystem>
+  </attribute>
+  <attribute id="export" role="template">
+    <SMTK_AttributeSystem Version="2">
+      <!--**********  Category and Analysis Information ***********-->
+      <!--**********  Attribute Definitions ***********-->
+      <Definitions>
+        <AttDef Type="ExportSpec" Label="Simulation" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <File Name="PythonScript" Label="Python script" Version="0" NumberOfRequiredValues="1" ShouldExist="true" FileFilters="Python files (*.py);;All files (*.*)" />
+            <File Name="OutputFile" Label="Output File" Version="0" NumberOfRequiredValues="1" />
+          </ItemDefinitions>
+        </AttDef>
+      </Definitions>
+      <!--**********  Attribute Instances ***********-->
+      <Attributes />
+      <!--********** Workflow Views ***********-->
+      <Views>
+        <View Type="Instanced" Title="Export" FilterByAdvanceLevel="false" FilterByCategory="false" TopLevel="true">
+          <InstancedAttributes>
+            <Att Name="Options" Type="ExportSpec" />
+          </InstancedAttributes>
+        </View>
+      </Views>
+    </SMTK_AttributeSystem>
+  </attribute>
+</cmb-resources>

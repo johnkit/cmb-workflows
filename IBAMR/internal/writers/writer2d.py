@@ -238,7 +238,8 @@ class Writer2D:
         keyword = '%scoef_function_%d' % (item_name, i)
         value = coef_item.value(i)
         value_string = '\"%s\"' % value
-        card.write_value(out, value_string, keyword=keyword, tab=tab)
+        card.write_value(
+          out, value_string, keyword=keyword, quote_string=False, tab=tab)
 
     self.end_component(out)
 
