@@ -19,9 +19,9 @@
             <Label>y:</Label>
           </ComponentLabels>
           <DefaultValue>1.0</DefaultValue>
-          <Range>
+          <RangeInfo>
             <Min Inclusive="false">0.0</Min>
-          </Range>
+          </RangeInfo>
         </Double>
         <Int Name="periodic" Label="Periodic?" NumberOfRequiredValues="2">
           <ComponentLabels>
@@ -44,15 +44,15 @@
             <Label>y:</Label>
           </ComponentLabels>
           <DefaultValue>64</DefaultValue>
-          <Range>
+          <RangeInfo>
             <Min Inclusive="true">1</Min>
-          </Range>
+          </RangeInfo>
         </Int>
         <Int Name="max-levels" Label="Maximum Levels" Version="0">
           <DefaultValue>1</DefaultValue>
-          <Range>
+          <RangeInfo>
             <Min Inclusive="true">1</Min>
-          </Range>
+          </RangeInfo>
         </Int>
         <!-- Define refinement ratio as string, to indicate whether itis specified as a single value ("fixed") or table of values
         -->
@@ -60,9 +60,9 @@
           <ChildrenDefinitions>
             <Int Name="fixed" Label="Fixed Refinement Ratio">
               <DefaultValue>2</DefaultValue>
-              <Range>
+              <RangeInfo>
                 <Min Inclusive="true">1</Min>
-              </Range>
+              </RangeInfo>
             </Int>
             <Group Name="table" Label="General Refinement Ratio" Extensible="true" NumberOfRequiredGroups="1">
               <ItemDefinitions>
@@ -72,9 +72,9 @@
                     <Label>y:</Label>
                   </ComponentLabels>
                   <DefaultValue>2</DefaultValue>
-                  <Range>
+                  <RangeInfo>
                     <Min Inclusive="true">1</Min>
-                  </Range>
+                  </RangeInfo>
                 </Int>
               </ItemDefinitions>
             </Group>
@@ -99,9 +99,9 @@
           <ChildrenDefinitions>
             <Int Name="fixed" Label="Fixed Value">
               <DefaultValue>2</DefaultValue>
-              <Range>
+              <RangeInfo>
                 <Min Inclusive="true">1</Min>
-              </Range>
+              </RangeInfo>
             </Int>
             <Group Name="table" Label="Table" Extensible="true" NumberOfRequiredGroups="1">
               <ItemDefinitions>
@@ -111,9 +111,9 @@
                     <Label>y:</Label>
                   </ComponentLabels>
                   <DefaultValue>2</DefaultValue>
-                  <Range>
+                  <RangeInfo>
                     <Min Inclusive="true">1</Min>
-                  </Range>
+                  </RangeInfo>
                 </Int>
               </ItemDefinitions>
             </Group>
@@ -138,9 +138,9 @@
           <ChildrenDefinitions>
             <Int Name="fixed" Label="Fixed Value">
               <DefaultValue>2</DefaultValue>
-              <Range>
+              <RangeInfo>
                 <Min Inclusive="true">1</Min>
-              </Range>
+              </RangeInfo>
             </Int>
             <Group Name="table" Label="Table" Extensible="true" NumberOfRequiredGroups="1">
               <ItemDefinitions>
@@ -150,9 +150,9 @@
                     <Label>y:</Label>
                   </ComponentLabels>
                   <DefaultValue>2</DefaultValue>
-                  <Range>
+                  <RangeInfo>
                     <Min Inclusive="true">1</Min>
-                  </Range>
+                  </RangeInfo>
                 </Int>
               </ItemDefinitions>
             </Group>
@@ -177,7 +177,7 @@
           <BriefDescription>ratio of structural mesh width to Cartesian mesh width</BriefDescription>
           <DefaultValue>2.0</DefaultValue>
           <RangeInfo>
-            <Minimum Inclusive="false">0.0</Minimum>
+            <Min Inclusive="false">0.0</Min>
           </RangeInfo>
         </Double>
         <String Name="element-type" Label="Element Type">
@@ -192,31 +192,31 @@
         <Int Name="pk1-dev-quad-order" Label="Quadrature Rule Order for Deviatoric Stress">
           <DefaultValue>5</DefaultValue>
           <RangeInfo>
-            <Minimum Inclusive="true">0</Minimum>
-            <Maximum Inclusive="true">43</Maximum>
+            <Min Inclusive="true">0</Min>
+            <Max Inclusive="true">43</Max>
           </RangeInfo>
         </Int>
         <Int Name="pk1-dil-quad-order" Label="Quadrature Rule Order for Dilational Stress">
           <DefaultValue>3</DefaultValue>
           <RangeInfo>
-            <Minimum Inclusive="true">0</Minimum>
-            <Maximum Inclusive="true">43</Maximum>
+            <Min Inclusive="true">0</Min>
+            <Max Inclusive="true">43</Max>
           </RangeInfo>
         </Int>
         <Double Name="efficiency-tolerance" Label="Efficiency Tolerance">
           <BriefDescription>min % of tag cells in new patch level</BriefDescription>
           <DefaultValue>0.85</DefaultValue>
           <RangeInfo>
-            <Minimum Inclusive="true">0.0</Minimum>
-            <Maximum Inclusive="true">1.0</Maximum>
+            <Min Inclusive="true">0.0</Min>
+            <Max Inclusive="true">1.0</Max>
           </RangeInfo>
         </Double>
         <Double Name="combine-efficiency" Label="Combine Efficiency">
           <BriefDescription>chop box is sum of volumes of smaller boxes &lt; efficiency * vol of large box</BriefDescription>
           <DefaultValue>0.85</DefaultValue>
           <RangeInfo>
-            <Minimum Inclusive="true">0.0</Minimum>
-            <Maximum Inclusive="true">1.0</Maximum>
+            <Min Inclusive="true">0.0</Min>
+            <Max Inclusive="true">1.0</Max>
           </RangeInfo>
         </Double>
       </ItemDefinitions>

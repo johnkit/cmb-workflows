@@ -29,7 +29,7 @@
                 <Int Name="number-procs-per-file" Label="Number of Process per File">
                   <DefaultValue>1</DefaultValue>
                   <RangeInfo>
-                    <Minimum Inclusive="true">1</Minimum>
+                    <Min Inclusive="true">1</Min>
                   </RangeInfo>
                 </Int>
               </ItemDefinitions>
@@ -39,7 +39,7 @@
             <Int Name="interval" Label="Output Interval">
               <DefaultValue>250</DefaultValue>
               <RangeInfo>
-                <Minimum Inclusive="true">1</Minimum>
+                <Min Inclusive="true">1</Min>
               </RangeInfo>
             </Int>
             <Directory Name="directory" Label="Directory" NumberOfRequiredValues="1">
@@ -52,7 +52,7 @@
             <Int Name="interval" Label="Restart Dump Interval">
               <DefaultValue>10</DefaultValue>
               <RangeInfo>
-                <Minimum Inclusive="true">1</Minimum>
+                <Min Inclusive="true">1</Min>
               </RangeInfo>
             </Int>
             <Directory Name="directory" Label="Directory" NumberOfRequiredValues="1">
@@ -65,7 +65,7 @@
             <Int Name="interval" Label="Hierarchy Data Dump Interval">
               <DefaultValue>10</DefaultValue>
               <RangeInfo>
-                <Minimum Inclusive="true">1</Minimum>
+                <Min Inclusive="true">1</Min>
               </RangeInfo>
             </Int>
             <Directory Name="directory" Label="Directory" NumberOfRequiredValues="1">
@@ -78,7 +78,7 @@
             <Int Name="interval" Label="Timer Parameters Dump Interval">
               <DefaultValue>10</DefaultValue>
               <RangeInfo>
-                <Minimum Inclusive="true">1</Minimum>
+                <Min Inclusive="true">1</Min>
               </RangeInfo>
             </Int>
           </ItemDefinitions>

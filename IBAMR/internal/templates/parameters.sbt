@@ -7,13 +7,13 @@
         <Double Name="viscosity" Label="Viscosity (mu)">
           <DefaultValue>0.01</DefaultValue>
           <RangeInfo>
-            <Minimum Inclusive="true">0.0</Minimum>
+            <Min Inclusive="true">0.0</Min>
           </RangeInfo>
         </Double>
         <Double Name="density" Label="Density (rho)">
           <DefaultValue>1.0</DefaultValue>
           <RangeInfo>
-            <Minimum Inclusive="true">0.0</Minimum>
+            <Min Inclusive="true">0.0</Min>
           </RangeInfo>
         </Double>
       </ItemDefinitions>

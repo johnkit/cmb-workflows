@@ -35,7 +35,7 @@ SMTK_AttributeSystem(Version="2")
             Double(Name="regrid-cfl-interval" Label="Regrid CFL Interval")
               DefaultValue 0.5
               RangeInfo
-                Minimum(Inclusive="true") 0.0
+                Min(Inclusive="true") 0.0
 
         Group(Name="fe-method" Label="IBFEMethod")
           ItemDefinitions
@@ -61,7 +61,7 @@ SMTK_AttributeSystem(Version="2")
             Double(Name="ib-point-density" Label="IB Point Density")
               DefaultValue 3.0
               RangeInfo
-                Minimum(Inclusive="false") 0.0
+                Min(Inclusive="false") 0.0
 
         Group(Name="solver" Label="Solver")
           ItemDefinitions
@@ -101,7 +101,7 @@ SMTK_AttributeSystem(Version="2")
               BriefDescription recommended &lt;= 0.5
               DefaultValue 0.25
               RangeInfo
-                Minimum(Inclusive="false") 0.0
+                Min(Inclusive="false") 0.0
             Group(Name="vorticity-tagging" Label="Vorticity Tagging"
               Optional="true" IsEnabledByDefault="true")
               ItemDefinitions

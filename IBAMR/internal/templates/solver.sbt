@@ -40,7 +40,7 @@
             <Double Name="regrid-cfl-interval" Label="Regrid CFL Interval">
               <DefaultValue>0.5</DefaultValue>
               <RangeInfo>
-                <Minimum Inclusive="true">0.0</Minimum>
+                <Min Inclusive="true">0.0</Min>
               </RangeInfo>
             </Double>
           </ItemDefinitions>
@@ -67,7 +67,7 @@
             <Double Name="ib-point-density" Label="IB Point Density">
               <DefaultValue>3.0</DefaultValue>
               <RangeInfo>
-                <Minimum Inclusive="false">0.0</Minimum>
+                <Min Inclusive="false">0.0</Min>
               </RangeInfo>
             </Double>
           </ItemDefinitions>
@@ -121,7 +121,7 @@
               <BriefDescription>recommended &lt;= 0.5</BriefDescription>
               <DefaultValue>0.25</DefaultValue>
               <RangeInfo>
-                <Minimum Inclusive="false">0.0</Minimum>
+                <Min Inclusive="false">0.0</Min>
               </RangeInfo>
             </Double>
             <Group Name="vorticity-tagging" Label="Vorticity Tagging" Optional="true" IsEnabledByDefault="true">

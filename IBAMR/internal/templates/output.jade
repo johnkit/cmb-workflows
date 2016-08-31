@@ -35,13 +35,13 @@ SMTK_AttributeSystem(Version="2")
                 Int(Name="number-procs-per-file" Label="Number of Process per File")
                   DefaultValue 1
                   RangeInfo
-                    Minimum(Inclusive="true") 1
+                    Min(Inclusive="true") 1
             Void(Name="exodus" Label="ExodusII" Optional="true" IsEnabledByDefault="true")
             Void(Name="silo" Label="Silo" Optional="true" IsEnabledByDefault="false")
             Int(Name="interval" Label="Output Interval")
               DefaultValue 250
               RangeInfo
-                Minimum(Inclusive="true") 1
+                Min(Inclusive="true") 1
             Directory(Name="directory" Label="Directory" NumberOfRequiredValues="1")
               DefaultValue viz_IB2d
 
@@ -51,7 +51,7 @@ SMTK_AttributeSystem(Version="2")
             Int(Name="interval" Label="Restart Dump Interval")
               DefaultValue 10
               RangeInfo
-                Minimum(Inclusive="true") 1
+                Min(Inclusive="true") 1
             Directory(Name="directory" Label="Directory" NumberOfRequiredValues="1")
               DefaultValue restart_IB2d
 
@@ -61,7 +61,7 @@ SMTK_AttributeSystem(Version="2")
             Int(Name="interval" Label="Hierarchy Data Dump Interval")
               DefaultValue 10
               RangeInfo
-                Minimum(Inclusive="true") 1
+                Min(Inclusive="true") 1
             Directory(Name="directory" Label="Directory" NumberOfRequiredValues="1")
               DefaultValue hier_data_IB2d
 
@@ -71,5 +71,5 @@ SMTK_AttributeSystem(Version="2")
             Int(Name="interval" Label="Timer Parameters Dump Interval")
               DefaultValue 10
               RangeInfo
-                Minimum(Inclusive="true") 1
+                Min(Inclusive="true") 1
 = "\n"
