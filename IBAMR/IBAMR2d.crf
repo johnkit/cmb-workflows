@@ -14,7 +14,9 @@
           <ItemDefinitions>
             <!--String Name="AnalysisTypes" Label="Analysis Types" Version="0" AdvanceLevel="99" NumberOfRequiredValues="1" Extensible="true" /-->
             <File Name="PythonScript" Label="Python script" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1"
-              ShouldExist="true" FileFilters="Python files (*.py);;All files (*.*)" />
+              ShouldExist="true" FileFilters="Python files (*.py);;All files (*.*)">
+              <DefaultValue>IBAMR2d.py</DefaultValue>
+            </File>
             <File Name="OutputFile" Label="Output File"
               Version="0" NumberOfRequiredValues="1" ShouldExist="false">
             </File>
