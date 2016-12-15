@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 
-# Hard-coded for jat desktop (turtleland2)
+# Hard-coded for specific desktops
+python_interp="python"
+if [[ $HOSTNAME == turtleland2* ]]; then
+  ld_library_path="/media/ssd/sim/projects/erdc/build/cmb-superbuild/install/lib"
+  pythonpath="/media/ssd/sim/projects/erdc/build/cmb-superbuild/superbuild/smtk/build"
+elif [[ $HOSTNAME == tortuga* ]]; then
+  python_interp="/usr/bin/python"
+  ld_library_path="/Users/john/kitware/cmb/build/smtk-superbuild/install/lib"
+  pythonpath="/Users/john/kitware/cmb/build/smtk"
+else
+  echo "Unsupported machine"
+  exit -1
+fi
 
 # Get directory, per http://stackoverflow.com/questions/59895
 SOURCE="${BASH_SOURCE[0]}"
@@ -24,6 +36,12 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 echo "DIR is '$DIR'"
 
 
-LD_LIBRARY_PATH=/media/ssd/sim/cmb_core/build-gitlab/superbuild-11/install/lib \
-PYTHONPATH=/media/ssd/sim/cmb_core/build-gitlab/superbuild-11/superbuild/smtk/src/smtk-build \
-python ${DIR}/testwriter.py $*
+test_num=1
+if [ $# -gt 0 ] ; then
+  test_num=$1
+fi
+
+LD_LIBRARY_PATH=${ld_library_path} \
+PYTHONPATH=${pythonpath} \
+${python_interp} ${DIR}/testwriter.py ${DIR}/test${test_num}.crf ${DIR}/test${test_num}-baseline.ibamr \
+  $*
