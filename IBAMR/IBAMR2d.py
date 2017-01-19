@@ -35,8 +35,26 @@ from internal.writers import CardFormat, OutputComponent, Writer2D
 card = CardFormat
 # Please order the components alphabetically in this table
 format_table = {
+  'toplevel' : [
+    card('MFAC', item_path='mfac'),
+    card('ELEM_TYPE', item_path='element-type'),
+    card('PK1_DEV_QUAD_ORDER', att_type='toplevel', item_path='pk1-dev-quad-order'),
+    card('PK1_DIL_QUAD_ORDER',att_type='toplevel',  item_path='pk1-dil-quad-order'),
+    card('MU', att_type='parameters', item_path='viscosity'),
+    card('RHO', att_type='parameters', item_path='density'),
+    card('START_TIME', att_type='solver', item_path='time/start-time'),
+    card('END_TIME', att_type='solver', item_path='time/end-time'),
+    card('MAX_LEVELS', att_type='grid', item_path='max-levels'),
+    card('REF_RATIO', att_type='grid', item_path='refinement-ratio'),
+    card('N', att_type='grid', item_path='base-grid-size'),
+    card('L', att_type='geometry', item_path='length'),
+    # the following cards are for derived properties, hence no item
+    card('NFINEST'),
+    card('DX0'),
+    card('DX'),
+    ],
   'Main': [
-    card('solver', att_type='solver', item_path='solver/solver-type'),
+    card('solver_type', att_type='solver', item_path='solver/solver-type'),
     card(None, comment='log file parameters'),
     card('log_file_name', item_path='log/log-file'),
     card('log_all_nodes', item_path='log/log-all-nodes'),
@@ -73,7 +91,7 @@ format_table = {
       is_custom=True, att_type='grid', item_path='base-grid-size'),
     card('x_lo', item_path='origin'),
     card('x_up', item_path='length'),
-    card('periodic_dimension', item_path='periodic'),
+    card('periodic_dimension', item_path='periodic')
   ],
   'GriddingAlgorithm': [
     card('max_levels', item_path='max-levels'),
@@ -157,6 +175,7 @@ format_table = {
 comp = OutputComponent
 # Order the components in the order to be written
 component_list = [
+  comp('Top Level', att_type='toplevel', custom_component_method='write_toplevel', format_list_name='toplevel'),
   comp('VelocityBcCoefs_0',
     att_name='velocity0',
     custom_component_method='write_bc_coefs',
