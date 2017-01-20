@@ -43,5 +43,9 @@ fi
 
 LD_LIBRARY_PATH=${ld_library_path} \
 PYTHONPATH=${pythonpath} \
-${python_interp} ${DIR}/testwriter.py ${DIR}/test${test_num}.crf ${DIR}/test${test_num}-baseline.ibamr \
+${python_interp} ${DIR}/testwriter.py ${DIR}/test${test_num}.crf ${DIR}/test${test_num}.ibamr \
   $*
+
+
+# To generate baseline files, use
+#${python_interp} ${DIR}/testwriter.py ${DIR}/test${test_num}.crf ${DIR}/test${test_num}-baseline.ibamr \

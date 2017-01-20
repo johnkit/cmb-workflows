@@ -179,21 +179,14 @@ class Writer2D:
       return None
 
     att = att_list[0]
-    # Use try/except to get whatever the value is, since
-    # python need not know what type it is
-    try:
-      item = att.findDouble(card.item_path)
-      return item.value(indx)
-    except:
-      try:
-        item = att.findInt(card.item_path)
-        return item.value(indx)
-      except:
-        try:
-          item = att.findString(card.item_path)
-          return item.value(indx)
-        except:
-          print 'ERROR: no value found for %s/%s' % (card.att_type, card.item_path)
+
+    item = att.itemAtPath(card.item_path, '/')
+    if not item:
+      print 'ERROR: no value found for %s/%s' % (card.att_type, card.item_path)
+      return None
+
+    concrete_item = smtk.attribute.to_concrete(item)
+    return concrete_item.value(indx)
 
 # ---------------------------------------------------------------------
   def get_att(self, component):
@@ -326,17 +319,17 @@ class Writer2D:
     for card in format_list:
       if card.keyword == 'N':
         N = self.get_value(card)
-        card.write_value(out, N, quote_string=False, tab=tab)
-        continue
+        card.write_value(out, N, tab=tab)
 
-      if card.keyword == 'L':
+      elif card.keyword == 'L':
         L = self.get_value(card)
-        card.write_value(out, L, quote_string=False, tab=tab)
-        continue
-      if card.keyword == 'MAX_LEVELS':
-        max_levels = self.get_value(card)
+        card.write_value(out, L, tab=tab)
 
-      if card.keyword == 'REF_RATIO':
+      elif card.keyword == 'MAX_LEVELS':
+        max_levels = self.get_value(card)
+        card.write_value(out, max_levels, tab=tab)
+
+      elif card.keyword == 'REF_RATIO':
         card_att = self.get_att(card)
         type_item = card_att.findString(card.item_path)
         data_type = type_item.value(0)
@@ -358,27 +351,24 @@ class Writer2D:
             vals.append(row_item.value(1))
           ref_ratio = max(vals)
 
-        card.write_value(out, ref_ratio, quote_string=False, tab=tab)
-        continue
+        card.write_value(out, ref_ratio, tab=tab)
 
-      if card.keyword == 'DX0':
+      elif card.keyword == 'DX0':
         value = L/N
-        card.write_value(out, value, quote_string=False, tab=tab)
-        continue
+        card.write_value(out, value, tab=tab)
 
-      if card.keyword == 'NFINEST':
+      elif card.keyword == 'NFINEST':
         nfinest =(ref_ratio**(max_levels - 1))*N
-        card.write_value(out, nfinest, quote_string=False, tab=tab)
-        continue
+        card.write_value(out, nfinest, tab=tab)
 
-      if card.keyword == 'DX':
+      elif card.keyword == 'DX':
         dx = L/nfinest
-        card.write_value(out, dx, quote_string=False, tab=tab)
-        continue
-      if 'PK1' in card.keyword.split('_'):
+        card.write_value(out, dx, tab=tab)
+
+      elif 'PK1' in card.keyword.split('_'):
         value = order_dict[self.get_value(card)]
-        card.write_value(out, value, quote_string=True, tab=tab)
-        continue
+        card.write_value(out, value, tab=tab)
+
       else:
         self.write_card(out, att, component, card)
 
