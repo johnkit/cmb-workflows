@@ -1,3 +1,4 @@
+import filecmp
 import os
 import sys
 
@@ -58,6 +59,27 @@ class MockExportSpec:
   def getLogger(self):
     return self.logger
 
+#----------------------------------------------------------------------
+def compare_files(test_file, baseline_file):
+  '''
+  '''
+  if not os.path.exists(test_file):
+    print 'Output file not found:', test_file
+    return
+
+  if not os.path.exists(baseline_file):
+    print 'Baseline file not found:', baseline_file
+    return
+
+  match = filecmp.cmp(test_file, baseline_file)
+  print 'Output file match baseline?', match
+
+  if not match:
+    print
+    print 'Files do NOT MATCH'
+    print ' ', test_file
+    print ' ', baseline_file
+
 
 #----------------------------------------------------------------------
 if __name__ == '__main__':
@@ -104,5 +126,10 @@ if __name__ == '__main__':
   # Initialize MockExportSpec and run export script
   export_spec = MockExportSpec(sim_atts, export_atts)
   completed = ibamr.ExportCMB(export_spec)
+
+    # If baseline file specified, compare results
+  if completed and len(sys.argv) > 2:
+    baseline_file = sys.argv[2]
+    compare_files(output_path, baseline_file)
 
   print 'finis, completed:', completed

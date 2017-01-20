@@ -161,16 +161,51 @@ class Writer2D:
         card.write(out, card_att, base_item_path=base_path, tab=tab)
 
 # ---------------------------------------------------------------------
-  def write_main(self, out, component, format_list):
-    '''Custom method for writing Main component
+  def get_value(self, card, indx=0):
     '''
-    print 'Writing component', component.name
+    Returns value from card item by extracting attribute type and path.
+
+    Required argument:
+        card: (object) CardFormat object with att_type != None
+
+    Optional argument:
+        indx: (int) Index of value in item if item has multiple values
+        Default is 0.
+    '''
+
+    att_list = self.sim_atts.findAttributes(card.att_type)
+    if not att_list:
+      print 'ERROR: Missing attribute type', card.att_type
+      return None
+
+    att = att_list[0]
+
+    item = att.itemAtPath(card.item_path, '/')
+    if not item:
+      print 'ERROR: no value found for %s/%s' % (card.att_type, card.item_path)
+      return None
+
+    concrete_item = smtk.attribute.to_concrete(item)
+    return concrete_item.value(indx)
+
+# ---------------------------------------------------------------------
+  def get_att(self, component):
+    '''Get attribute for input component
+
+    '''
     att_list = self.sim_atts.findAttributes(component.att_type)
     if not att_list:
       print 'ERROR: Missing', component.att_type, 'attribute'
       return
 
-    att = att_list[0]
+    return att_list[0]
+
+# ---------------------------------------------------------------------
+  def write_main(self, out, component, format_list):
+    '''Custom method for writing Main component
+    '''
+    print 'Writing component', component.name
+    att = self.get_att(component)
     tab = component.tab
     self.begin_component(out, component)
 
@@ -248,39 +283,19 @@ class Writer2D:
     '''Custom method for writing CartesianGeometry
     '''
     print 'Writing component', component.name
-    att_list = self.sim_atts.findAttributes(component.att_type)
-    if not att_list:
-      print 'ERROR: Missing', component.att_type, 'attribute'
-      return
 
-    att = att_list[0]
+    att = self.get_att(component)
     tab = component.tab
     self.begin_component(out, component)
 
     for card in format_list:
       if 'domain_boxes' == card.keyword:
         # Get the grid attribute & base-grid-size item
-        att_list = self.sim_atts.findAttributes(card.att_type)
-        if not att_list:
-          print 'ERROR: Missing attribute type', card.att_type
-          continue
-
-        grid_att = att_list[0]
-        grid_size_item = grid_att.findInt(card.item_path)
-        if not grid_size_item:
-          print 'ERROR: Missing item', card.item_path
-          continue
-
-        if grid_size_item.numberOfValues() != 2:
-          print 'ERROR: Wrong number of values (should be 2) for item', \
-            card.item_path
-          continue
-
-        upper_x = grid_size_item.value(0) - 1
-        upper_y = grid_size_item.value(1) - 1
+        upper_x = self.get_value(card, indx=0) - 1
+        upper_y = self.get_value(card, indx=1) - 1
         value = '[ (0,0), (%d,%d) ]' % (upper_x, upper_y)
-
         card.write_value(out, value, quote_string=False, tab=tab)
+
       elif card.is_custom:
         print 'TODO', card.keyword
       else:
@@ -289,16 +304,80 @@ class Writer2D:
     self.end_component(out)
 
 # ---------------------------------------------------------------------
+  def write_toplevel(self, out, component, format_list):
+    '''Custom writer for Top Level component
+    '''
+    print 'Writing component', component.name
+
+    out.write('\n')
+    out.write('// %s' % component.name)
+    out.write('\n')
+
+    att = self.get_att(component)
+    tab = component.tab
+    order_dict = {1:'FIRST', 2:'SECOND', 3:'THIRD', 4:'FOURTH', 5:'FIFTH', 6:'SIXTH', 7:'SEVENTH'}
+    for card in format_list:
+      if card.keyword == 'N':
+        N = self.get_value(card)
+        card.write_value(out, N, tab=tab)
+
+      elif card.keyword == 'L':
+        L = self.get_value(card)
+        card.write_value(out, L, tab=tab)
+
+      elif card.keyword == 'MAX_LEVELS':
+        max_levels = self.get_value(card)
+        card.write_value(out, max_levels, tab=tab)
+
+      elif card.keyword == 'REF_RATIO':
+        card_att = self.get_att(card)
+        type_item = card_att.findString(card.item_path)
+        data_type = type_item.value(0)
+        item_path = '%s/%s' % (type_item.name(), data_type)
+        item = card_att.itemAtPath(item_path, '/')
+        data_item = smtk.attribute.to_concrete(item)
+        if 'fixed' == data_type:
+          # data_item is single double value
+          ref_ratio = data_item.value(0)
+
+        elif 'table' == data_type:
+          # data_item is Group with rows of double[2] items
+          num_rows = data_item.numberOfGroups()
+          vals = []
+          for i in range(num_rows):
+            item = data_item.find(i, 'row')
+            row_item = smtk.attribute.to_concrete(item)
+            vals.append(row_item.value(0))
+            vals.append(row_item.value(1))
+          ref_ratio = max(vals)
+
+        card.write_value(out, ref_ratio, tab=tab)
+
+      elif card.keyword == 'DX0':
+        value = L/N
+        card.write_value(out, value, tab=tab)
+
+      elif card.keyword == 'NFINEST':
+        nfinest =(ref_ratio**(max_levels - 1))*N
+        card.write_value(out, nfinest, tab=tab)
+
+      elif card.keyword == 'DX':
+        dx = L/nfinest
+        card.write_value(out, dx, tab=tab)
+
+      elif 'PK1' in card.keyword.split('_'):
+        value = order_dict[self.get_value(card)]
+        card.write_value(out, value, tab=tab)
+
+      else:
+        self.write_card(out, att, component, card)
+
+# ---------------------------------------------------------------------
   def write_grid(self, out, component, format_list):
     '''Custom writer for GriddingAlgorithm component
     '''
     print 'Writing component', component.name
-    att_list = self.sim_atts.findAttributes(component.att_type)
-    if not att_list:
-      print 'ERROR: Missing', component.att_type, 'attribute'
-      return
-
-    att = att_list[0]
+    att = self.get_att(component)
     tab = component.tab
     self.begin_component(out, component)
 
@@ -363,4 +442,5 @@ class Writer2D:
 
 # ---------------------------------------------------------------------
   def end_component(self, out, indent=''):
+
     out.write('%s}\n' % indent)

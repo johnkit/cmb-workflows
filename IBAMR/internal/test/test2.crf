@@ -59,6 +59,9 @@
                 <Label>y:</Label>
               </ComponentLabels>
               <DefaultValue>1</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="false">0</Min>
+              </RangeInfo>
             </Double>
             <Int Name="periodic" Label="Periodic?" Version="0" NumberOfRequiredValues="2">
               <ComponentLabels>
@@ -81,14 +84,24 @@
                 <Label>y:</Label>
               </ComponentLabels>
               <DefaultValue>64</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="true">1</Min>
+              </RangeInfo>
             </Int>
             <Int Name="max-levels" Label="Maximum Levels" Version="0" NumberOfRequiredValues="1">
               <DefaultValue>1</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="true">1</Min>
+              </RangeInfo>
             </Int>
             <String Name="refinement-ratio" Label="Refinement Ratio" Version="0" NumberOfRequiredValues="1">
               <ChildrenDefinitions>
                 <Int Name="fixed" Label="Fixed Refinement Ratio" Version="0" NumberOfRequiredValues="1">
+                  <BriefDescription>Recommended values of 2 or 4 (effective for every level)</BriefDescription>
                   <DefaultValue>2</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
                 </Int>
                 <Group Name="table" Label="General Refinement Ratio" Version="0" NumberOfRequiredGroups="1" Extensible="true">
                   <ComponentLabels CommonLabel="" />
@@ -99,6 +112,9 @@
                         <Label>y:</Label>
                       </ComponentLabels>
                       <DefaultValue>2</DefaultValue>
+                      <RangeInfo>
+                        <Min Inclusive="true">1</Min>
+                      </RangeInfo>
                     </Int>
                   </ItemDefinitions>
                 </Group>
@@ -122,6 +138,9 @@
               <ChildrenDefinitions>
                 <Int Name="fixed" Label="Fixed Value" Version="0" NumberOfRequiredValues="1">
                   <DefaultValue>2</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
                 </Int>
                 <Group Name="table" Label="Table" Version="0" NumberOfRequiredGroups="1" Extensible="true">
                   <ComponentLabels CommonLabel="" />
@@ -132,6 +151,9 @@
                         <Label>y:</Label>
                       </ComponentLabels>
                       <DefaultValue>2</DefaultValue>
+                      <RangeInfo>
+                        <Min Inclusive="true">1</Min>
+                      </RangeInfo>
                     </Int>
                   </ItemDefinitions>
                 </Group>
@@ -155,6 +177,9 @@
               <ChildrenDefinitions>
                 <Int Name="fixed" Label="Fixed Value" Version="0" NumberOfRequiredValues="1">
                   <DefaultValue>2</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
                 </Int>
                 <Group Name="table" Label="Table" Version="0" NumberOfRequiredGroups="1" Extensible="true">
                   <ComponentLabels CommonLabel="" />
@@ -165,6 +190,9 @@
                         <Label>y:</Label>
                       </ComponentLabels>
                       <DefaultValue>2</DefaultValue>
+                      <RangeInfo>
+                        <Min Inclusive="true">1</Min>
+                      </RangeInfo>
                     </Int>
                   </ItemDefinitions>
                 </Group>
@@ -184,32 +212,21 @@
                 </Structure>
               </DiscreteInfo>
             </String>
-            <Double Name="mfac" Label="MFAC" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1">
-              <BriefDescription>ratio of structural mesh width to Cartesian mesh width</BriefDescription>
-              <DefaultValue>2</DefaultValue>
-            </Double>
-            <String Name="element-type" Label="Element Type" Version="0" NumberOfRequiredValues="1">
-              <DiscreteInfo DefaultIndex="1">
-                <Value Enum="TRI3">TRI3</Value>
-                <Value Enum="TRI6">TRI6</Value>
-                <Value Enum="QUAD4">QUAD4</Value>
-                <Value Enum="QUAD8">QUAD8</Value>
-                <Value Enum="QUAD9">QUAD9</Value>
-              </DiscreteInfo>
-            </String>
-            <Int Name="pk1-dev-quad-order" Label="Quadrature Rule Order for Deviatoric Stress" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>5</DefaultValue>
-            </Int>
-            <Int Name="pk1-dil-quad-order" Label="Quadrature Rule Order for Dilational Stress" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>3</DefaultValue>
-            </Int>
             <Double Name="efficiency-tolerance" Label="Efficiency Tolerance" Version="0" NumberOfRequiredValues="1">
               <BriefDescription>min % of tag cells in new patch level</BriefDescription>
               <DefaultValue>0.84999999999999998</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="true">0</Min>
+                <Max Inclusive="true">1</Max>
+              </RangeInfo>
             </Double>
             <Double Name="combine-efficiency" Label="Combine Efficiency" Version="0" NumberOfRequiredValues="1">
               <BriefDescription>chop box is sum of volumes of smaller boxes &lt; efficiency * vol of large box</BriefDescription>
               <DefaultValue>0.84999999999999998</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="true">0</Min>
+                <Max Inclusive="true">1</Max>
+              </RangeInfo>
             </Double>
           </ItemDefinitions>
         </AttDef>
@@ -228,7 +245,7 @@
             <Group Name="log" Label="Log Output" Version="0" NumberOfRequiredGroups="1">
               <ItemDefinitions>
                 <File Name="log-file" Label="Log File" Version="0" NumberOfRequiredValues="1">
-                  <:anonymous />
+                  <DefaultValue>IB2d.log</DefaultValue>
                 </File>
                 <Void Name="log-all-nodes" Label="Log All Nodes" Version="0" Optional="true" IsEnabledByDefault="false" />
               </ItemDefinitions>
@@ -239,6 +256,9 @@
                   <ItemDefinitions>
                     <Int Name="number-procs-per-file" Label="Number of Process per File" Version="0" NumberOfRequiredValues="1">
                       <DefaultValue>1</DefaultValue>
+                      <RangeInfo>
+                        <Min Inclusive="true">1</Min>
+                      </RangeInfo>
                     </Int>
                   </ItemDefinitions>
                 </Group>
@@ -246,9 +266,12 @@
                 <Void Name="silo" Label="Silo" Version="0" Optional="true" IsEnabledByDefault="false" />
                 <Int Name="interval" Label="Output Interval" Version="0" NumberOfRequiredValues="1">
                   <DefaultValue>250</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
                 </Int>
                 <Directory Name="directory" Label="Directory" Version="0" NumberOfRequiredValues="1">
-                  <:anonymous />
+                  <DefaultValue>viz_IB2d</DefaultValue>
                 </Directory>
               </ItemDefinitions>
             </Group>
@@ -256,9 +279,12 @@
               <ItemDefinitions>
                 <Int Name="interval" Label="Restart Dump Interval" Version="0" NumberOfRequiredValues="1">
                   <DefaultValue>10</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
                 </Int>
                 <Directory Name="directory" Label="Directory" Version="0" NumberOfRequiredValues="1">
-                  <:anonymous />
+                  <DefaultValue>restart_IB2d</DefaultValue>
                 </Directory>
               </ItemDefinitions>
             </Group>
@@ -266,9 +292,12 @@
               <ItemDefinitions>
                 <Int Name="interval" Label="Hierarchy Data Dump Interval" Version="0" NumberOfRequiredValues="1">
                   <DefaultValue>10</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
                 </Int>
                 <Directory Name="directory" Label="Directory" Version="0" NumberOfRequiredValues="1">
-                  <:anonymous />
+                  <DefaultValue>hier_data_IB2d</DefaultValue>
                 </Directory>
               </ItemDefinitions>
             </Group>
@@ -276,6 +305,9 @@
               <ItemDefinitions>
                 <Int Name="interval" Label="Timer Parameters Dump Interval" Version="0" NumberOfRequiredValues="1">
                   <DefaultValue>10</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">1</Min>
+                  </RangeInfo>
                 </Int>
               </ItemDefinitions>
             </Group>
@@ -285,9 +317,15 @@
           <ItemDefinitions>
             <Double Name="viscosity" Label="Viscosity (mu)" Version="0" NumberOfRequiredValues="1">
               <DefaultValue>0.01</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="true">0</Min>
+              </RangeInfo>
             </Double>
             <Double Name="density" Label="Density (rho)" Version="0" NumberOfRequiredValues="1">
               <DefaultValue>1</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="true">0</Min>
+              </RangeInfo>
             </Double>
           </ItemDefinitions>
         </AttDef>
@@ -328,6 +366,9 @@
                 </Int>
                 <Double Name="regrid-cfl-interval" Label="Regrid CFL Interval" Version="0" NumberOfRequiredValues="1">
                   <DefaultValue>0.5</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="true">0</Min>
+                  </RangeInfo>
                 </Double>
               </ItemDefinitions>
             </Group>
@@ -352,6 +393,9 @@
                 <Void Name="use-consistent-mass-matrix" Label="Use Consistent Mass Matrix" Version="0" Optional="true" IsEnabledByDefault="true" />
                 <Double Name="ib-point-density" Label="IB Point Density" Version="0" NumberOfRequiredValues="1">
                   <DefaultValue>3</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="false">0</Min>
+                  </RangeInfo>
                 </Double>
               </ItemDefinitions>
             </Group>
@@ -403,6 +447,9 @@
                 <Double Name="cfl-max" Label="Maximum CFL Number" Version="0" NumberOfRequiredValues="1">
                   <BriefDescription>recommended &lt;= 0.5</BriefDescription>
                   <DefaultValue>0.25</DefaultValue>
+                  <RangeInfo>
+                    <Min Inclusive="false">0</Min>
+                  </RangeInfo>
                 </Double>
                 <Group Name="vorticity-tagging" Label="Vorticity Tagging" Version="0" Optional="true" IsEnabledByDefault="true" NumberOfRequiredGroups="1">
                   <ItemDefinitions>
@@ -416,6 +463,40 @@
                 </Group>
               </ItemDefinitions>
             </Group>
+          </ItemDefinitions>
+        </AttDef>
+        <AttDef Type="toplevel" Label="Top Level" BaseType="" Version="0" Unique="true">
+          <ItemDefinitions>
+            <Double Name="mfac" Label="MFAC" Version="0" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="1">
+              <BriefDescription>ratio of structural mesh width to Cartesian mesh width</BriefDescription>
+              <DefaultValue>2</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="false">0</Min>
+              </RangeInfo>
+            </Double>
+            <String Name="element-type" Label="Element Type" Version="0" NumberOfRequiredValues="1">
+              <DiscreteInfo DefaultIndex="1">
+                <Value Enum="TRI3">TRI3</Value>
+                <Value Enum="TRI6">TRI6</Value>
+                <Value Enum="QUAD4">QUAD4</Value>
+                <Value Enum="QUAD8">QUAD8</Value>
+                <Value Enum="QUAD9">QUAD9</Value>
+              </DiscreteInfo>
+            </String>
+            <Int Name="pk1-dev-quad-order" Label="Quadrature Rule Order for Deviatoric Stress" Version="0" NumberOfRequiredValues="1">
+              <DefaultValue>5</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="true">0</Min>
+                <Max Inclusive="true">43</Max>
+              </RangeInfo>
+            </Int>
+            <Int Name="pk1-dil-quad-order" Label="Quadrature Rule Order for Dilational Stress" Version="0" NumberOfRequiredValues="1">
+              <DefaultValue>3</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="true">0</Min>
+                <Max Inclusive="true">43</Max>
+              </RangeInfo>
+            </Int>
           </ItemDefinitions>
         </AttDef>
         <AttDef Type="velocity" Label="Velocity Boundary Condition" BaseType="" Version="0" Unique="true">
@@ -439,7 +520,7 @@
       </Definitions>
       <!--**********  Attribute Instances ***********-->
       <Attributes>
-        <Att Name="controls" Type="controls" ID="4b222806-55fe-408e-8686-be8b33692695">
+        <Att Name="controls" Type="controls" ID="b50a3129-e990-4f2f-8e8e-db41cff95216">
           <Items>
             <String Name="tagging-method" Discrete="true">0</String>
             <Group Name="load-balancer">
@@ -458,7 +539,7 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="Geometry" Type="geometry" ID="98c0fef1-bc7c-43ac-baeb-8a0995b6241d">
+        <Att Name="Geometry" Type="geometry" ID="9b185819-4a0d-474d-9f94-4adccfe9a698">
           <Items>
             <Double Name="origin">
               <Values>
@@ -480,7 +561,7 @@
             </Int>
           </Items>
         </Att>
-        <Att Name="Grid" Type="grid" ID="883d2b99-359f-4b83-b298-fc238dba93d0">
+        <Att Name="Grid" Type="grid" ID="13d92194-cd74-4dca-bd27-baeefcf75509">
           <Items>
             <Int Name="base-grid-size">
               <Values>
@@ -492,17 +573,9 @@
             <String Name="refinement-ratio" Discrete="true">
               <ChildrenItems>
                 <Int Name="fixed">2</Int>
-                <Group Name="table" NumberOfGroups="3">
+                <Group Name="table" NumberOfGroups="2">
                   <GroupClusters>
                     <Cluster Ith="0">
-                      <Int Name="row">
-                        <Values>
-                          <Val Ith="0">2</Val>
-                          <Val Ith="1">2</Val>
-                        </Values>
-                      </Int>
-                    </Cluster>
-                    <Cluster Ith="1">
                       <Int Name="row">
                         <Values>
                           <Val Ith="0">1</Val>
@@ -510,7 +583,7 @@
                         </Values>
                       </Int>
                     </Cluster>
-                    <Cluster Ith="2">
+                    <Cluster Ith="1">
                       <Int Name="row">
                         <Values>
                           <Val Ith="0">2</Val>
@@ -553,15 +626,11 @@
                   </GroupClusters>
                 </Group>
               </ChildrenItems>0</String>
-            <Double Name="mfac" Enabled="true">3.2999999999999998</Double>
-            <String Name="element-type" Discrete="true">1</String>
-            <Int Name="pk1-dev-quad-order">5</Int>
-            <Int Name="pk1-dil-quad-order">3</Int>
             <Double Name="efficiency-tolerance">0.84999999999999998</Double>
             <Double Name="combine-efficiency">0.84999999999999998</Double>
           </Items>
         </Att>
-        <Att Name="output" Type="output" ID="d82a21f3-b438-4116-bdf2-0411caf044f8">
+        <Att Name="output" Type="output" ID="2ac67ca0-ea6f-4334-96b6-623157074c5a">
           <Items>
             <Void Name="enable-logging" Enabled="true" />
             <Group Name="output-fields">
@@ -597,13 +666,13 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="parameters" Type="parameters" ID="21eb005e-026e-46bd-aaa6-34953e9de514">
+        <Att Name="parameters" Type="parameters" ID="a986400f-ce5f-4cef-8634-cf81a7feb54a">
           <Items>
             <Double Name="viscosity">0.01</Double>
             <Double Name="density">1</Double>
           </Items>
         </Att>
-        <Att Name="solver" Type="solver" ID="3c38544d-15bb-433a-b0a7-d12a267f7ee8">
+        <Att Name="solver" Type="solver" ID="f5cee33b-fb77-4faf-820e-2844eb911552">
           <Items>
             <Group Name="time">
               <Double Name="start-time">0</Double>
@@ -638,7 +707,7 @@
                 <Double Name="vorticity-rel-thresh" NumberOfValues="3">
                   <Values>
                     <Val Ith="0">0.01</Val>
-                    <Val Ith="1">0.029999999999999999</Val>
+                    <Val Ith="1">0.040000000000000001</Val>
                     <Val Ith="2">0.02</Val>
                   </Values>
                 </Double>
@@ -651,7 +720,15 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity2" Type="velocity" ID="d4e6738b-a7f9-44ed-acfc-f68759b05b27">
+        <Att Name="toplevel" Type="toplevel" ID="228acce0-02f0-412f-8e07-fb1660e2e3a2">
+          <Items>
+            <Double Name="mfac" Enabled="false">2</Double>
+            <String Name="element-type" Discrete="true">1</String>
+            <Int Name="pk1-dev-quad-order">5</Int>
+            <Int Name="pk1-dil-quad-order">3</Int>
+          </Items>
+        </Att>
+        <Att Name="velocity0" Type="velocity" ID="4b5767dc-afd3-403f-b41f-d9fe35480441">
           <Items>
             <Group Name="enable" Enabled="false">
               <Double Name="a">
@@ -681,75 +758,15 @@
             </Group>
           </Items>
         </Att>
-        <Att Name="velocity0" Type="velocity" ID="837348c2-b45c-43d5-a9ae-eeb47b1ddabf">
-          <Items>
-            <Group Name="enable" Enabled="false">
-              <Double Name="a">
-                <Values>
-                  <Val Ith="0">1</Val>
-                  <Val Ith="1">1</Val>
-                  <Val Ith="2">1</Val>
-                  <Val Ith="3">1</Val>
-                </Values>
-              </Double>
-              <Double Name="b">
-                <Values>
-                  <Val Ith="0">0</Val>
-                  <Val Ith="1">0</Val>
-                  <Val Ith="2">0</Val>
-                  <Val Ith="3">0</Val>
-                </Values>
-              </Double>
-              <Double Name="g">
-                <Values>
-                  <Val Ith="0">0</Val>
-                  <Val Ith="1">0</Val>
-                  <Val Ith="2">0</Val>
-                  <Val Ith="3">0</Val>
-                </Values>
-              </Double>
-            </Group>
-          </Items>
-        </Att>
-        <Att Name="velocity3" Type="velocity" ID="7ecc2d0f-4d27-4420-8798-7dff361f6746">
-          <Items>
-            <Group Name="enable" Enabled="false">
-              <Double Name="a">
-                <Values>
-                  <Val Ith="0">1</Val>
-                  <Val Ith="1">1</Val>
-                  <Val Ith="2">1</Val>
-                  <Val Ith="3">1</Val>
-                </Values>
-              </Double>
-              <Double Name="b">
-                <Values>
-                  <Val Ith="0">0</Val>
-                  <Val Ith="1">0</Val>
-                  <Val Ith="2">0</Val>
-                  <Val Ith="3">0</Val>
-                </Values>
-              </Double>
-              <Double Name="g">
-                <Values>
-                  <Val Ith="0">0</Val>
-                  <Val Ith="1">0</Val>
-                  <Val Ith="2">0</Val>
-                  <Val Ith="3">0</Val>
-                </Values>
-              </Double>
-            </Group>
-          </Items>
-        </Att>
-        <Att Name="velocity1" Type="velocity" ID="0bc81ca9-f212-49b1-89c6-deecb272fef2">
+        <Att Name="velocity1" Type="velocity" ID="8054b1ce-3746-428f-b139-8e5fb10e2ece">
           <Items>
             <Group Name="enable" Enabled="true">
               <Double Name="a">
                 <Values>
-                  <Val Ith="0">1</Val>
-                  <Val Ith="1">2</Val>
-                  <Val Ith="2">3</Val>
-                  <Val Ith="3">4</Val>
+                  <Val Ith="0">1.1000000000000001</Val>
+                  <Val Ith="1">2.2000000000000002</Val>
+                  <Val Ith="2">3.2999999999999998</Val>
+                  <Val Ith="3">4.4000000000000004</Val>
                 </Values>
               </Double>
               <Double Name="b">
@@ -771,11 +788,72 @@
             </Group>
           </Items>
         </Att>
+        <Att Name="velocity2" Type="velocity" ID="5990c0f7-f417-4cd9-bd02-558f3cd61dc2">
+          <Items>
+            <Group Name="enable" Enabled="false">
+              <Double Name="a">
+                <Values>
+                  <Val Ith="0">1</Val>
+                  <Val Ith="1">1</Val>
+                  <Val Ith="2">1</Val>
+                  <Val Ith="3">1</Val>
+                </Values>
+              </Double>
+              <Double Name="b">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">0</Val>
+                </Values>
+              </Double>
+              <Double Name="g">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">0</Val>
+                </Values>
+              </Double>
+            </Group>
+          </Items>
+        </Att>
+        <Att Name="velocity3" Type="velocity" ID="d5f5550f-7506-4e0b-a8d6-d2ef9ca7536a">
+          <Items>
+            <Group Name="enable" Enabled="false">
+              <Double Name="a">
+                <Values>
+                  <Val Ith="0">1</Val>
+                  <Val Ith="1">1</Val>
+                  <Val Ith="2">1</Val>
+                  <Val Ith="3">1</Val>
+                </Values>
+              </Double>
+              <Double Name="b">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">0</Val>
+                </Values>
+              </Double>
+              <Double Name="g">
+                <Values>
+                  <Val Ith="0">0</Val>
+                  <Val Ith="1">0</Val>
+                  <Val Ith="2">0</Val>
+                  <Val Ith="3">0</Val>
+                </Values>
+              </Double>
+            </Group>
+          </Items>
+        </Att>
       </Attributes>
       <!--********** Workflow Views ***********-->
       <Views>
         <View Type="Group" Title="SimBuilder" FilterByAdvanceLevel="false" FilterByCategory="false" TopLevel="true">
           <Views>
+            <View Title="Top Level" />
             <View Title="Grid" />
             <View Title="BC" />
             <View Title="Solver" />
@@ -828,6 +906,11 @@
             <Att Name="solver" Type="solver" />
           </InstancedAttributes>
         </View>
+        <View Type="Instanced" Title="Top Level">
+          <InstancedAttributes>
+            <Att Name="toplevel" Type="toplevel" />
+          </InstancedAttributes>
+        </View>
         <View Type="Instanced" Title="Upper X">
           <InstancedAttributes>
             <Att Name="velocity1" Type="velocity" />
@@ -848,7 +931,9 @@
       <Definitions>
         <AttDef Type="ExportSpec" Label="Simulation" BaseType="" Version="0" Unique="true">
           <ItemDefinitions>
-            <File Name="PythonScript" Label="Python script" Version="0" NumberOfRequiredValues="1" ShouldExist="true" FileFilters="Python files (*.py);;All files (*.*)" />
+            <File Name="PythonScript" Label="Python script" Version="0" NumberOfRequiredValues="1" ShouldExist="true" FileFilters="Python files (*.py);;All files (*.*)">
+              <DefaultValue>IBAMR2d.py</DefaultValue>
+            </File>
             <File Name="OutputFile" Label="Output File" Version="0" NumberOfRequiredValues="1" />
           </ItemDefinitions>
         </AttDef>

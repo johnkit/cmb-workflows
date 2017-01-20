@@ -59,6 +59,7 @@
         <String Name="refinement-ratio" Label="Refinement Ratio">
           <ChildrenDefinitions>
             <Int Name="fixed" Label="Fixed Refinement Ratio">
+              <BriefDescription>Recommended values of 2 or 4 (effective for every level)</BriefDescription>
               <DefaultValue>2</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="true">1</Min>
@@ -172,37 +173,6 @@
             </Structure>
           </DiscreteInfo>
         </String>
-        <!-- Next 4 values not currently used-->
-        <Double Name="mfac" Label="MFAC" Optional="true" IsEnabledByDefault="false">
-          <BriefDescription>ratio of structural mesh width to Cartesian mesh width</BriefDescription>
-          <DefaultValue>2.0</DefaultValue>
-          <RangeInfo>
-            <Min Inclusive="false">0.0</Min>
-          </RangeInfo>
-        </Double>
-        <String Name="element-type" Label="Element Type">
-          <DiscreteInfo DefaultIndex="1">
-            <Value>TRI3</Value>
-            <Value>TRI6</Value>
-            <Value>QUAD4</Value>
-            <Value>QUAD8</Value>
-            <Value>QUAD9</Value>
-          </DiscreteInfo>
-        </String>
-        <Int Name="pk1-dev-quad-order" Label="Quadrature Rule Order for Deviatoric Stress">
-          <DefaultValue>5</DefaultValue>
-          <RangeInfo>
-            <Min Inclusive="true">0</Min>
-            <Max Inclusive="true">43</Max>
-          </RangeInfo>
-        </Int>
-        <Int Name="pk1-dil-quad-order" Label="Quadrature Rule Order for Dilational Stress">
-          <DefaultValue>3</DefaultValue>
-          <RangeInfo>
-            <Min Inclusive="true">0</Min>
-            <Max Inclusive="true">43</Max>
-          </RangeInfo>
-        </Int>
         <Double Name="efficiency-tolerance" Label="Efficiency Tolerance">
           <BriefDescription>min % of tag cells in new patch level</BriefDescription>
           <DefaultValue>0.85</DefaultValue>

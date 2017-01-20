@@ -52,6 +52,7 @@ SMTK_AttributeSystem(Version="2")
           //- Standard format for fixed/table options
           ChildrenDefinitions
             Int(Name="fixed" Label="Fixed Refinement Ratio")
+              BriefDescription Recommended values of 2 or 4 (effective for every level)
               DefaultValue 2
               RangeInfo
                 Min(Inclusive="true") 1
@@ -133,32 +134,6 @@ SMTK_AttributeSystem(Version="2")
               Value(Enum="General") table
               Items
                 Item table
-
-        // Next 4 values not currently used
-        Double(Name="mfac" Label="MFAC"
-          Optional="true" IsEnabledByDefault="false")
-          BriefDescription
-            | ratio of structural mesh width to Cartesian mesh width
-          DefaultValue 2.0
-          RangeInfo
-            Min(Inclusive="false") 0.0
-        String(Name="element-type" Label="Element Type")
-          DiscreteInfo(DefaultIndex="1")
-            Value TRI3
-            Value TRI6
-            Value QUAD4
-            Value QUAD8
-            Value QUAD9
-        Int(Name="pk1-dev-quad-order" Label="Quadrature Rule Order for Deviatoric Stress")
-          DefaultValue 5
-          RangeInfo
-            Min(Inclusive="true") 0
-            Max(Inclusive="true") 43
-        Int(Name="pk1-dil-quad-order" Label="Quadrature Rule Order for Dilational Stress")
-          DefaultValue 3
-          RangeInfo
-            Min(Inclusive="true") 0
-            Max(Inclusive="true") 43
 
         Double(Name="efficiency-tolerance" Label="Efficiency Tolerance")
           BriefDescription
